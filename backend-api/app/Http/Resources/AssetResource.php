@@ -21,6 +21,7 @@ class AssetResource extends JsonResource
             'qr_code' => $this->qr_code,
             'status' => $this->status,
             'purchase_year' => $this->purchase_year,
+            'category_id'   => $this->category_id,
             'category_name' => $this->category?->name ?? 'Tanpa Kategori',
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
         ];

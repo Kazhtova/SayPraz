@@ -152,11 +152,11 @@ export default function AddAssetPage() {
                     <Input 
                       value={formData.name} 
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500 text-zinc-100 h-11 rounded-lg transition-all" 
+                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-500/50 focus-visible:border-zinc-400 text-zinc-100 h-11 rounded-lg transition-all" 
                       placeholder="Cth: Proyektor Epson EB-X51" 
                       required 
                     />
-                    <Type className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 transition-colors peer-focus:text-indigo-400" />
+                    <Type className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 transition-colors peer-focus:text-zinc-400" />
                   </div>
                   {formErrors.name && <p className="text-xs text-red-500">{formErrors.name[0]}</p>}
                 </div>
@@ -169,11 +169,11 @@ export default function AddAssetPage() {
                     <Input 
                       value={formData.brand} 
                       onChange={(e) => setFormData({...formData, brand: e.target.value})}
-                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500 text-zinc-100 h-11 rounded-lg transition-all" 
+                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-500/50 focus-visible:border-zinc-400 text-zinc-100 h-11 rounded-lg transition-all" 
                       placeholder="Cth: Epson" 
                       required 
                     />
-                    <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 transition-colors peer-focus:text-indigo-400" />
+                    <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 transition-colors peer-focus:text-zinc-400" />
                   </div>
                   {formErrors.brand && <p className="text-xs text-red-500">{formErrors.brand[0]}</p>}
                 </div>
@@ -189,7 +189,7 @@ export default function AddAssetPage() {
                     <select 
                       value={formData.category_id} 
                       onChange={(e) => setFormData({...formData, category_id: e.target.value})}
-                      className="peer appearance-none flex h-11 w-full items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/50 pl-10 pr-4 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+                      className="peer appearance-none flex h-11 w-full items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/50 pl-10 pr-4 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-500/50 focus:border-zinc-400 transition-all"
                       required
                     >
                       <option value="" className="bg-zinc-900"> Pilih Kategori </option>
@@ -197,7 +197,7 @@ export default function AddAssetPage() {
                         <option key={cat.id} value={cat.id} className="bg-zinc-900">{cat.name}</option>
                       ))}
                     </select>
-                    <FolderOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 transition-colors peer-focus:text-indigo-400 pointer-events-none" />
+                    <FolderOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 transition-colors peer-focus:text-zinc-400 pointer-events-none" />
                   </div>
                   {formErrors.category_id && <p className="text-xs text-red-500">{formErrors.category_id[0]}</p>}
                 </div>
@@ -211,12 +211,12 @@ export default function AddAssetPage() {
                       type="number" 
                       value={formData.purchase_year} 
                       onChange={(e) => setFormData({...formData, purchase_year: e.target.value})}
-                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-indigo-500/50 focus-visible:border-indigo-500 text-zinc-100 h-11 rounded-lg transition-all" 
+                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-500/50 focus-visible:border-zinc-400 text-zinc-100 h-11 rounded-lg transition-all" 
                       min="1900" 
                       max={new Date().getFullYear()} 
                       required 
                     />
-                    <CalendarDays className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 transition-colors peer-focus:text-indigo-400" />
+                    <CalendarDays className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 transition-colors peer-focus:text-zinc-400" />
                   </div>
                   {formErrors.purchase_year && <p className="text-xs text-red-500">{formErrors.purchase_year[0]}</p>}
                 </div>
