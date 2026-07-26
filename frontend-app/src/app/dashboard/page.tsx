@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { 
   LogOut, Boxes, Package, AlertTriangle, CheckCircle2, ArrowUpRight,
   Search, Plus, RefreshCw, ChevronLeft, ChevronRight, Filter, 
-  SlidersHorizontal, Pencil // 👈 HANYA ICON PENCIL
+  SlidersHorizontal, Pencil 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,12 +34,6 @@ function TableRowSkeleton() {
 function StatCardSkeleton() {
   return (
     <div className="animate-pulse rounded-xl border border-zinc-800 bg-zinc-900/40 p-5"><div className="flex items-center gap-3"><div className="h-5 w-5 rounded-full bg-zinc-800" /><div className="h-4 w-28 rounded bg-zinc-800" /></div><div className="mt-3 h-10 w-20 rounded-lg bg-zinc-800" /></div>
-  );
-}
-
-function NavbarSkeleton() {
-  return (
-    <nav className="animate-pulse border-b border-zinc-800 bg-zinc-950"><div className="mx-auto max-w-7xl px-4 h-16 flex items-center justify-between"><div className="flex items-center gap-3"><div className="h-10 w-10 rounded-xl bg-zinc-800" /><div className="h-6 w-24 rounded bg-zinc-800" /></div><div className="h-10 w-24 rounded-lg bg-zinc-800" /></div></nav>
   );
 }
 
@@ -136,7 +130,7 @@ export default function DashboardPage() {
 
   const handleRefreshClick = () => {
     setIsTableRefreshing(true); 
-    setSearchQuery(""); setFilterCategory(""); setFilterStatus(""); setCurrentPage(1);       
+    setSearchQuery(""); setFilterCategory(""); setFilterStatus(""); setCurrentPage(1);      
     loadData(1, "", "", "");
   };
 
@@ -158,7 +152,8 @@ export default function DashboardPage() {
 
   if (isInitialLoading && items.length === 0) {
     return (
-      <div className="min-h-screen bg-zinc-950 font-sans antialiased"><FontKillerStyles /><NavbarSkeleton />
+      <div className="min-h-screen bg-zinc-950 font-sans antialiased">
+        <FontKillerStyles />
         <main className="mx-auto max-w-7xl px-4 py-8 space-y-8">
           <div className="space-y-2 animate-pulse"><div className="h-9 w-64 rounded-lg bg-zinc-800" /><div className="h-4 w-96 rounded bg-zinc-800" /></div>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"><StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton /></div>
@@ -171,14 +166,6 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans antialiased">
       <FontKillerStyles />
-      <nav className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800/50"><Boxes className="h-5 w-5 text-zinc-100" /></div><span className="text-xl font-bold tracking-tight text-zinc-100">{APP_NAME}</span></div>
-            <Button variant="ghost" onClick={handleLogout} className="h-10 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 gap-2"><LogOut className="h-4 w-4" />Keluar</Button>
-          </div>
-        </div>
-      </nav>
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
         <div className="space-y-1"><h1 className="text-3xl font-bold tracking-tight text-zinc-100">Dasbor Kontrol Inventaris</h1><p className="text-zinc-400 text-sm">Kelola aset dan peminjaman Sarpras.</p></div>
@@ -219,7 +206,6 @@ export default function DashboardPage() {
                       <td className="px-6 py-4 text-center">{getStatusBadge(item.status)}</td>
                       <td className="px-6 py-4 text-center text-zinc-300">{item.purchase_year}</td>
                       <td className="px-6 py-4 text-right">
-                        {/* 👈 HANYA 1 TOMBOL: PENCIL (KELOLA ASET) */}
                         <Button 
                           variant="ghost" 
                           size="icon" 

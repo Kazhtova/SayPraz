@@ -42,7 +42,7 @@ class CategoryController extends Controller
         $category = Category::create([
             'name' => $request->name,
             'slug'  => Str::slug($request->name),
-            'description' => 'Kategori berhasil Dibuat',
+            'description' => $request->description,
         ]);
 
         return response()->json([

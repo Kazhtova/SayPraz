@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-hooks/static-components */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -12,7 +13,8 @@ import {
   Type,
   Tag,
   FolderOpen,
-  CalendarDays
+  CalendarDays,
+  ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,9 +25,44 @@ interface Category {
   name: string;
 }
 
+// ==========================================
+// KOMPONEN SKELETON HALAMAN TAMBAH ASET
+// ==========================================
+function AddFormSkeleton() {
+  return (
+    <div className="min-h-screen bg-zinc-950 py-10 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-2xl space-y-6">
+        <div className="flex items-center gap-4 animate-pulse">
+          <div className="h-10 w-10 rounded-md bg-zinc-800" />
+          <div className="space-y-2">
+            <div className="h-6 w-48 rounded bg-zinc-800" />
+            <div className="h-4 w-64 rounded bg-zinc-800/50" />
+          </div>
+        </div>
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-6 sm:p-8 animate-pulse space-y-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="space-y-2"><div className="h-3 w-24 rounded bg-zinc-800" /><div className="h-11 rounded-md bg-zinc-800/50" /></div>
+            <div className="space-y-2"><div className="h-3 w-24 rounded bg-zinc-800" /><div className="h-11 rounded-md bg-zinc-800/50" /></div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="space-y-2"><div className="h-3 w-24 rounded bg-zinc-800" /><div className="h-11 rounded-md bg-zinc-800/50" /></div>
+            <div className="space-y-2"><div className="h-3 w-24 rounded bg-zinc-800" /><div className="h-11 rounded-md bg-zinc-800/50" /></div>
+          </div>
+          <div className="h-20 rounded-md bg-zinc-800/30" />
+          <div className="flex justify-end gap-3 pt-2">
+            <div className="h-11 w-20 rounded-md bg-zinc-800" />
+            <div className="h-11 w-32 rounded-md bg-zinc-800" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AddAssetPage() {
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
   
@@ -67,6 +104,8 @@ export default function AddAssetPage() {
         }
       } catch (error) {
         console.error("Gagal memuat kategori:", error);
+      } finally {
+        setTimeout(() => setIsLoadingCategories(false), 300);
       }
     };
 
@@ -107,14 +146,19 @@ export default function AddAssetPage() {
     }
   };
 
+  const FontKillerStyles = () => (
+    <style dangerouslySetInnerHTML={{__html: `
+      @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+      * { font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important; }
+    `}} />
+  );
+
+  // Tampilkan Skeleton saat kategori dimuat di awal
+  if (isLoadingCategories) return <><FontKillerStyles /><AddFormSkeleton /></>;
+
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans antialiased py-10 px-4 sm:px-6 lg:px-8">
-      {/* Font Loader yang Aman untuk Turbopack */}
-      <link 
-        rel="stylesheet" 
-        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" 
-      />
-      <style>{`* { font-family: 'IBM Plex Sans', sans-serif !important; }`}</style>
+      <FontKillerStyles />
       
       <div className="mx-auto max-w-2xl space-y-6">
         
@@ -152,11 +196,11 @@ export default function AddAssetPage() {
                     <Input 
                       value={formData.name} 
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-500/50 focus-visible:border-zinc-400 text-zinc-100 h-11 rounded-lg transition-all" 
+                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-indigo-500/50 text-zinc-100 h-11 transition-all" 
                       placeholder="Cth: Proyektor Epson EB-X51" 
                       required 
                     />
-                    <Type className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 transition-colors peer-focus:text-zinc-400" />
+                    <Type className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-indigo-400 transition-colors" />
                   </div>
                   {formErrors.name && <p className="text-xs text-red-500">{formErrors.name[0]}</p>}
                 </div>
@@ -169,11 +213,11 @@ export default function AddAssetPage() {
                     <Input 
                       value={formData.brand} 
                       onChange={(e) => setFormData({...formData, brand: e.target.value})}
-                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-500/50 focus-visible:border-zinc-400 text-zinc-100 h-11 rounded-lg transition-all" 
+                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-indigo-500/50 text-zinc-100 h-11 transition-all" 
                       placeholder="Cth: Epson" 
                       required 
                     />
-                    <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 transition-colors peer-focus:text-zinc-400" />
+                    <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-indigo-400 transition-colors" />
                   </div>
                   {formErrors.brand && <p className="text-xs text-red-500">{formErrors.brand[0]}</p>}
                 </div>
@@ -189,15 +233,16 @@ export default function AddAssetPage() {
                     <select 
                       value={formData.category_id} 
                       onChange={(e) => setFormData({...formData, category_id: e.target.value})}
-                      className="peer appearance-none flex h-11 w-full items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/50 pl-10 pr-4 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-500/50 focus:border-zinc-400 transition-all"
+                      className="peer appearance-none flex h-11 w-full items-center rounded-md border border-zinc-800 bg-zinc-900/50 pl-10 pr-8 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 cursor-pointer transition-all"
                       required
                     >
-                      <option value="" className="bg-zinc-900"> Pilih Kategori </option>
+                      <option value="" className="bg-zinc-900">-- Pilih Kategori --</option>
                       {categories.map(cat => (
                         <option key={cat.id} value={cat.id} className="bg-zinc-900">{cat.name}</option>
                       ))}
                     </select>
-                    <FolderOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 transition-colors peer-focus:text-zinc-400 pointer-events-none" />
+                    <FolderOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-indigo-400 pointer-events-none transition-colors" />
+                    <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
                   </div>
                   {formErrors.category_id && <p className="text-xs text-red-500">{formErrors.category_id[0]}</p>}
                 </div>
@@ -211,12 +256,12 @@ export default function AddAssetPage() {
                       type="number" 
                       value={formData.purchase_year} 
                       onChange={(e) => setFormData({...formData, purchase_year: e.target.value})}
-                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-500/50 focus-visible:border-zinc-400 text-zinc-100 h-11 rounded-lg transition-all" 
+                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-indigo-500/50 text-zinc-100 h-11 transition-all" 
                       min="1900" 
                       max={new Date().getFullYear()} 
                       required 
                     />
-                    <CalendarDays className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 transition-colors peer-focus:text-zinc-400" />
+                    <CalendarDays className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-indigo-400 transition-colors" />
                   </div>
                   {formErrors.purchase_year && <p className="text-xs text-red-500">{formErrors.purchase_year[0]}</p>}
                 </div>
@@ -236,7 +281,7 @@ export default function AddAssetPage() {
                 <Input 
                   value={formData.qr_code} 
                   readOnly
-                  className="bg-zinc-950 border-zinc-800/80 text-indigo-400 h-11 font-mono uppercase font-bold text-center cursor-not-allowed select-none w-full sm:w-56" 
+                  className="appearance-none bg-zinc-950 border-zinc-800/80 text-indigo-400 h-11 font-mono uppercase font-bold text-center cursor-not-allowed select-none w-full sm:w-56 focus-visible:ring-0" 
                 />
                 {formErrors.qr_code && <p className="text-xs text-red-500 mt-1">{formErrors.qr_code[0]}</p>}
               </div>
@@ -250,14 +295,14 @@ export default function AddAssetPage() {
                 type="button" 
                 variant="ghost" 
                 onClick={() => router.back()} 
-                className="text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 h-11 px-6 rounded-lg"
+                className="text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 h-11 px-6 rounded-md"
               >
                 Batal
               </Button>
               <Button 
                 type="submit" 
                 disabled={isSubmitting} 
-                className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 h-11 px-8 font-semibold rounded-lg shadow-lg shadow-indigo-900/20"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 h-11 px-8 font-semibold rounded-md shadow-lg shadow-indigo-900/20 transition-all"
               >
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                 {isSubmitting ? "Menyimpan Data..." : "Tambah Aset"}
