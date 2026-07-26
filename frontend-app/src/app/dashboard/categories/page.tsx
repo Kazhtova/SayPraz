@@ -26,14 +26,15 @@ interface PaginationMeta {
 }
 
 // ==========================================
-// KOMPONEN SKELETON
+// KOMPONEN SKELETON (DIPERBARUI)
 // ==========================================
 function TableRowSkeleton() {
   return (
     <tr className="animate-pulse border-b border-zinc-800/60">
-      <td className="px-6 py-4"><div className="h-5 w-8 rounded bg-zinc-800" /></td>
-      <td className="px-6 py-4"><div className="h-5 w-48 rounded bg-zinc-800" /></td>
-      <td className="px-6 py-4 text-right"><div className="ml-auto h-8 w-16 rounded-lg bg-zinc-800" /></td>
+      <td className="px-6 py-4"><div className="h-4 w-8 rounded bg-zinc-800" /></td>
+      <td className="px-6 py-4"><div className="h-4 w-48 rounded bg-zinc-800" /></td>
+      {/* Kolom aksi dibuat sejajar di tengah (mx-auto) */}
+      <td className="px-6 py-4 text-center"><div className="mx-auto h-8 w-8 rounded-lg bg-zinc-800" /></td>
     </tr>
   );
 }
@@ -137,7 +138,7 @@ export default function CategoriesPage() {
             <h1 className="text-3xl font-bold tracking-tight text-zinc-100 flex items-center gap-3">
               <FolderOpen className="h-7 w-7 text-indigo-400" /> Manajemen Kategori
             </h1>
-            <p className="text-zinc-400 text-sm mt-1">Kelola daftar Kateogori untuk inventaris aset.</p>
+            <p className="text-zinc-400 text-sm mt-1">Kelola daftar Kategori untuk inventaris aset.</p>
           </div>
         </div>
 
@@ -150,7 +151,7 @@ export default function CategoriesPage() {
                 placeholder="Cari nama kategori..." 
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                className="pl-10 bg-zinc-900/50 border-zinc-800 text-sm h-11 focus-visible:ring-indigo-500/50 w-full"
+                className="pl-10 bg-zinc-900/50 border-zinc-800 text-sm h-11 focus-visible:ring-zinc-500/50 w-full"
               />
             </div>
 
@@ -171,7 +172,7 @@ export default function CategoriesPage() {
                 <tr>
                   <th scope="col" className="px-6 py-4 font-semibold w-24">ID</th>
                   <th scope="col" className="px-6 py-4 font-semibold">Nama Kategori</th>
-                  <th scope="col" className="px-6 py-4 font-semibold text-right">Aksi</th>
+                  <th scope="col" className="px-6 py-4 font-semibold text-center">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/60">
@@ -190,8 +191,8 @@ export default function CategoriesPage() {
                       <td className="px-6 py-4">
                         <div className="font-medium text-zinc-200">{cat.name}</div>
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-2">
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex justify-center gap-2">
                           <Button 
                             variant="ghost" 
                             size="icon" 
