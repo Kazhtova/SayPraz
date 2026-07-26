@@ -14,10 +14,23 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::orderBy('id', 'asc')->get();
-        
+
+        $query = Category::query();
+
+        if($request->has('search') && $request->search != ''){
+            $searchTerm = $request->search;
+            $query->where('name', 'like', "%{$searchTerm}%");
+        }
+
+        $sortOrder = $request->input('sort_id', 'asc');
+        if(!in_array($sortOrder, ['asc', 'desc'])){
+            $sortOrder = 'asc';
+        }
+
+        $categories = Category::orderBy('id', $sortOrder)->paginate(10);
+    
         return CategoryResource::collection($categories);
     }
 

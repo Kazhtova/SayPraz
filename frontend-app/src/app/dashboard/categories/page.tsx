@@ -6,7 +6,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { 
   Search, Plus, RefreshCw, ChevronLeft, ChevronRight, 
-  Pencil, FolderOpen, ArrowLeft
+  Pencil, FolderOpen, ArrowLeft, ArrowUpDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,29 +26,28 @@ interface PaginationMeta {
 }
 
 // ==========================================
-// KOMPONEN SKELETON (DIPERBARUI)
+// KOMPONEN SKELETON
 // ==========================================
 function TableRowSkeleton() {
   return (
     <tr className="animate-pulse border-b border-zinc-800/60">
       <td className="px-6 py-4"><div className="h-4 w-8 rounded bg-zinc-800" /></td>
       <td className="px-6 py-4"><div className="h-4 w-48 rounded bg-zinc-800" /></td>
-      {/* Kolom aksi dibuat sejajar di tengah (mx-auto) */}
       <td className="px-6 py-4 text-center"><div className="mx-auto h-8 w-8 rounded-lg bg-zinc-800" /></td>
     </tr>
   );
 }
 
-// ==========================================
-// KOMPONEN UTAMA HALAMAN KATEGORI
-// ==========================================
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]); 
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
+  
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortId, setSortId] = useState("asc"); // 'asc' (terkecil) atau 'desc' (terbesar)
+
   const [isInitialLoading, setIsInitialLoading] = useState(true); 
   const [isTableRefreshing, setIsTableRefreshing] = useState(false); 
-  const [searchQuery, setSearchQuery] = useState("");
 
   const router = useRouter();
 
@@ -57,13 +56,16 @@ export default function CategoriesPage() {
     router.push("/login");
   }, [router]);
 
-  // Fungsi Load Data Kategori
-  const loadCategories = useCallback(async (page: number = 1, search: string = "") => {
+  // Fungsi Utama Load Data (Diperbarui dengan parameter sort_id)
+  const loadCategories = useCallback(async (page: number = 1, search: string = "", sort: string = "asc") => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
     try {
-      const params = new URLSearchParams({ page: page.toString() });
+      const params = new URLSearchParams({ 
+        page: page.toString(),
+        sort_id: sort 
+      });
       if (search) params.append("search", search);
 
       const response = await fetch(`${API_URL}/api/categories?${params.toString()}`, {
@@ -85,24 +87,25 @@ export default function CategoriesPage() {
     }
   }, [handleLogout]);
 
-  // Efek Debounce untuk Pencarian
+  // Efek Debounce untuk Pencarian & Sorting
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) { router.push("/login"); return; }
     
     setIsTableRefreshing(true);
     const delayDebounceFn = setTimeout(() => {
-      loadCategories(currentPage, searchQuery);
-    }, 500);
+      loadCategories(currentPage, searchQuery, sortId);
+    }, 400);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [router, currentPage, searchQuery, loadCategories]);
+  }, [router, currentPage, searchQuery, sortId, loadCategories]);
 
   const handleRefreshClick = () => {
     setIsTableRefreshing(true); 
     setSearchQuery(""); 
+    setSortId("asc"); 
     setCurrentPage(1);       
-    loadCategories(1, "");
+    loadCategories(1, "", "asc");
   };
 
   const FontKillerStyles = () => (
@@ -144,18 +147,37 @@ export default function CategoriesPage() {
 
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm overflow-hidden flex flex-col">
           
-          <div className="border-b border-zinc-800 p-4 flex flex-col sm:flex-row gap-4 items-center justify-between bg-zinc-900/20">
-            <div className="relative w-full sm:w-96">
-              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-              <Input 
-                placeholder="Cari nama kategori..." 
-                value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                className="pl-10 bg-zinc-900/50 border-zinc-800 text-sm h-11 focus-visible:ring-zinc-500/50 w-full"
-              />
+          <div className="border-b border-zinc-800 p-4 flex flex-col md:flex-row gap-4 items-center justify-between bg-zinc-900/20">
+            
+            {/* AREA PENCARIAN DAN URUTKAN (Kiri/Atas) */}
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto flex-1">
+              {/* Kolom Pencarian Nama */}
+              <div className="relative w-full sm:w-80 shrink-0">
+                <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                <Input 
+                  placeholder="Cari nama kategori..." 
+                  value={searchQuery}
+                  onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                  className="pl-10 bg-zinc-900/50 border-zinc-800 text-sm h-11 focus-visible:ring-zinc-500/50 w-full"
+                />
+              </div>
+
+              {/* Dropdown Urutkan ID */}
+              <div className="relative w-full sm:w-52 shrink-0">
+                <ArrowUpDown className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                <select 
+                  value={sortId}
+                  onChange={(e) => { setSortId(e.target.value); setCurrentPage(1); }}
+                  className="pl-10 appearance-none flex h-11 w-full items-center justify-between rounded-md border border-zinc-800 bg-zinc-900/50 pr-8 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-500/50 cursor-pointer transition-all"
+                >
+                  <option value="asc" className="bg-zinc-900">ID Terkecil (Lama)</option>
+                  <option value="desc" className="bg-zinc-900">ID Terbesar (Baru)</option>
+                </select>
+              </div>
             </div>
 
-            <div className="flex w-full sm:w-auto gap-3 justify-end shrink-0">
+            {/* TOMBOL AKSI (Kanan/Bawah) */}
+            <div className="flex w-full md:w-auto gap-3 justify-end shrink-0">
               <Button onClick={() => router.push('/dashboard/categories/add')} className="bg-zinc-100 hover:bg-zinc-300 text-zinc-950 font-medium gap-2 h-11 w-full sm:w-auto px-5">
                 <Plus className="h-4 w-4" /> Tambah Kategori
               </Button>
@@ -172,7 +194,7 @@ export default function CategoriesPage() {
                 <tr>
                   <th scope="col" className="px-6 py-4 font-semibold w-24">ID</th>
                   <th scope="col" className="px-6 py-4 font-semibold">Nama Kategori</th>
-                  <th scope="col" className="px-6 py-4 font-semibold text-center">Aksi</th>
+                  <th scope="col" className="px-6 py-4 font-semibold text-center w-32">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/60">
