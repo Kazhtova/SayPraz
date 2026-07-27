@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Boxes, LogOut, Package, FolderOpen, User } from "lucide-react";
+import { Boxes, LogOut, Package, FolderOpen, User, ArrowLeftRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/lib/constants";
 
@@ -19,6 +19,7 @@ export function Navbar() {
   const navLinks = [
     { name: "Aset Inventaris", href: "/dashboard", icon: Package },
     { name: "Kategori", href: "/dashboard/categories", icon: FolderOpen },
+    { name: "Transaksi Peminjaman", href: "/dashboard/transactions", icon: ArrowLeftRight },
   ];
 
   return (
