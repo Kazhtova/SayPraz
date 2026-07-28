@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AssetResource;
 use App\Models\Asset;
+use App\Models\AssetLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -134,6 +135,19 @@ class AssetController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Asset berhasil dihapus'
+        ]);
+    }
+
+    public function logs(int $id){
+        $logs = AssetLog::with('admin:id,name,role')
+        ->where('asset_id', $id)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        return response()->json([
+            'success'   => true,
+            'message'   => 'Riwayat Aset Berhasil Diambil',
+            'data'      => $logs
         ]);
     }
 }
