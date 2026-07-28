@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AssetController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\TransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,4 +25,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/transaction/{id}/status', [TransactionController::class, 'updateStatus']);
 
     Route::get('/asset/{id}/logs', [AssetController::class, 'logs']);
+
+    Route::get('/reports/asset/pdf', [ReportController::class, 'exportAssetPdf']);
 });

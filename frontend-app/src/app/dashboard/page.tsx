@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { 
   LogOut, Boxes, Package, AlertTriangle, CheckCircle2, ArrowUpRight,
   Search, Plus, RefreshCw, ChevronLeft, ChevronRight, Filter, 
-  SlidersHorizontal, Pencil, History, X, Activity, Clock
+  SlidersHorizontal, Pencil, History, X, Activity, Clock, Download
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,6 +60,7 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [isDownloading, setIsDownloading] = useState(false); // State untuk loading PDF
 
   // State untuk Riwayat/Log Modal
   const [assetLogs, setAssetLogs] = useState<AssetLog[]>([]);
@@ -124,6 +125,37 @@ export default function DashboardPage() {
       setTimeout(() => { setIsInitialLoading(false); setIsTableRefreshing(false); }, 500);
     }
   }, [handleLogout]);
+
+  // FUNGSI MENGUNDUH PDF
+  const handleDownloadPDF = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    setIsDownloading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/reports/assets/pdf`, {
+        method: "GET",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      if (!response.ok) throw new Error("Gagal mengambil dokumen PDF");
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Laporan-Aset-${new Date().toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      alert("Gagal mengunduh dokumen PDF. Pastikan backend siap.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   // FUNGSI MEMUAT RIWAYAT LOG
   const handleOpenLogs = async (id: number, name: string) => {
@@ -219,7 +251,18 @@ export default function DashboardPage() {
               <div className="relative w-full sm:w-48"><Filter className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" /><select value={filterCategory} onChange={(e) => { setFilterCategory(e.target.value); setCurrentPage(1); }} className="pl-10 appearance-none flex h-11 w-full items-center justify-between rounded-md border border-zinc-800 bg-zinc-900/50 pr-8 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 cursor-pointer"><option value="" className="bg-zinc-900">Semua Kategori</option>{categories.map(cat => (<option key={cat.id} value={cat.name} className="bg-zinc-900">{cat.name}</option>))}<option value="Tanpa Kategori" className="bg-zinc-900">Tanpa Kategori</option></select></div>
               <div className="relative w-full sm:w-48"><SlidersHorizontal className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" /><select value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }} className="pl-10 appearance-none flex h-11 w-full items-center justify-between rounded-md border border-zinc-800 bg-zinc-900/50 pr-8 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 cursor-pointer"><option value="" className="bg-zinc-900">Semua Status</option><option value="available" className="bg-zinc-900">Tersedia</option><option value="borrowed" className="bg-zinc-900">Dipinjam</option><option value="in_repair" className="bg-zinc-900">Dalam Perbaikan</option></select></div>
             </div>
-            <div className="flex w-full xl:w-auto gap-3 justify-end">
+            
+            {/* AREA TOMBOL AKSI DENGAN FITUR CETAK PDF */}
+            <div className="flex w-full xl:w-auto gap-3 justify-end flex-wrap">
+              <Button 
+                variant="outline" 
+                onClick={handleDownloadPDF} 
+                disabled={isDownloading} 
+                className="border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 gap-2 h-11 w-full sm:w-auto px-5"
+              >
+                <Download className={`h-4 w-4 ${isDownloading ? "animate-bounce" : ""}`} />
+                {isDownloading ? "Menyusun PDF..." : "Cetak PDF"}
+              </Button>
               <Button onClick={() => router.push('/dashboard/add')} className="bg-zinc-100 hover:bg-zinc-300 text-zinc-950 font-medium gap-2 h-11 w-full sm:w-auto px-5"><Plus className="h-4 w-4" />Tambah Aset</Button>
               <Button variant="outline" onClick={handleRefreshClick} disabled={isTableRefreshing} className="border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 text-zinc-300 gap-2 h-11 w-full sm:w-auto px-5"><RefreshCw className={`h-4 w-4 ${isTableRefreshing ? "animate-spin" : ""}`} />Muat Ulang</Button>
             </div>
