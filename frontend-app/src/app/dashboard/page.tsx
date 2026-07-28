@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { 
   LogOut, Boxes, Package, AlertTriangle, CheckCircle2, ArrowUpRight,
   Search, Plus, RefreshCw, ChevronLeft, ChevronRight, Filter, 
-  SlidersHorizontal, Pencil 
+  SlidersHorizontal, Pencil, History, X, Activity, Clock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,15 @@ import { API_URL, APP_NAME } from "@/lib/constants";
 interface Asset {
   id: number; qr_code: string; name: string; brand: string;
   purchase_year: number; status: "available" | "borrowed" | "in_repair"; category_name?: string;
+}
+
+interface AssetLog {
+  id: number;
+  old_status: string;
+  new_status: string;
+  notes: string;
+  created_at: string;
+  admin?: { name: string; role: string };
 }
 
 interface PaginationMeta { current_page: number; last_page: number; total: number; from: number; to: number; }
@@ -27,7 +36,7 @@ interface Category { id: number; name: string; }
 // ==========================================
 function TableRowSkeleton() {
   return (
-    <tr className="animate-pulse border-b border-zinc-800/60"><td className="px-6 py-4"><div className="space-y-2"><div className="h-4 w-36 rounded bg-zinc-800" /><div className="h-3 w-20 rounded bg-zinc-800/50" /></div></td><td className="px-6 py-4"><div className="h-4 w-24 rounded bg-zinc-800" /></td><td className="px-6 py-4 text-center"><div className="mx-auto h-6 w-24 rounded-full bg-zinc-800" /></td><td className="px-6 py-4 text-center"><div className="mx-auto h-4 w-12 rounded bg-zinc-800" /></td><td className="px-6 py-4 text-right"><div className="ml-auto h-8 w-8 rounded-lg bg-zinc-800" /></td></tr>
+    <tr className="animate-pulse border-b border-zinc-800/60"><td className="px-6 py-4"><div className="space-y-2"><div className="h-4 w-36 rounded bg-zinc-800" /><div className="h-3 w-20 rounded bg-zinc-800/50" /></div></td><td className="px-6 py-4"><div className="h-4 w-24 rounded bg-zinc-800" /></td><td className="px-6 py-4 text-center"><div className="mx-auto h-6 w-24 rounded-full bg-zinc-800" /></td><td className="px-6 py-4 text-center"><div className="mx-auto h-4 w-12 rounded bg-zinc-800" /></td><td className="px-6 py-4 text-right"><div className="ml-auto h-8 w-16 rounded-lg bg-zinc-800" /></td></tr>
   );
 }
 
@@ -51,6 +60,11 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+
+  // State untuk Riwayat/Log Modal
+  const [assetLogs, setAssetLogs] = useState<AssetLog[]>([]);
+  const [isLogsLoading, setIsLogsLoading] = useState(false);
+  const [logsModal, setLogsModal] = useState<{isOpen: boolean, assetName: string, assetId: number | null}>({ isOpen: false, assetName: "", assetId: null });
 
   const router = useRouter();
 
@@ -110,6 +124,27 @@ export default function DashboardPage() {
       setTimeout(() => { setIsInitialLoading(false); setIsTableRefreshing(false); }, 500);
     }
   }, [handleLogout]);
+
+  // FUNGSI MEMUAT RIWAYAT LOG
+  const handleOpenLogs = async (id: number, name: string) => {
+    setLogsModal({ isOpen: true, assetName: name, assetId: id });
+    setIsLogsLoading(true);
+    const token = localStorage.getItem("token");
+    
+    try {
+      const response = await fetch(`${API_URL}/api/assets/${id}/logs`, {
+        headers: { "Authorization": `Bearer ${token}`, "Accept": "application/json" }
+      });
+      if (response.ok) {
+        const result = await response.json();
+        setAssetLogs(result.data || []);
+      }
+    } catch (error) {
+      console.error("Gagal memuat riwayat", error);
+    } finally {
+      setIsLogsLoading(false);
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -206,15 +241,26 @@ export default function DashboardPage() {
                       <td className="px-6 py-4 text-center">{getStatusBadge(item.status)}</td>
                       <td className="px-6 py-4 text-center text-zinc-300">{item.purchase_year}</td>
                       <td className="px-6 py-4 text-right">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => router.push(`/dashboard/edit/${item.id}`)}
-                          className="h-9 w-9 text-zinc-400 hover:text-indigo-400 hover:bg-indigo-400/10"
-                          title="Kelola Aset"
-                        >
-                          <Pencil className="h-5 w-5" />
-                        </Button>
+                        <div className="flex justify-end gap-2">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => handleOpenLogs(item.id, item.name)}
+                            className="h-8 w-8 text-zinc-400 hover:text-blue-400 hover:bg-blue-400/10"
+                            title="Riwayat Aset"
+                          >
+                            <History className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => router.push(`/dashboard/edit/${item.id}`)}
+                            className="h-8 w-8 text-zinc-400 hover:text-indigo-400 hover:bg-indigo-400/10"
+                            title="Kelola Aset"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -235,6 +281,70 @@ export default function DashboardPage() {
           )}
         </div>
       </main>
+
+      {/* MODAL AUDIT TRAIL / RIWAYAT */}
+      {logsModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-lg shadow-2xl flex flex-col max-h-[85vh]">
+            
+            <div className="flex items-center justify-between p-5 border-b border-zinc-800">
+              <div>
+                <h2 className="text-xl font-bold text-zinc-100 flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-indigo-400" /> Riwayat Aset
+                </h2>
+                <p className="text-sm text-zinc-400 mt-1">{logsModal.assetName}</p>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => setLogsModal({ isOpen: false, assetName: "", assetId: null })} className="text-zinc-500 hover:text-white rounded-full">
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            <div className="p-5 overflow-y-auto flex-1">
+              {isLogsLoading ? (
+                <div className="flex flex-col items-center justify-center py-10 gap-3 text-zinc-500">
+                  <RefreshCw className="h-6 w-6 animate-spin text-indigo-500" />
+                  <span className="text-sm">Memuat jejak riwayat...</span>
+                </div>
+              ) : assetLogs.length === 0 ? (
+                <div className="text-center py-10">
+                  <History className="h-10 w-10 text-zinc-700 mx-auto mb-3" />
+                  <p className="text-zinc-400 text-sm">Belum ada aktivitas yang tercatat untuk aset ini.</p>
+                </div>
+              ) : (
+                <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-zinc-800 before:to-transparent">
+                  {assetLogs.map((log, index) => (
+                    <div key={log.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-zinc-950 bg-zinc-800 text-zinc-400 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                        <Clock className="h-4 w-4" />
+                      </div>
+                      <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-zinc-800 bg-zinc-900/50 backdrop-blur-sm shadow-sm">
+                        <div className="flex flex-col mb-1">
+                          <time className="text-xs font-mono text-indigo-400/80 mb-1">
+                            {new Date(log.created_at).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })}
+                          </time>
+                          <div className="text-sm font-semibold text-zinc-200">
+                            {getStatusBadge(log.old_status)} <span className="text-zinc-600 mx-1">➜</span> {getStatusBadge(log.new_status)}
+                          </div>
+                        </div>
+                        <div className="text-zinc-400 text-xs mt-2 italic border-l-2 border-zinc-700 pl-2">
+                          {log.notes}
+                        </div>
+                        {log.admin && (
+                          <div className="text-[10px] text-zinc-500 font-medium uppercase tracking-wider mt-3">
+                            Oleh: {log.admin.name}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
