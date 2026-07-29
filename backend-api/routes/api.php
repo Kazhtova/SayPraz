@@ -37,4 +37,4 @@ Route::middleware(['auth:sanctum', 'role:admin,staff'])->group(function () {
 
     Route::get('/asset/{id}/logs', [AssetController::class, 'logs']);
     Route::get('/reports/asset/pdf', [ReportController::class, 'exportAssetPdf']);
-}); 
+});

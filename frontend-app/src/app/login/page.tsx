@@ -61,10 +61,20 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("token", data.access_token);
-        console.log("✅ Akses Diberikan. Token:", data.access_token);
-        alert("Login Berhasil!\n\nToken Anda:\n" + data.access_token);
-        router.push("/dashboard");
+        // Ambil token & role dengan pembacaan aman (fallback/optional chaining)
+        const token = data.access_token || data.token;
+        const role = data.user?.role || data.role || "student";
+
+        // 1. Simpan Kredensial
+        localStorage.setItem("token", token);
+        localStorage.setItem("role", role);
+
+        // 2. Pengalihan Cerdas Berdasarkan Role (Smart Redirect)
+        if (role === "admin" || role === "staff") {
+          router.push("/dashboard");
+        } else {
+          router.push("/catalog");
+        }
       } else {
         setError(data.message || "Email atau password salah.");
       }
