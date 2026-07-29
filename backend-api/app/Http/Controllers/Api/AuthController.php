@@ -39,7 +39,7 @@ class AuthController extends Controller
             'success'   => true,
             'message'   => 'Login Berhasil',
             'user'      => [
-                'id'  => $user->id,
+                'id'    => $user->id,
                 'name'  => $user->name,
                 'email' => $user->email,
                 'role'  => $user->role,

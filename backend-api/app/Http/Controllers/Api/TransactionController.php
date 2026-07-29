@@ -14,9 +14,18 @@ use Illuminate\Support\Facades\Validator;
 class TransactionController extends Controller
 {
     public function index(){
-        $transactions = Transaction::with(['asset:id,name,brand,status', 'user:id,name,role'])
-        ->orderBy('created_at', 'desc')
-        ->get();
+
+        $role = Auth::user();
+
+        if($role->role === 'admin'){
+            $transactions = Transaction::with(['user', 'aset'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+        }else{
+            $transactions = Transaction::where('user_id', $role->id)->with(['asset'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+        }
 
         return response()->json([
            'success'    => true,
