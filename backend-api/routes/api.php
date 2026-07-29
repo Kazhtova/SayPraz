@@ -29,7 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // =================================================================
 // GRUP 2: KHUSUS ADMIN & STAFF (Membutuhkan role: admin atau staff)
 // =================================================================
-Route::middleware(['auth:sanctum', 'role:admin,staff'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::apiResource('assets', AssetController::class)->except(['index', 'show']);
     Route::apiResource('categories', CategoryController::class)->except(['index', 'show']); 
 

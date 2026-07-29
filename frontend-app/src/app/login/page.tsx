@@ -70,7 +70,7 @@ export default function LoginPage() {
         localStorage.setItem("role", role);
 
         // 2. Pengalihan Cerdas Berdasarkan Role (Smart Redirect)
-        if (role === "admin" || role === "staff") {
+        if (role === "admin") {
           router.push("/dashboard");
         } else {
           router.push("/catalog");
