@@ -16,7 +16,9 @@ class AssetController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Asset::with('category')->latest();
+        $query = Asset::with('category')
+            ->latest()
+            ->orderBy('id', 'desc');
 
         if($request->filled('search')) {
             $search = $request->search;
