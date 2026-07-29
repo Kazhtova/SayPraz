@@ -262,7 +262,7 @@ export default function CatalogPage() {
               {!isLoading && (
                 <div className="inline-flex items-center px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-sm font-medium text-zinc-300 whitespace-nowrap w-fit">
                   <Package className="h-4 w-4 mr-2 text-zinc-200" />
-                  Total Database: {allAssets.length} Aset
+                  Total: {allAssets.length} Aset
                 </div>
               )}
             </div>
@@ -347,7 +347,7 @@ export default function CatalogPage() {
                         </span>
                       )}
                       
-                      <Package className={`h-12 w-12 transition-colors duration-500 ${isAvailable ? "text-zinc-700 group-hover:text-indigo-400/50" : "text-zinc-800"}`} />
+                      <Package className={`h-12 w-12 transition-colors duration-500 ${isAvailable ? "text-zinc-700 group-hover:text-zinc-400/50" : "text-zinc-800"}`} />
                     </div>
 
                     <div className="flex-1 p-5 flex flex-col">
