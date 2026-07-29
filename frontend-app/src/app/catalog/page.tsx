@@ -6,7 +6,8 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { 
   Search, Package, Calendar, Clock, Loader2, ArrowRight, LogOut, CheckCircle2,
-  FolderOpen, History, Boxes, Bell, User, MapPin, Activity, Layers
+  FolderOpen, History, Boxes, Bell, User, MapPin, Activity, Layers,
+  ChevronLeft, ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +19,6 @@ interface Asset {
   brand: string;
   qr_code: string;
   category_name?: string;
-  // Properti tambahan untuk UI (Bisa disesuaikan jika API backend sudah mendukung)
   stock?: number;
   condition?: string;
   location?: string;
@@ -27,15 +27,18 @@ interface Asset {
 export default function CatalogPage() {
   const router = useRouter();
   
-  const [assets, setAssets] = useState<Asset[]>([]);
+  const [allAssets, setAllAssets] = useState<Asset[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [userName, setUserName] = useState("Pengguna"); // State untuk nama user
+  const [userName, setUserName] = useState("Pengguna"); 
   
-  // State untuk Modal Peminjaman
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [returnDate, setReturnDate] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // === PAGINATION KHUSUS FRONTEND (PASTI 16 ITEM PER HALAMAN) ===
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 16; 
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem("token");
@@ -43,24 +46,58 @@ export default function CatalogPage() {
     router.replace("/login"); 
   }, [router]);
 
+  // Mengambil SEMUA data dari Laravel dengan menelusuri setiap halamannya
   const loadAvailableAssets = useCallback(async (search: string = "") => {
     const token = localStorage.getItem("token");
     if (!token) { router.push("/login"); return; }
 
+    setIsLoading(true);
     try {
-      const params = new URLSearchParams({ status: "available" });
-      if (search) params.append("search", search);
+      let allFetchedAssets: Asset[] = [];
+      let currentPageAPI = 1;
+      let lastPageAPI = 1; // Akan diperbarui setelah respons pertama
 
-      const response = await fetch(`${API_URL}/api/assets?${params.toString()}`, {
-        headers: { "Authorization": `Bearer ${token}`, "Accept": "application/json" }
-      });
+      do {
+        const params = new URLSearchParams({ 
+          page: currentPageAPI.toString() 
+          // Hapus 'status' jika ingin menampilkan semua aset, bukan hanya yang 'available'
+          // Jika hanya ingin yang 'available', tambahkan: status: "available"
+        });
+        if (search) {
+          params.append("search", search);
+        }
 
-      if (response.ok) {
-        const result = await response.json();
-        setAssets(result.data || []);
-      } else if (response.status === 401) {
-        handleLogout();
-      }
+        const response = await fetch(`${API_URL}/api/assets?${params.toString()}`, {
+          headers: { "Authorization": `Bearer ${token}`, "Accept": "application/json" }
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          const fetchedData = result.data || [];
+          allFetchedAssets = [...allFetchedAssets, ...fetchedData];
+
+          // Jika ada metadata pagination dari Laravel, perbarui lastPageAPI
+          if (result.meta && result.meta.last_page) {
+            lastPageAPI = result.meta.last_page;
+          } else {
+             // Jika tidak ada meta, asumsikan ini halaman terakhir
+             break;
+          }
+        } else if (response.status === 401) {
+          handleLogout();
+          break; // Keluar dari loop jika tidak terotorisasi
+        } else {
+           console.error("Gagal mengambil data dari API, status:", response.status);
+           break;
+        }
+
+        currentPageAPI++;
+      } while (currentPageAPI <= lastPageAPI);
+
+      // Menghapus duplikat berdasarkan ID (langkah pengamanan)
+      const uniqueAssets = Array.from(new Map(allFetchedAssets.map(item => [item.id, item])).values());
+      setAllAssets(uniqueAssets);
+
     } catch (error) {
       console.error("Gagal memuat katalog:", error);
     } finally {
@@ -69,13 +106,18 @@ export default function CatalogPage() {
   }, [handleLogout, router]);
 
   useEffect(() => {
-    setIsLoading(true);
+    setCurrentPage(1); 
     const delayDebounceFn = setTimeout(() => {
       loadAvailableAssets(searchQuery);
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery, loadAvailableAssets]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); 
+  };
 
   const handleBorrowSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,6 +157,17 @@ export default function CatalogPage() {
     }
   };
 
+  // === PENGURUTAN ALFABET (A-Z) & PEMOTONGAN MURNI 16 ITEM DI NEXT.JS ===
+  const sortedAssets = [...allAssets].sort((a, b) => 
+    a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+  );
+
+  const totalPages = Math.ceil(sortedAssets.length / itemsPerPage);
+  const paginatedAssets = sortedAssets.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   const FontKillerStyles = () => (
     <style dangerouslySetInnerHTML={{__html: `
       @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
@@ -126,11 +179,8 @@ export default function CatalogPage() {
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans antialiased pb-12">
       <FontKillerStyles />
 
-      {/* HEADER NAVBAR YANG DIPERBESAR */}
       <header className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          
-          {/* Logo Brand (Diubah ke Zinc sesuai permintaan) */}
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800/50 shadow-sm">
               <Boxes className="h-5 w-5 text-zinc-300" />
@@ -138,20 +188,16 @@ export default function CatalogPage() {
             <span className="text-xl font-bold tracking-tight text-zinc-100 hidden sm:block">Invenkoryz</span>
           </div>
           
-          {/* Menu & Profil Pengguna */}
           <div className="flex items-center gap-3 sm:gap-5">
             <button className="relative p-2 text-zinc-400 hover:text-white transition-colors" title="Notifikasi">
               <Bell className="h-5 w-5" />
               <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-indigo-500 ring-2 ring-zinc-950"></span>
             </button>
-            
             <div className="h-6 w-px bg-zinc-800 hidden sm:block"></div>
-            
             <Button variant="ghost" className="text-zinc-400 hover:text-white hover:bg-zinc-800" onClick={() => router.push('/my-transactions')}>
               <History className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Riwayat</span>
             </Button>
-
             <div className="flex items-center gap-3 pl-2 border-l border-zinc-800">
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-full bg-zinc-800 flex items-center justify-center border border-zinc-700 overflow-hidden">
@@ -167,13 +213,11 @@ export default function CatalogPage() {
               </Button>
             </div>
           </div>
-
         </div>
       </header>
 
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-10 space-y-8">
         
-        {/* LAYOUT HEADER KONTEN & PENCARIAN (Menyatu di kiri dengan porsi lebar 65%) */}
         <div className="flex flex-col border-b border-zinc-800/60 pb-8">
           <div className="w-full lg:w-[65%]">
             <h1 className="text-3xl font-bold tracking-tight text-zinc-100">Jelajahi Aset Sarpras</h1>
@@ -185,81 +229,106 @@ export default function CatalogPage() {
               <Input 
                 placeholder="Cari proyektor, mikrotik, kamera..." 
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange} 
                 className="pl-10 bg-zinc-900/40 border-zinc-700 text-sm h-12 rounded-xl focus-visible:ring-zinc-200/30 transition-all w-full"
               />
             </div>
           </div>
         </div>
 
-        {/* GRID KATALOG KARTU YANG LEBIH HIDUP */}
+        {/* LOADING STATE */}
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20 text-zinc-500 gap-3">
             <Loader2 className="h-8 w-8 animate-spin text-zinc-600" />
             <p>Memuat katalog aset...</p>
           </div>
-        ) : assets.length === 0 ? (
+        ) : sortedAssets.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/20 py-24 text-center">
             <Package className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
             <p className="text-zinc-400">Pencarian tidak ditemukan atau aset sedang tidak tersedia.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {assets.map((asset) => (
-              <div key={asset.id} className="group flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900/30 overflow-hidden hover:border-zinc-400 hover:bg-zinc-900/60 transition-all duration-300 shadow-sm">
-                
-                {/* Thumbnail / Ilustrasi Header Kartu */}
-                <div className="h-32 bg-gradient-to-br from-zinc-800/40 to-zinc-900 flex items-center justify-center relative border-b border-zinc-800/50">
-                  <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[9px] font-bold border bg-emerald-500/10 text-emerald-400 border-emerald-500/20 uppercase tracking-widest shadow-sm">
-                    <CheckCircle2 className="h-3 w-3" /> Tersedia
-                  </span>
-                  <Package className="h-12 w-12 text-zinc-700 group-zinc:text-indigo-400/50 transition-colors duration-500" />
-                </div>
-
-                {/* Konten Data dengan Hierarki Tipografi Baru */}
-                <div className="flex-1 p-5 flex flex-col">
-                  <div className="mb-3">
-                    {/* Kode aset dikontraskan: font-medium (500) dan warna background lebih terang */}
-                    <span className="text-[10px] font-mono font-medium text-zinc-200 bg-zinc-800 px-2 py-1 rounded border border-zinc-600 shadow-sm">
-                      {asset.qr_code}
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {/* MAPPING PADA paginatedAssets HASIL SORT DAN SLICE 16 ITEM */}
+              {paginatedAssets.map((asset) => (
+                <div key={asset.id} className="group flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900/30 overflow-hidden hover:border-zinc-400 hover:bg-zinc-900/60 transition-all duration-300 shadow-sm">
+                  
+                  <div className="h-32 bg-gradient-to-br from-zinc-800/40 to-zinc-900 flex items-center justify-center relative border-b border-zinc-800/50">
+                    <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[9px] font-bold border bg-emerald-500/10 text-emerald-400 border-emerald-500/20 uppercase tracking-widest shadow-sm">
+                      <CheckCircle2 className="h-3 w-3" /> Tersedia
                     </span>
-                  </div>
-                  
-                  {/* Nama: font-bold (700) */}
-                  <h3 className="text-lg font-bold text-zinc-100 leading-tight group-hover:text-zinc-100 transition-colors">{asset.name}</h3>
-                  {/* Brand: font-normal (400) */}
-                  <p className="text-sm font-normal text-zinc-400 mt-1 mb-5">{asset.brand}</p>
-                  
-                  {/* Informasi Detail Ekstra (Grid Padat dengan Lokasi & Kategori = 400) */}
-                  <div className="grid grid-cols-2 gap-y-3 gap-x-2 mt-auto pb-5 border-b border-zinc-800/60 mb-5">
-                    <div className="flex items-center gap-2 text-xs font-normal text-zinc-400">
-                      <FolderOpen className="h-3.5 w-3.5 text-zinc-500" />
-                      <span className="truncate">{asset.category_name || "Umum"}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs font-normal text-zinc-400">
-                      <Layers className="h-3.5 w-3.5 text-zinc-500" />
-                      <span>Stok: {asset.stock || 1}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs font-normal text-zinc-400">
-                      <Activity className="h-3.5 w-3.5 text-zinc-500" />
-                      <span>{asset.condition || "Kondisi Baik"}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs font-normal text-zinc-400">
-                      <MapPin className="h-3.5 w-3.5 text-zinc-500" />
-                      <span className="truncate">{asset.location || "Pusat"}</span>
-                    </div>
+                    <Package className="h-12 w-12 text-zinc-700 group-zinc:text-indigo-400/50 transition-colors duration-500" />
                   </div>
 
-                  {/* Tombol yang lebih proporsional */}
-                  <Button 
-                    onClick={() => setSelectedAsset(asset)}
-                    className="mx-2 mb-2 bg-indigo-500/10 hover:bg-indigo-950/10 border border-indigo-400/40 text-zinc-200 gap-2 font-medium rounded-xl transition-all h-10"
-                  >
-                    Ajukan Pinjam <ArrowRight className="h-4 w-4 opacity-70" />
-                  </Button>
+                  <div className="flex-1 p-5 flex flex-col">
+                    <div className="mb-3">
+                      <span className="text-[10px] font-mono font-medium text-zinc-200 bg-zinc-800 px-2 py-1 rounded border border-zinc-600 shadow-sm">
+                        {asset.qr_code}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-lg font-bold text-zinc-100 leading-tight group-hover:text-zinc-100 transition-colors">{asset.name}</h3>
+                    <p className="text-sm font-normal text-zinc-400 mt-1 mb-5">{asset.brand}</p>
+                    
+                    <div className="grid grid-cols-2 gap-y-3 gap-x-2 mt-auto pb-5 border-b border-zinc-800/60 mb-5">
+                      <div className="flex items-center gap-2 text-xs font-normal text-zinc-400">
+                        <FolderOpen className="h-3.5 w-3.5 text-zinc-500" />
+                        <span className="truncate">{asset.category_name || "Umum"}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs font-normal text-zinc-400">
+                        <Layers className="h-3.5 w-3.5 text-zinc-500" />
+                        <span>Stok: {asset.stock || 1}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs font-normal text-zinc-400">
+                        <Activity className="h-3.5 w-3.5 text-zinc-500" />
+                        <span>{asset.condition || "Kondisi Baik"}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs font-normal text-zinc-400">
+                        <MapPin className="h-3.5 w-3.5 text-zinc-500" />
+                        <span className="truncate">{asset.location || "Pusat"}</span>
+                      </div>
+                    </div>
+
+                    <Button 
+                      onClick={() => setSelectedAsset(asset)}
+                      className="mx-2 mb-2 bg-indigo-500/10 hover:bg-indigo-950/10 border border-indigo-400/40 text-zinc-200 gap-2 font-medium rounded-xl transition-all h-10"
+                    >
+                      Ajukan Pinjam <ArrowRight className="h-4 w-4 opacity-70" />
+                    </Button>
+                  </div>
                 </div>
+              ))}
+            </div>
+
+            {/* NAVIGASI PAGINATION */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-4 pt-4 border-t border-zinc-800/50">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1 || isLoading}
+                  className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white rounded-xl h-10 px-4 disabled:opacity-50"
+                >
+                  <ChevronLeft className="h-4 w-4 mr-2" />
+                  Sebelumnya
+                </Button>
+                
+                <span className="text-sm font-medium text-zinc-400">
+                  Halaman <span className="text-zinc-100">{currentPage}</span> dari <span className="text-zinc-100">{totalPages}</span>
+                </span>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages || isLoading}
+                  className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white rounded-xl h-10 px-4 disabled:opacity-50"
+                >
+                  Selanjutnya
+                  <ChevronRight className="h-4 w-4 ml-2" />
+                </Button>
               </div>
-            ))}
+            )}
           </div>
         )}
       </main>
