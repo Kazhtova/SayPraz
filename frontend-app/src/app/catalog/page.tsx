@@ -280,11 +280,28 @@ export default function CatalogPage() {
           </div>
         </div>
 
-        {/* LOADING STATE */}
+        {/* LOADING STATE - SKELETON LOADER */}
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-zinc-500 gap-3">
-            <Loader2 className="h-8 w-8 animate-spin text-zinc-600" />
-            <p>Memuat seluruh katalog aset dari database...</p>
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {Array.from({ length: 8 }).map((_, index) => (
+                <div key={index} className="flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900/30 overflow-hidden shadow-sm animate-pulse">
+                  <div className="h-32 bg-zinc-800/40 border-b border-zinc-800/50" />
+                  <div className="flex-1 p-5 flex flex-col space-y-4">
+                    <div className="h-4 w-20 bg-zinc-800 rounded" />
+                    <div className="h-6 w-3/4 bg-zinc-800 rounded" />
+                    <div className="h-4 w-1/2 bg-zinc-800 rounded mb-2" />
+                    <div className="grid grid-cols-2 gap-2 pb-5 border-b border-zinc-800/60">
+                      <div className="h-3 bg-zinc-800 rounded" />
+                      <div className="h-3 bg-zinc-800 rounded" />
+                      <div className="h-3 bg-zinc-800 rounded" />
+                      <div className="h-3 bg-zinc-800 rounded" />
+                    </div>
+                    <div className="h-10 bg-zinc-800/50 rounded-xl mt-auto" />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         ) : sortedAssets.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/20 py-24 text-center">
