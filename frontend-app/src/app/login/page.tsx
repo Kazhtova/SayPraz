@@ -112,10 +112,10 @@ export default function LoginPage() {
         {/* Hero Section & Features */}
         <div className="relative z-10 max-w-md">
           <h1 className="text-3xl font-bold leading-tight tracking-tight text-zinc-100">
-            Kendalikan inventaris Anda dari satu dasbor.
+            Kelola Barang Sarpras dengan mudah.
           </h1>
           <p className="mt-4 text-base leading-relaxed text-zinc-300">
-            Masuk untuk melanjutkan pengelolaan stok, transaksi, dan laporan secara terpusat.
+            Masuk untuk melanjutkan peminjaman barang di sarpras.
           </p>
 
           <div className="mt-10 space-y-4">
