@@ -1,8 +1,12 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Boxes, LogOut, Package, FolderOpen, User, ArrowLeftRight } from "lucide-react";
+import { 
+  Boxes, LogOut, Package, FolderOpen, User, ArrowLeftRight, PackageSearch, History 
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/lib/constants";
 
@@ -10,17 +14,41 @@ export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
+  // === STATE UNTUK ROLE ===
+  const [role, setRole] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    // Ambil role dari localStorage saat komponen di-mount di browser
+    const storedRole = localStorage.getItem("role");
+    setRole(storedRole);
+    setIsMounted(true);
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("role");
     router.push("/login");
   };
 
-  // Daftar menu untuk mempermudah penambahan fitur di masa depan
-  const navLinks = [
+  // Mencegah render yang tidak konsisten antara Server dan Client (Hydration Error)
+  if (!isMounted) return null;
+
+  // === DAFTAR MENU BERDASARKAN ROLE ===
+  const adminLinks = [
     { name: "Aset Inventaris", href: "/dashboard", icon: Package },
     { name: "Kategori", href: "/dashboard/categories", icon: FolderOpen },
     { name: "Transaksi Peminjaman", href: "/dashboard/transactions", icon: ArrowLeftRight },
   ];
+
+  const userLinks = [
+    { name: "Katalog Aset", href: "/catalog", icon: PackageSearch },
+    { name: "Riwayat Peminjaman", href: "/my-transactions", icon: History },
+  ];
+
+  // Tentukan link dan tampilan profil mana yang dipakai
+  const navLinks = role === "admin" ? adminLinks : userLinks;
+  const roleName = role === "admin" ? "Administrator" : "Siswa / Guru";
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md">
@@ -29,8 +57,11 @@ export function Navbar() {
           
           {/* KIRI: Logo & Navigasi Utama */}
           <div className="flex items-center gap-8">
-            {/* Brand Logo */}
-            <Link href="/dashboard" className="flex items-center gap-3 transition-opacity hover:opacity-80">
+            {/* Brand Logo (Arahkan ke rute awal sesuai role) */}
+            <Link 
+              href={role === "admin" ? "/dashboard" : "/catalog"} 
+              className="flex items-center gap-3 transition-opacity hover:opacity-80"
+            >
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-600 text-white shadow-inner shadow-white/10">
                 <Boxes className="h-5 w-5" />
               </div>
@@ -42,14 +73,14 @@ export function Navbar() {
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 // Logika Aktif: Benar-benar sama dengan URL, atau berada di dalam sub-rutenya
-                const isActive = pathname === link.href || (link.href !== "/dashboard" && pathname.startsWith(link.href));
+                const isActive = pathname === link.href || (link.href !== "/dashboard" && link.href !== "/catalog" && pathname.startsWith(link.href));
                 
                 return (
                   <Link key={link.href} href={link.href}>
                     <div className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                       isActive 
-                        ? "bg-zinc-800 text-zinc-100 shadow-sm border border-zinc-700/50" // Gaya aktif (Tegas & Elegan)
-                        : "text-zinc-400 hover:bg-zinc-800/40 hover:text-zinc-200 border border-transparent" // Gaya pasif
+                        ? "bg-zinc-800 text-zinc-100 shadow-sm border border-zinc-700/50" 
+                        : "text-zinc-400 hover:bg-zinc-800/40 hover:text-zinc-200 border border-transparent" 
                     }`}>
                       <Icon className="h-4 w-4" />
                       {link.name}
@@ -68,8 +99,9 @@ export function Navbar() {
                 <User className="h-4 w-4 text-zinc-400" />
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-semibold text-zinc-200 leading-none">Admin Praz</span>
-                <span className="text-xs text-zinc-500 mt-0.5">admin@saypraz.com</span>
+                <span className="text-sm font-semibold text-zinc-200 leading-none">Pengguna</span>
+                {/* Tampilkan Role yang sedang login */}
+                <span className="text-xs text-zinc-500 mt-0.5 uppercase tracking-wide">{roleName}</span>
               </div>
             </div>
 
