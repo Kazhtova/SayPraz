@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { API_URL } from "@/lib/constants";
+import { Navbar } from "@/components/Navbar";
 
 interface Asset {
   id: number;
@@ -210,42 +211,7 @@ export default function CatalogPage() {
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans antialiased pb-12">
       <FontKillerStyles />
 
-      <header className="sticky top-0 z-50 border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-800/50 shadow-sm">
-              <Boxes className="h-5 w-5 text-zinc-300" />
-            </div>
-            <span className="text-xl font-bold tracking-tight text-zinc-100 hidden sm:block">Invenkoryz</span>
-          </div>
-          
-          <div className="flex items-center gap-3 sm:gap-5">
-            <button className="relative p-2 text-zinc-400 hover:text-white transition-colors" title="Notifikasi">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-indigo-500 ring-2 ring-zinc-950"></span>
-            </button>
-            <div className="h-6 w-px bg-zinc-800 hidden sm:block"></div>
-            <Button variant="ghost" className="text-zinc-400 hover:text-white hover:bg-zinc-800" onClick={() => router.push('/my-transactions')}>
-              <History className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Riwayat</span>
-            </Button>
-            <div className="flex items-center gap-3 pl-2 border-l border-zinc-800">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-full bg-zinc-800 flex items-center justify-center border border-zinc-700 overflow-hidden">
-                  <User className="h-4 w-4 text-zinc-400" />
-                </div>
-                <div className="hidden md:flex md:flex-col">
-                  <span className="text-sm font-medium text-zinc-200 leading-none">Halo, Pengguna</span>
-                  <span className="text-[10px] text-zinc-500 mt-1">Siswa/Guru</span>
-                </div>
-              </div>
-              <Button variant="ghost" size="icon" className="text-red-400 hover:bg-red-500/10 hover:text-red-300 ml-1" onClick={handleLogout} title="Keluar">
-                <LogOut className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-10 space-y-8">
         
