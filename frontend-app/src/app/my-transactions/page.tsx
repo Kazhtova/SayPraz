@@ -9,6 +9,7 @@ import {
   XCircle, RefreshCw, CalendarDays, Inbox
 } from "lucide-react";
 import { API_URL } from "@/lib/constants";
+import { Navbar } from "@/components/Navbar";
 
 // Definisikan tipe data sesuai relasi Eloquent di Laravel
 interface Transaction {
@@ -165,6 +166,8 @@ export default function MyTransactionsPage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans antialiased pb-12">
       <FontKillerStyles />
+
+      <Navbar />
 
       <main className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 mt-10 space-y-8">
         
