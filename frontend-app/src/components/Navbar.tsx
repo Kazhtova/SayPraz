@@ -48,7 +48,7 @@ export function Navbar() {
 
   // Tentukan link dan tampilan profil mana yang dipakai
   const navLinks = role === "admin" ? adminLinks : userLinks;
-  const roleName = role === "admin" ? "Administrator" : "Siswa / Guru";
+  const roleName = role === "admin" ? "Administrator" : role === "student" ? "Student" : role === "teacher" ? "Guru" : "Staf";
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md">
