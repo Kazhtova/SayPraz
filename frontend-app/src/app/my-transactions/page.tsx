@@ -202,11 +202,45 @@ export default function MyTransactionsPage() {
           </div>
         </div>
 
-        {/* LOADING & EMPTY STATES */}
+        {/* LOADING STATE - SKELETON LOADER */}
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-zinc-500 gap-3">
-            <Loader2 className="h-8 w-8 animate-spin text-zinc-600" />
-            <p>Memuat riwayat transaksi...</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900/30 overflow-hidden shadow-sm animate-pulse">
+                {/* Bagian Atas: Status & Tanggal Ajuan Skeleton */}
+                <div className="flex items-center justify-between p-5 border-b border-zinc-800/50 bg-zinc-900/50">
+                  <div className="h-6 w-24 bg-zinc-800 rounded-md" />
+                  <div className="h-4 w-32 bg-zinc-800 rounded" />
+                </div>
+
+                {/* Bagian Tengah: Info Barang Skeleton */}
+                <div className="p-5 flex gap-4">
+                  <div className="h-14 w-14 rounded-xl bg-zinc-800 flex-shrink-0" />
+                  <div className="flex flex-col justify-center gap-2 flex-1">
+                    <div className="h-5 w-3/4 bg-zinc-800 rounded" />
+                    <div className="flex items-center gap-2">
+                      <div className="h-4 w-1/4 bg-zinc-800 rounded" />
+                      <div className="h-4 w-1/3 bg-zinc-800 rounded" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bagian Bawah: Informasi Timeline Skeleton */}
+                <div className="p-5 pt-0 mt-auto">
+                  <div className="rounded-xl bg-zinc-950/50 border border-zinc-800/80 p-3 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="h-4 w-32 bg-zinc-800 rounded" />
+                      <div className="h-4 w-24 bg-zinc-800 rounded" />
+                    </div>
+                    <div className="h-px w-full bg-zinc-800/60" />
+                    <div className="flex items-center justify-between">
+                      <div className="h-4 w-28 bg-zinc-800 rounded" />
+                      <div className="h-4 w-24 bg-zinc-800 rounded" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : filteredTransactions.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/20 py-24 flex flex-col items-center text-center">
