@@ -15,21 +15,28 @@ class TransactionController extends Controller
 {
     public function index(){
 
-        $role = Auth::user();
+        $user = Auth::user();
 
-        if($role->role === 'admin'){
-            $transactions = Transaction::with(['user', 'aset'])
+        if($user->role === 'admin'){
+            $query = Transaction::with(['user', 'asset'])
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->orderBy('id', 'desc');
         }else{
-            $transactions = Transaction::where('user_id', $role->id)->with(['asset'])
+            $query = Transaction::where('user_id', $user->id)->with(['asset'])
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->orderBy('id', 'desc');
         }
+
+        $transactions = $query->paginate(15);
 
         return response()->json([
            'success'    => true,
-           'data'       => $transactions 
+           'data'       => $transactions->items(),
+           'meta'       => [
+                'current_page'  => $transactions->currentPage(),
+                'last_page'     => $transactions->lastPage(),
+                'total'         => $transactions->total()
+           ]
         ]);
     }
 
@@ -49,7 +56,7 @@ class TransactionController extends Controller
             return response()->json([
                'success'    => false,
                'message'    => 'Asset Tidak Tersedia Untuk Dipinjam' 
-            ]);
+            ], 400);
         }
 
         $transaction = Transaction::create([
@@ -120,7 +127,7 @@ class TransactionController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'success'   => true,
+                'success'   => false,
                 'message'   => 'Terjadi kesalahan sistem ' . $e->getMessage()
             ], 500);
         }

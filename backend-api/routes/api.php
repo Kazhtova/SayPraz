@@ -33,8 +33,8 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::apiResource('assets', AssetController::class)->except(['index', 'show']);
     Route::apiResource('categories', CategoryController::class)->except(['index', 'show']); 
 
-    Route::patch('/transaction/{id}/status', [TransactionController::class, 'updateStatus']);
+    Route::patch('/transactions/{id}/status', [TransactionController::class, 'updateStatus']);
 
-    Route::get('/asset/{id}/logs', [AssetController::class, 'logs']);
+    Route::get('/assets/{id}/logs', [AssetController::class, 'logs']);
     Route::get('/reports/asset/pdf', [ReportController::class, 'exportAssetPdf']);
 });
