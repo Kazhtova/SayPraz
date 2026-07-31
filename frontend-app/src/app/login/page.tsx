@@ -21,17 +21,17 @@ const FEATURES = [
   {
     icon: Boxes,
     title: "Manajemen stok real-time",
-    desc: "Pantau setiap pergerakan barang tanpa jeda.",
+    desc: "Pantau setiap pergerakan barang real time.",
   },
   {
     icon: ScanLine,
-    title: "Pemindaian cepat",
-    desc: "Input dan verifikasi item dalam hitungan detik.",
+    title: "Peminjaman cepat",
+    desc: "Input dan pinjam barang dalam hitungan detik.",
   },
   {
     icon: BarChart3,
     title: "Laporan otomatis",
-    desc: "Ringkasan inventaris tersaji tanpa hitung manual.",
+    desc: "Ringkasan inventaris tertata tanpa hitung manual.",
   },
 ] as const;
 
