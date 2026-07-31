@@ -36,5 +36,5 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::patch('/transactions/{id}/status', [TransactionController::class, 'updateStatus']);
 
     Route::get('/assets/{id}/logs', [AssetController::class, 'logs']);
-    Route::get('/reports/asset/pdf', [ReportController::class, 'exportAssetPdf']);
+    Route::get('/reports/assets/pdf', [ReportController::class, 'exportAssetPdf']);
 });
