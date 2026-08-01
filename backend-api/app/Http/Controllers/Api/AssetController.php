@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Transaction; 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class AssetController extends Controller
 {
@@ -118,7 +120,19 @@ class AssetController extends Controller
             ], 422);
         }
 
-        $asset = Asset::create($request->all());
+        $asset = DB::transaction(function() use ($request) {
+            $createdAset = Asset::create($request->all());
+
+            AssetLog::create([
+                'asset_id'      => $createdAset->id,
+                'admin_id'      => Auth::id(),
+                'old_status'    => 'none',
+                'new_status'    => $createdAset->status,
+                'notes'         => 'Aset baru berhasil terdaftar di sistem sarpras.'
+            ]);
+
+            return $createdAset;
+        });
 
         return response()->json([
             'success' => true,
@@ -149,7 +163,7 @@ class AssetController extends Controller
             'brand' => 'sometimes|required|string|max:255',
             'qr_code' => 'sometimes|required|string|unique:assets,qr_code,' . $asset->id,
             'status' => 'sometimes|required|in:available,borrowed,in_repair',
-            'purchase_year' => 'sometimes|required|integer|min:2000|max:' . date('Y'),
+            'purchase_year' => 'sometimes|required|integer|min:1900|max:' . date('Y'),
         ]);
 
         if($validator->fails()) {
@@ -159,7 +173,20 @@ class AssetController extends Controller
             ], 422);
         }
 
-        $asset->update($request->all());
+        DB::transaction(function() use ($request, $asset){
+            $oldStatus = $asset->status;
+            $asset->update($request->all());
+
+            if($request->has('status') && $oldStatus !== $asset->status){
+                AssetLog::create([
+                   'asset_id'   => $asset->id,
+                   'admin_id'   => Auth::id(),
+                   'old_status' => $oldStatus,
+                   'new_status' => $asset->status,
+                   'notes'      => $request->input('notes', 'Status aset diperbarui oleh administrator.') 
+                ]);
+            }
+        });
 
         return response()->json([
             'success' => true,
@@ -173,7 +200,13 @@ class AssetController extends Controller
      */
     public function destroy(Asset $asset)
     {
-        $asset->delete();
+
+        DB::transaction(function() use ($asset){
+            
+            AssetLog::where('asset_id', $asset->id)->delete();
+            $asset->delete();
+        });
+    
 
         return response()->json([
             'success' => true,
