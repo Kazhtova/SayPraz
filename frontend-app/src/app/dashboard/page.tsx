@@ -5,13 +5,16 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { 
-  LogOut, Boxes, Package, AlertTriangle, CheckCircle2, ArrowUpRight,
+  Boxes, Package, AlertTriangle, CheckCircle2, ArrowUpRight,
   Search, Plus, RefreshCw, ChevronLeft, ChevronRight, Filter, 
-  SlidersHorizontal, Pencil, History, X, Activity, Clock, Download
+  SlidersHorizontal, Pencil, History, X, Activity, Clock, Download,
+  BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { API_URL, APP_NAME } from "@/lib/constants";
+import { API_URL } from "@/lib/constants";
+// 💡 IMPORT RECHARTS
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface Asset {
   id: number; qr_code: string; name: string; brand: string;
@@ -19,17 +22,25 @@ interface Asset {
 }
 
 interface AssetLog {
-  id: number;
-  old_status: string;
-  new_status: string;
-  notes: string;
-  created_at: string;
+  id: number; old_status: string; new_status: string; notes: string; created_at: string;
   admin?: { name: string; role: string };
 }
 
 interface PaginationMeta { current_page: number; last_page: number; total: number; from: number; to: number; }
 interface GlobalStats { total: number; available: number; in_repair: number; borrowed: number; }
 interface Category { id: number; name: string; }
+
+// ==========================================
+// DATA SIMULASI GRAFIK (DUMMY)
+// ==========================================
+const monthlyChartData = [
+  { name: 'Jan', peminjaman: 12 },
+  { name: 'Feb', peminjaman: 19 },
+  { name: 'Mar', peminjaman: 15 },
+  { name: 'Apr', peminjaman: 28 },
+  { name: 'Mei', peminjaman: 35 },
+  { name: 'Jun', peminjaman: 25 },
+];
 
 // ==========================================
 // KOMPONEN SKELETON
@@ -60,7 +71,7 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
-  const [isDownloading, setIsDownloading] = useState(false); // State untuk loading PDF
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // State untuk Riwayat/Log Modal
   const [assetLogs, setAssetLogs] = useState<AssetLog[]>([]);
@@ -235,15 +246,74 @@ export default function DashboardPage() {
       <FontKillerStyles />
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
-        <div className="space-y-1"><h1 className="text-3xl font-bold tracking-tight text-zinc-100">Dasbor Kontrol Inventaris</h1><p className="text-zinc-400 text-sm">Kelola aset dan peminjaman Sarpras.</p></div>
-
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 backdrop-blur-sm"><div className="flex items-center gap-3 text-zinc-400 text-sm font-medium"><Package className="h-5 w-5 text-indigo-400" /> Total Aset Terdaftar</div><div className="mt-3"><p className="text-3xl font-bold text-zinc-100 tracking-tight">{stats.total}</p>{stats.total === 0 && <p className="text-xs text-zinc-500 mt-1">Belum ada barang terdaftar.</p>}</div></div>
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 backdrop-blur-sm"><div className="flex items-center gap-3 text-zinc-400 text-sm font-medium"><CheckCircle2 className="h-5 w-5 text-emerald-400" /> Aset Tersedia</div><div className="mt-3"><p className="text-3xl font-bold text-zinc-100 tracking-tight">{stats.available}</p></div></div>
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 backdrop-blur-sm"><div className="flex items-center gap-3 text-zinc-400 text-sm font-medium"><ArrowUpRight className="h-5 w-5 text-blue-400" /> Sedang Dipinjam</div><div className="mt-3"><p className="text-3xl font-bold text-zinc-100 tracking-tight">{stats.borrowed}</p></div></div>
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 backdrop-blur-sm"><div className="flex items-center gap-3 text-zinc-400 text-sm font-medium"><AlertTriangle className="h-5 w-5 text-amber-400" /> Dalam Perbaikan</div><div className="mt-3"><p className="text-3xl font-bold text-zinc-100 tracking-tight">{stats.in_repair}</p></div></div>
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold tracking-tight text-zinc-100">Dasbor Kontrol Inventaris</h1>
+          <p className="text-zinc-400 text-sm">Kelola aset dan peminjaman Sarpras.</p>
         </div>
 
+        {/* 4 STAT CARDS (Sesuai aslimu) */}
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 backdrop-blur-sm">
+            <div className="flex items-center gap-3 text-zinc-400 text-sm font-medium"><Package className="h-5 w-5 text-indigo-400" /> Total Aset Terdaftar</div>
+            <div className="mt-3">
+              <p className="text-3xl font-bold text-zinc-100 tracking-tight">{stats.total}</p>
+              {stats.total === 0 && <p className="text-xs text-zinc-500 mt-1">Belum ada barang terdaftar.</p>}
+            </div>
+          </div>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 backdrop-blur-sm">
+            <div className="flex items-center gap-3 text-zinc-400 text-sm font-medium"><CheckCircle2 className="h-5 w-5 text-emerald-400" /> Aset Tersedia</div>
+            <div className="mt-3"><p className="text-3xl font-bold text-zinc-100 tracking-tight">{stats.available}</p></div>
+          </div>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 backdrop-blur-sm">
+            <div className="flex items-center gap-3 text-zinc-400 text-sm font-medium"><ArrowUpRight className="h-5 w-5 text-blue-400" /> Sedang Dipinjam</div>
+            <div className="mt-3"><p className="text-3xl font-bold text-zinc-100 tracking-tight">{stats.borrowed}</p></div>
+          </div>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 backdrop-blur-sm">
+            <div className="flex items-center gap-3 text-zinc-400 text-sm font-medium"><AlertTriangle className="h-5 w-5 text-amber-400" /> Dalam Perbaikan</div>
+            <div className="mt-3"><p className="text-3xl font-bold text-zinc-100 tracking-tight">{stats.in_repair}</p></div>
+          </div>
+        </div>
+
+        {/* GRAFIK RECHARTS (Modern Enterprise Look - Glassmorphism) */}
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-6 backdrop-blur-sm">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-lg font-bold text-zinc-100 flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-zinc-100" /> Statistik Peminjaman
+              </h3>
+              <p className="text-sm text-zinc-400 mt-1">Tren peminjaman aset sarpras 6 bulan terakhir.</p>
+            </div>
+          </div>
+          <div className="h-72 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={monthlyChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+                <XAxis dataKey="name" stroke="#a1a1aa" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="#a1a1aa" fontSize={12} tickLine={false} axisLine={false} />
+                <Tooltip 
+                  cursor={{fill: '#27272a'}} 
+                  contentStyle={{
+                    backgroundColor: 'rgba(9, 9, 11, 0.65)', // Background tooltip transparan
+                    backdropFilter: 'blur(8px)', // Efek kaca pada tooltip
+                    borderColor: '#3f3f46', 
+                    borderRadius: '8px', 
+                    color: '#f4f4f5'
+                  }} 
+                  itemStyle={{color: '#ffffff', fontWeight: 'bold'}} // Teks "peminjaman" & angka menjadi putih tebal
+                />
+                <Bar 
+                  dataKey="peminjaman" 
+                  fill="rgba(244, 244, 245, 0.15)" // Fill zinc/putih tembus pandang (Body Kaca)
+                  stroke="rgba(244, 244, 245, 0.4)" // Garis tepi terang (Pantulan Pinggir Kaca)
+                  strokeWidth={1.5}
+                  radius={[4, 4, 0, 0]} 
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* TABEL DATA */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm overflow-hidden flex flex-col">
           <div className="border-b border-zinc-800 p-4 flex flex-col xl:flex-row gap-4 items-center justify-between bg-zinc-900/20">
             <div className="relative w-full xl:w-96"><Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" /><Input placeholder="Cari QR Code, nama, atau merek..." value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }} className="pl-10 bg-zinc-900/50 border-zinc-800 text-sm h-11 focus-visible:ring-zinc-500/50 w-full" /></div>
