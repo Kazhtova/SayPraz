@@ -425,7 +425,7 @@ export default function DashboardPage() {
           </div>
           <div className="h-72 w-full relative">
             
-            {/* 💡 OVERLAY EMPTY STATE JIKA DATA CHART 0 */}
+            {/* OVERLAY EMPTY STATE JIKA DATA CHART 0 */}
             {isChartEmpty && !isTableRefreshing && (
               <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-zinc-950/40 backdrop-blur-[2px] rounded-lg border border-zinc-800/50">
                 <BarChart3 className="h-8 w-8 text-zinc-600 mb-3 opacity-50" />
@@ -436,7 +436,7 @@ export default function DashboardPage() {
 
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
+               <defs>
                   <linearGradient id="glassGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="rgba(255, 255, 255, 0.4)" />
                     <stop offset="100%" stopColor="rgba(255, 255, 255, 0.05)" />
