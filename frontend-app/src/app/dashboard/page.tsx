@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable react-hooks/static-components */
 "use client";
@@ -26,24 +27,21 @@ interface AssetLog {
 }
 
 interface PaginationMeta { current_page: number; last_page: number; total: number; from: number; to: number; }
-interface GlobalStats { total: number; available: number; in_repair: number; borrowed: number; }
+interface GlobalStats { total: number; available: number; in_repair: number; borrowed: number; pending_transactions?: number; }
 interface Category { id: number; name: string; }
 
 // ==========================================
-// DATA SIMULASI GRAFIK
+// DATA SIMULASI AWAL (Akan ditimpa oleh DB)
 // ==========================================
-const monthlyChartData = [
-  { name: 'Jan', peminjaman: 12 },
-  { name: 'Feb', peminjaman: 19 },
-  { name: 'Mar', peminjaman: 15 },
-  { name: 'Apr', peminjaman: 28 },
-  { name: 'Mei', peminjaman: 35 },
-  { name: 'Jun', peminjaman: 25 },
+const initialChartData = [
+  { name: 'Jan', peminjaman: 0 },
+  { name: 'Feb', peminjaman: 0 },
+  { name: 'Mar', peminjaman: 0 },
+  { name: 'Apr', peminjaman: 0 },
+  { name: 'Mei', peminjaman: 0 },
+  { name: 'Jun', peminjaman: 0 },
 ];
 
-// ==========================================
-// KOMPONEN SKELETON
-// ==========================================
 function TableRowSkeleton() {
   return (
     <tr className="animate-pulse border-b border-zinc-800/60"><td className="px-6 py-4"><div className="space-y-2"><div className="h-4 w-36 rounded bg-zinc-800" /><div className="h-3 w-20 rounded bg-zinc-800/50" /></div></td><td className="px-6 py-4"><div className="h-4 w-24 rounded bg-zinc-800" /></td><td className="px-6 py-4 text-center"><div className="mx-auto h-6 w-24 rounded-full bg-zinc-800" /></td><td className="px-6 py-4 text-center"><div className="mx-auto h-4 w-12 rounded bg-zinc-800" /></td><td className="px-6 py-4 text-right"><div className="ml-auto h-8 w-16 rounded-lg bg-zinc-800" /></td></tr>
@@ -61,7 +59,8 @@ export default function DashboardPage() {
   const [categories, setCategories] = useState<Category[]>([]); 
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [stats, setStats] = useState<GlobalStats>({ total: 0, available: 0, in_repair: 0, borrowed: 0 });
+  const [stats, setStats] = useState<GlobalStats>({ total: 0, available: 0, in_repair: 0, borrowed: 0, pending_transactions: 0 });
+  const [chartData, setChartData] = useState<any[]>(initialChartData);
   const [isInitialLoading, setIsInitialLoading] = useState(true); 
   const [isTableRefreshing, setIsTableRefreshing] = useState(false); 
   const [searchQuery, setSearchQuery] = useState("");
@@ -112,6 +111,11 @@ export default function DashboardPage() {
         setItems(result.data || []); 
         setPagination(result.meta || null);
 
+        // 💡 PERBAIKAN: Set data chart jika dikirim oleh backend
+        if (result.chart_data) {
+          setChartData(result.chart_data);
+        }
+
         if (result.stats) {
           setStats(result.stats);
         } else {
@@ -120,6 +124,7 @@ export default function DashboardPage() {
             available: (result.data || []).filter((i: Asset) => i.status === 'available').length,
             in_repair: (result.data || []).filter((i: Asset) => i.status === 'in_repair').length,
             borrowed: (result.data || []).filter((i: Asset) => i.status === 'borrowed').length,
+            pending_transactions: 0
           });
         }
       } else if (response.status === 401) {
@@ -229,7 +234,8 @@ export default function DashboardPage() {
     );
   }
 
-  const dummyPendingTransactions = 3;
+  // 💡 PERBAIKAN: Ambil nilai real dari state stats API
+  const pendingTransactionsCount = stats.pending_transactions || 0;
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans antialiased selection:bg-zinc-800">
@@ -290,14 +296,15 @@ export default function DashboardPage() {
               <Clock className="h-4 w-4 text-zinc-300 group-hover:text-white transition-colors" /> Menunggu Persetujuan
             </div>
             <div className="mt-4 flex items-end justify-between relative z-10">
-              <p className="text-4xl font-bold text-zinc-100 tracking-tighter">{dummyPendingTransactions}</p>
-              {dummyPendingTransactions > 0 && (
-                <span className="flex h-2.5 w-2.5 mb-2 rounded-full bg-amber-500 animate-pulse" />
+              {/* 💡 PERBAIKAN: Render angka dari backend */}
+              <p className="text-4xl font-bold text-zinc-100 tracking-tighter">{pendingTransactionsCount}</p>
+              {pendingTransactionsCount > 0 && (
+                <span className="flex h-2.5 w-2.5 mb-2 rounded-full bg-zinc-500/4 animate-pulse" />
               )}
             </div>
             <p className="text-[10px] text-zinc-500 mt-2 font-medium relative z-10">PERLU TINDAKAN SEGERA</p>
             {/* Subtle Background Glow */}
-            <div className="absolute -top-10 -right-10 w-24 h-24 bg-amber-500/5 rounded-full blur-2xl group-hover:bg-amber-500/10 transition-colors z-0"></div>
+            <div className="absolute -top-10 -right-10 w-24 h-24 bg-zinc-500/5 rounded-full blur-2xl group-hover:bg-zinc-500/10 transition-colors z-0"></div>
           </div>
         </div>
 
@@ -313,8 +320,8 @@ export default function DashboardPage() {
           </div>
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={monthlyChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                {/* 💡 DEFS: Definisi Gradasi Kaca (Glass Gradient) */}
+              {/* 💡 PERBAIKAN: Menggunakan data dari state (bukan array dummy) */}
+              <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="glassGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="rgba(255, 255, 255, 0.25)" />
@@ -326,7 +333,6 @@ export default function DashboardPage() {
                 <XAxis dataKey="name" stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} dy={10} />
                 <YAxis stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} dx={-10} />
                 
-                {/* 💡 TOOLTIP: Vercel-style (Gelap, Blur, Teks Putih) */}
                 <Tooltip 
                   cursor={{fill: 'rgba(255, 255, 255, 0.03)'}} 
                   contentStyle={{
@@ -340,7 +346,6 @@ export default function DashboardPage() {
                   itemStyle={{color: '#ffffff', fontWeight: '600'}} 
                 />
                 
-                {/* 💡 BAR: Menggunakan Fill Gradient, Stroke Terang, & Radius Rounded */}
                 <Bar 
                   dataKey="peminjaman" 
                   fill="url(#glassGradient)" 
