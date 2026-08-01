@@ -17,7 +17,7 @@ import { API_URL } from "@/lib/constants";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface Asset {
-  id: number; name: string; brand: string;
+  id: number; qr_code: string; name: string; brand: string;
   purchase_year: number; status: "available" | "borrowed" | "in_repair"; category_name?: string;
 }
 
@@ -98,6 +98,26 @@ function StatCardSkeleton() {
       </div>
       {/* Subteks Bawah */}
       <div className="mt-3 h-2.5 w-24 rounded bg-zinc-800/50" />
+    </div>
+  );
+}
+
+function ChartSkeleton() {
+  return (
+    <div className="animate-pulse rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-6">
+      <div className="mb-8 space-y-2">
+        <div className="flex items-center gap-2">
+          <div className="h-5 w-5 rounded bg-zinc-800" />
+          <div className="h-6 w-48 rounded bg-zinc-800" />
+        </div>
+        <div className="h-4 w-64 rounded bg-zinc-800/50" />
+      </div>
+      {/* Simulasi area batang grafik */}
+      <div className="h-72 w-full flex items-end gap-8 border-b border-l border-zinc-800/50 px-4 pb-0 pt-4">
+        {['40%', '75%', '50%', '90%', '60%', '35%'].map((height, i) => (
+          <div key={i} className="w-full rounded-t-md bg-zinc-800/80" style={{ height }} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -283,8 +303,22 @@ export default function DashboardPage() {
         <FontKillerStyles />
         <main className="mx-auto max-w-7xl px-4 py-8 space-y-8">
           <div className="space-y-2 animate-pulse"><div className="h-9 w-64 rounded-lg bg-zinc-800" /><div className="h-4 w-96 rounded bg-zinc-800" /></div>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"><StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton /></div>
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 overflow-hidden"><div className="p-4 border-b border-zinc-800 flex justify-between animate-pulse"><div className="h-11 w-full rounded-lg bg-zinc-800" /></div><table className="w-full"><tbody><TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton /></tbody></table></div>
+          
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton />
+          </div>
+          
+          {/* PANGGIL SKELETON CHART DI SINI */}
+          <ChartSkeleton />
+
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 overflow-hidden">
+            <div className="p-4 border-b border-zinc-800 flex justify-between animate-pulse"><div className="h-11 w-full rounded-lg bg-zinc-800" /></div>
+            <table className="w-full">
+              <tbody>
+                <TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton />
+              </tbody>
+            </table>
+          </div>
         </main>
       </div>
     );
@@ -433,12 +467,12 @@ export default function DashboardPage() {
 
         {/* TABEL DATA */}
         <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/30 backdrop-blur-md overflow-hidden flex flex-col">
-          <div className="border-b border-zinc-800/80 p-5 flex flex-col xl:flex-row gap-4 items-center justify-between">
+          <div className="border-b border-zinc-800/70 p-5 flex flex-col xl:flex-row gap-4 items-center justify-between">
             <div className="relative w-full xl:w-70">
               <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-              <Input placeholder="Cari Nama atau Merek..." value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }} className="pl-10 bg-zinc-950/50 border-zinc-800/80 text-sm h-10 focus-visible:ring-1 focus-visible:ring-zinc-600 w-full rounded-lg transition-all" />
+              <Input placeholder="Cari Code, Nama atau Merek" value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }} className="pl-10 bg-zinc-950/50 border-zinc-800/80 text-sm h-10 focus-visible:ring-1 focus-visible:ring-zinc-600 w-full rounded-lg transition-all" />
             </div>
-            <div className="flex w-full xl:w-auto gap-14 flex-1">
+            <div className="flex w-full xl:w-auto gap-5 flex-1 xl:ml-0.5">
               <div className="relative w-full sm:w-48"><Filter className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" /><select value={filterCategory} onChange={(e) => { setFilterCategory(e.target.value); setCurrentPage(1); }} className="pl-10 appearance-none flex h-10 w-full items-center justify-between rounded-lg border border-zinc-800/80 bg-zinc-950/50 pr-8 py-2 text-sm text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-600 transition-all cursor-pointer"><option value="" className="bg-zinc-900">Semua Kategori</option>{categories.map(cat => (<option key={cat.id} value={cat.name} className="bg-zinc-900">{cat.name}</option>))}<option value="Tanpa Kategori" className="bg-zinc-900">Tanpa Kategori</option></select></div>
               <div className="relative w-full sm:w-48"><SlidersHorizontal className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" /><select value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }} className="pl-10 appearance-none flex h-10 w-full items-center justify-between rounded-lg border border-zinc-800/80 bg-zinc-950/50 pr-8 py-2 text-sm text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-600 transition-all cursor-pointer"><option value="" className="bg-zinc-900">Semua Status</option><option value="available" className="bg-zinc-900">Tersedia</option><option value="borrowed" className="bg-zinc-900">Dipinjam</option><option value="in_repair" className="bg-zinc-900">Dalam Perbaikan</option></select></div>
             </div>
@@ -500,7 +534,7 @@ export default function DashboardPage() {
                       
                       {/* Aksi (Tengah - Menggunakan justify-center) */}
                       <td className="px-6 py-4 text-center">
-                        <div className="flex justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex justify-center gap-1 opacity-100 transition-opacity">
                           <Button variant="ghost" size="icon" onClick={() => handleOpenLogs(item.id, item.name)} className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-700/50 rounded-md" title="Riwayat Aset"><History className="h-4 w-4" /></Button>
                           <Button variant="ghost" size="icon" onClick={() => router.push(`/dashboard/edit/${item.id}`)} className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-700/50 rounded-md" title="Kelola Aset"><Pencil className="h-4 w-4" /></Button>
                         </div>
