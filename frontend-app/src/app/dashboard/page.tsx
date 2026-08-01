@@ -52,13 +52,53 @@ const initialChartData = [
 
 function TableRowSkeleton() {
   return (
-    <tr className="animate-pulse border-b border-zinc-800/60"><td className="px-6 py-4"><div className="space-y-2"><div className="h-4 w-36 rounded bg-zinc-800" /><div className="h-3 w-20 rounded bg-zinc-800/50" /></div></td><td className="px-6 py-4"><div className="h-4 w-24 rounded bg-zinc-800" /></td><td className="px-6 py-4 text-center"><div className="mx-auto h-6 w-24 rounded-full bg-zinc-800" /></td><td className="px-6 py-4 text-center"><div className="mx-auto h-4 w-12 rounded bg-zinc-800" /></td><td className="px-6 py-4 text-right"><div className="ml-auto h-8 w-16 rounded-lg bg-zinc-800" /></td></tr>
+    <tr className="animate-pulse border-b border-zinc-800/60">
+      {/* Kolom 1: Nama & Merek (Tengah) */}
+      <td className="px-6 py-4 text-center">
+        <div className="space-y-2 flex flex-col items-center">
+          <div className="h-4 w-32 rounded bg-zinc-800" />
+          <div className="h-3 w-20 rounded bg-zinc-800/50" />
+        </div>
+      </td>
+      {/* Kolom 2: Kategori (Tengah) */}
+      <td className="px-6 py-4 text-center">
+        <div className="mx-auto h-4 w-20 rounded bg-zinc-800" />
+      </td>
+      {/* Kolom 3: Status (Tengah) */}
+      <td className="px-6 py-4 text-center">
+        <div className="mx-auto h-6 w-20 rounded-full bg-zinc-800" />
+      </td>
+      {/* Kolom 4: Tahun (Tengah) */}
+      <td className="px-6 py-4 text-center">
+        <div className="mx-auto h-4 w-10 rounded bg-zinc-800" />
+      </td>
+      {/* Kolom 5: Aksi (Tengah - 2 Kotak Tombol) */}
+      <td className="px-6 py-4 text-center">
+        <div className="flex justify-center gap-1">
+          <div className="h-8 w-8 rounded-md bg-zinc-800" />
+          <div className="h-8 w-8 rounded-md bg-zinc-800" />
+        </div>
+      </td>
+    </tr>
   );
 }
 
 function StatCardSkeleton() {
   return (
-    <div className="animate-pulse rounded-xl border border-zinc-800 bg-zinc-900/40 p-5"><div className="flex items-center gap-3"><div className="h-5 w-5 rounded-full bg-zinc-800" /><div className="h-4 w-28 rounded bg-zinc-800" /></div><div className="mt-3 h-10 w-20 rounded-lg bg-zinc-800" /></div>
+    <div className="animate-pulse rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-5">
+      {/* Judul Kartu */}
+      <div className="flex items-center gap-2">
+        <div className="h-4 w-4 rounded bg-zinc-800" />
+        <div className="h-4 w-32 rounded bg-zinc-800" />
+      </div>
+      {/* Angka & Lencana */}
+      <div className="mt-4 flex items-end justify-between">
+        <div className="h-9 w-16 rounded-md bg-zinc-800" />
+        <div className="h-5 w-12 rounded bg-zinc-800" />
+      </div>
+      {/* Subteks Bawah */}
+      <div className="mt-3 h-2.5 w-24 rounded bg-zinc-800/50" />
+    </div>
   );
 }
 
