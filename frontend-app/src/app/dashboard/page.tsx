@@ -404,12 +404,12 @@ export default function DashboardPage() {
             </div>
             
             <div className="flex w-full xl:w-auto gap-3 justify-end flex-wrap">
-              <Button variant="outline" onClick={handleDownloadPDF} disabled={isDownloading} className="border-zinc-800 bg-zinc-950/50 hover:bg-zinc-800 text-zinc-300 gap-2 h-10 w-full sm:w-auto px-4 rounded-lg transition-all">
+              <Button variant="outline" onClick={handleDownloadPDF} disabled={isDownloading} className="border-zinc-800 bg-zinc-950/50 hover:bg-zinc-100 text-zinc-300 gap-2 h-10 w-full sm:w-auto px-4 rounded-lg transition-all">
                 <Download className={`h-4 w-4 ${isDownloading ? "animate-bounce" : ""}`} />
                 {isDownloading ? "Menyusun PDF..." : "Cetak PDF"}
               </Button>
-              <Button variant="outline" onClick={handleRefreshClick} disabled={isTableRefreshing} className="border-zinc-800 bg-zinc-950/50 hover:bg-zinc-800 text-zinc-300 gap-2 h-10 w-full sm:w-auto px-4 rounded-lg transition-all"><RefreshCw className={`h-4 w-4 ${isTableRefreshing ? "animate-spin" : ""}`} />Muat Ulang</Button>
-              <Button onClick={() => router.push('/dashboard/add')} className="bg-zinc-100 hover:bg-white text-zinc-950 font-medium gap-2 h-10 w-full sm:w-auto px-5 rounded-lg shadow-sm transition-all"><Plus className="h-4 w-4" />Tambah Aset</Button>
+              <Button variant="outline" onClick={handleRefreshClick} disabled={isTableRefreshing} className="border-zinc-800 bg-zinc-950/50 hover:bg-zinc-100 text-zinc-300 gap-2 h-10 w-full sm:w-auto px-4 rounded-lg transition-all"><RefreshCw className={`h-4 w-4 ${isTableRefreshing ? "animate-spin" : ""}`} />Muat Ulang</Button>
+              <Button onClick={() => router.push('/dashboard/add')} className="bg-zinc-100 hover:bg-zinc-950/50 text-zinc-900 hover:text-white hover:border-zinc-200 font-medium gap-2 h-10 w-full sm:w-auto px-20 rounded-lg shadow-sm transition-all"><Plus className="h-4 w-4" />Tambah Aset</Button>
             </div>
           </div>
 
