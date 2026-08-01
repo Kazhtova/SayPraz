@@ -17,7 +17,7 @@ import { API_URL } from "@/lib/constants";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface Asset {
-  id: number; qr_code: string; name: string; brand: string;
+  id: number; name: string; brand: string;
   purchase_year: number; status: "available" | "borrowed" | "in_repair"; category_name?: string;
 }
 
@@ -394,11 +394,11 @@ export default function DashboardPage() {
         {/* TABEL DATA */}
         <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/30 backdrop-blur-md overflow-hidden flex flex-col">
           <div className="border-b border-zinc-800/80 p-5 flex flex-col xl:flex-row gap-4 items-center justify-between">
-            <div className="relative w-full xl:w-96">
+            <div className="relative w-full xl:w-70">
               <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-              <Input placeholder="Cari QR Code, nama, atau merek..." value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }} className="pl-10 bg-zinc-950/50 border-zinc-800/80 text-sm h-10 focus-visible:ring-1 focus-visible:ring-zinc-600 w-full rounded-lg transition-all" />
+              <Input placeholder="Cari Nama atau Merek..." value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }} className="pl-10 bg-zinc-950/50 border-zinc-800/80 text-sm h-10 focus-visible:ring-1 focus-visible:ring-zinc-600 w-full rounded-lg transition-all" />
             </div>
-            <div className="flex w-full xl:w-auto gap-3 flex-1 xl:justify-start">
+            <div className="flex w-full xl:w-auto gap-14 flex-1">
               <div className="relative w-full sm:w-48"><Filter className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" /><select value={filterCategory} onChange={(e) => { setFilterCategory(e.target.value); setCurrentPage(1); }} className="pl-10 appearance-none flex h-10 w-full items-center justify-between rounded-lg border border-zinc-800/80 bg-zinc-950/50 pr-8 py-2 text-sm text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-600 transition-all cursor-pointer"><option value="" className="bg-zinc-900">Semua Kategori</option>{categories.map(cat => (<option key={cat.id} value={cat.name} className="bg-zinc-900">{cat.name}</option>))}<option value="Tanpa Kategori" className="bg-zinc-900">Tanpa Kategori</option></select></div>
               <div className="relative w-full sm:w-48"><SlidersHorizontal className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" /><select value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }} className="pl-10 appearance-none flex h-10 w-full items-center justify-between rounded-lg border border-zinc-800/80 bg-zinc-950/50 pr-8 py-2 text-sm text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-600 transition-all cursor-pointer"><option value="" className="bg-zinc-900">Semua Status</option><option value="available" className="bg-zinc-900">Tersedia</option><option value="borrowed" className="bg-zinc-900">Dipinjam</option><option value="in_repair" className="bg-zinc-900">Dalam Perbaikan</option></select></div>
             </div>
@@ -414,26 +414,58 @@ export default function DashboardPage() {
           </div>
 
           <div className="overflow-x-auto min-h-[400px]">
-            <table className="w-full text-left text-sm text-zinc-400">
+            <table className="w-full text-sm text-zinc-400 table-fixed">
               <thead className="border-b border-zinc-800/80 bg-zinc-950/30 text-[11px] font-medium uppercase text-zinc-500 tracking-widest">
-                <tr><th className="px-6 py-4">Nama & Merek</th><th className="px-6 py-4">Kategori</th><th className="px-6 py-4 text-center">Status</th><th className="px-6 py-4 text-center">Tahun</th><th className="px-6 py-4 text-right">Aksi</th></tr>
+                <tr>
+                  <th className="px-6 py-4 text-center whitespace-nowrap">Nama & Merek</th>
+                  <th className="px-6 py-4 text-center whitespace-nowrap">Kategori</th>
+                  <th className="px-6 py-4 text-center whitespace-nowrap">Status</th>
+                  <th className="px-6 py-4 text-center whitespace-nowrap">Tahun</th>
+                  <th className="px-6 py-4 text-center whitespace-nowrap">Aksi</th>
+                </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/60">
-                {isTableRefreshing ? (<><TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton /></>) : items.length === 0 ? (
-                  <tr><td colSpan={5} className="px-6 py-16 text-center text-zinc-500">{searchQuery || filterCategory || filterStatus ? "Aset dengan filter/pencarian tersebut tidak ditemukan." : "Belum ada data aset di database."}</td></tr>
+                {isTableRefreshing ? (
+                  <><TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton /></>
+                ) : items.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-16 text-center text-zinc-500">
+                      {searchQuery || filterCategory || filterStatus ? "Aset dengan filter/pencarian tersebut tidak ditemukan." : "Belum ada data aset di database."}
+                    </td>
+                  </tr>
                 ) : (
                   items.map((item) => (
                     <tr key={item.id} className="hover:bg-zinc-800/30 transition-colors group">
-                      <td className="px-6 py-4"><div className="font-semibold text-zinc-200 group-hover:text-white transition-colors">{item.name}</div><div className="text-xs text-zinc-500 mt-0.5">{item.brand}</div></td>
-                      <td className="px-6 py-4 text-zinc-400">{item.category_name || '-'}</td>
-                      <td className="px-6 py-4 text-center">{getStatusBadge(item.status)}</td>
-                      <td className="px-6 py-4 text-center text-zinc-400 font-mono text-xs">{item.purchase_year}</td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      
+                      {/* Nama & Merek (Tengah) */}
+                      <td className="px-6 py-4 text-center">
+                        <div className="font-semibold text-zinc-200 group-hover:text-white transition-colors">{item.name}</div>
+                        <div className="text-xs text-zinc-500 mt-0.5">{item.brand}</div>
+                      </td>
+                      
+                      {/* Kategori (Tengah) */}
+                      <td className="px-6 py-4 text-center text-zinc-400">
+                        {item.category_name || '-'}
+                      </td>
+                      
+                      {/* Status (Tengah) */}
+                      <td className="px-6 py-4 text-center">
+                        {getStatusBadge(item.status)}
+                      </td>
+                      
+                      {/* Tahun (Tengah) */}
+                      <td className="px-6 py-4 text-center text-zinc-400 font-mono text-xs">
+                        {item.purchase_year}
+                      </td>
+                      
+                      {/* Aksi (Tengah - Menggunakan justify-center) */}
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Button variant="ghost" size="icon" onClick={() => handleOpenLogs(item.id, item.name)} className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-700/50 rounded-md" title="Riwayat Aset"><History className="h-4 w-4" /></Button>
                           <Button variant="ghost" size="icon" onClick={() => router.push(`/dashboard/edit/${item.id}`)} className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-700/50 rounded-md" title="Kelola Aset"><Pencil className="h-4 w-4" /></Button>
                         </div>
                       </td>
+                      
                     </tr>
                   ))
                 )}
