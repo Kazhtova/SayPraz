@@ -27,12 +27,20 @@ interface AssetLog {
 }
 
 interface PaginationMeta { current_page: number; last_page: number; total: number; from: number; to: number; }
-interface GlobalStats { total: number; available: number; in_repair: number; borrowed: number; pending_transactions?: number; }
+
+// 💡 TANGKAP: Tambahkan total_growth dan borrow_growth ke Interface agar dikenali TypeScript
+interface GlobalStats { 
+  total: number; 
+  available: number; 
+  in_repair: number; 
+  borrowed: number; 
+  pending_transactions?: number;
+  total_growth?: number;
+  borrow_growth?: number;
+}
+
 interface Category { id: number; name: string; }
 
-// ==========================================
-// DATA SIMULASI AWAL (Akan ditimpa oleh DB)
-// ==========================================
 const initialChartData = [
   { name: 'Jan', peminjaman: 0 },
   { name: 'Feb', peminjaman: 0 },
@@ -59,7 +67,12 @@ export default function DashboardPage() {
   const [categories, setCategories] = useState<Category[]>([]); 
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [stats, setStats] = useState<GlobalStats>({ total: 0, available: 0, in_repair: 0, borrowed: 0, pending_transactions: 0 });
+  
+  // 💡 TANGKAP: Inisialisasi nilai awal state dengan 0
+  const [stats, setStats] = useState<GlobalStats>({ 
+    total: 0, available: 0, in_repair: 0, borrowed: 0, pending_transactions: 0, total_growth: 0, borrow_growth: 0 
+  });
+  
   const [chartData, setChartData] = useState<any[]>(initialChartData);
   const [isInitialLoading, setIsInitialLoading] = useState(true); 
   const [isTableRefreshing, setIsTableRefreshing] = useState(false); 
@@ -111,11 +124,12 @@ export default function DashboardPage() {
         setItems(result.data || []); 
         setPagination(result.meta || null);
 
-        // 💡 PERBAIKAN: Set data chart jika dikirim oleh backend
+        // 💡 TERAPKAN: Memasukkan data ke state chart
         if (result.chart_data) {
           setChartData(result.chart_data);
         }
 
+        // 💡 TERAPKAN: Memasukkan data ke state stats
         if (result.stats) {
           setStats(result.stats);
         } else {
@@ -124,7 +138,9 @@ export default function DashboardPage() {
             available: (result.data || []).filter((i: Asset) => i.status === 'available').length,
             in_repair: (result.data || []).filter((i: Asset) => i.status === 'in_repair').length,
             borrowed: (result.data || []).filter((i: Asset) => i.status === 'borrowed').length,
-            pending_transactions: 0
+            pending_transactions: 0,
+            total_growth: 0,
+            borrow_growth: 0
           });
         }
       } else if (response.status === 401) {
@@ -234,9 +250,6 @@ export default function DashboardPage() {
     );
   }
 
-  // 💡 PERBAIKAN: Ambil nilai real dari state stats API
-  const pendingTransactionsCount = stats.pending_transactions || 0;
-
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans antialiased selection:bg-zinc-800">
       <FontKillerStyles />
@@ -249,7 +262,7 @@ export default function DashboardPage() {
           <p className="text-zinc-400 text-sm">Kelola aset dan peminjaman Sarpras secara real-time.</p>
         </div>
 
-        {/* 4 STAT CARDS (Vercel-like Hover & Feedback) */}
+        {/* 4 STAT CARDS */}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           
           {/* CARD 1: Total Aset Terdaftar */}
@@ -259,12 +272,18 @@ export default function DashboardPage() {
             </div>
             <div className="mt-4 flex items-end justify-between relative z-10">
               <p className="text-4xl font-bold text-zinc-100 tracking-tighter">{stats.total}</p>
-              <div className="flex items-center text-[11px] font-medium text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-md mb-1 border border-emerald-400/20">
-                <ArrowUpRight className="h-3 w-3 mr-0.5" /> +12%
+              
+              {/* 💡 TERAPKAN: Growth Dinamis tanpa hack any */}
+              <div className={`flex items-center text-[11px] font-medium px-2 py-1 rounded-md mb-1 border ${
+                (stats.total_growth ?? 0) >= 0 
+                  ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20' 
+                  : 'text-rose-400 bg-rose-400/10 border-rose-400/20'
+              }`}>
+                {(stats.total_growth ?? 0) >= 0 ? <ArrowUpRight className="h-3 w-3 mr-0.5" /> : <ArrowDownRight className="h-3 w-3 mr-0.5" />}
+                {(stats.total_growth ?? 0) >= 0 ? `+${stats.total_growth}%` : `${stats.total_growth}%`}
               </div>
             </div>
             <p className="text-[10px] text-zinc-500 mt-2 font-medium relative z-10">DIBANDING BULAN LALU</p>
-            {/* Subtle Background Glow */}
             <div className="absolute -top-10 -right-10 w-24 h-24 bg-zinc-500/5 rounded-full blur-2xl group-hover:bg-zinc-500/10 transition-colors z-0"></div>
           </div>
 
@@ -276,11 +295,10 @@ export default function DashboardPage() {
             <div className="mt-4 flex items-end justify-between relative z-10">
               <p className="text-4xl font-bold text-zinc-100 tracking-tighter">{stats.available}</p>
               <div className="flex items-center text-[11px] font-medium text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-md mb-1 border border-emerald-400/20">
-                <ArrowUpRight className="h-3 w-3 mr-0.5" /> +8%
+                <ArrowUpRight className="h-3 w-3 mr-0.5" /> Ready
               </div>
             </div>
-            <p className="text-[10px] text-zinc-500 mt-2 font-medium relative z-10">KETERSEDIAAN MINGGU INI</p>
-            {/* Subtle Background Glow */}
+            <p className="text-[10px] text-zinc-500 mt-2 font-medium relative z-10">KETERSEDIAAN SAAT INI</p>
             <div className="absolute -top-10 -right-10 w-24 h-24 bg-zinc-500/5 rounded-full blur-2xl group-hover:bg-zinc-500/10 transition-colors z-0"></div>
           </div>
 
@@ -291,28 +309,33 @@ export default function DashboardPage() {
             </div>
             <div className="mt-4 flex items-end justify-between relative z-10">
               <p className="text-4xl font-bold text-zinc-100 tracking-tighter">{stats.borrowed}</p>
-              <div className="flex items-center text-[11px] font-medium text-rose-400 bg-rose-400/10 px-2 py-1 rounded-md mb-1 border border-rose-400/20">
-                <ArrowDownRight className="h-3 w-3 mr-0.5" /> -2%
+              
+              {/* 💡 TERAPKAN: Growth Dinamis tanpa hack any */}
+              <div className={`flex items-center text-[11px] font-medium px-2 py-1 rounded-md mb-1 border ${
+                (stats.borrow_growth ?? 0) >= 0 
+                  ? 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20' 
+                  : 'text-rose-400 bg-rose-400/10 border-rose-400/20'
+              }`}>
+                {(stats.borrow_growth ?? 0) >= 0 ? <ArrowUpRight className="h-3 w-3 mr-0.5" /> : <ArrowDownRight className="h-3 w-3 mr-0.5" />}
+                {(stats.borrow_growth ?? 0) >= 0 ? `+${stats.borrow_growth}%` : `${stats.borrow_growth}%`}
               </div>
             </div>
-            <p className="text-[10px] text-zinc-500 mt-2 font-medium relative z-10">AKTIVITAS SAAT INI</p>
-            {/* Subtle Background Glow */}
+            <p className="text-[10px] text-zinc-500 mt-2 font-medium relative z-10">DIBANDING BULAN LALU</p>
             <div className="absolute -top-10 -right-10 w-24 h-24 bg-zinc-500/5 rounded-full blur-2xl group-hover:bg-zinc-500/10 transition-colors z-0"></div>
           </div>
 
+          {/* CARD 4: Menunggu Persetujuan */}
           <div className="group rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_0_25px_-5px_rgba(255,255,255,0.12)] hover:border-zinc-500/50 hover:bg-zinc-800/20 relative overflow-hidden">
             <div className="flex items-center gap-2 text-zinc-400 text-sm font-medium relative z-10">
               <Clock className="h-4 w-4 text-zinc-300 group-hover:text-white transition-colors" /> Menunggu Persetujuan
             </div>
             <div className="mt-4 flex items-end justify-between relative z-10">
-              {/* 💡 PERBAIKAN: Render angka dari backend */}
-              <p className="text-4xl font-bold text-zinc-100 tracking-tighter">{pendingTransactionsCount}</p>
-              {pendingTransactionsCount > 0 && (
-                <span className="flex h-2.5 w-2.5 mb-2 rounded-full bg-zinc-500/4 animate-pulse" />
+              <p className="text-4xl font-bold text-zinc-100 tracking-tighter">{stats.pending_transactions}</p>
+              {(stats.pending_transactions ?? 0) > 0 && (
+                <span className="flex h-2.5 w-2.5 mb-2 rounded-full bg-zinc-500/40 animate-pulse" />
               )}
             </div>
             <p className="text-[10px] text-zinc-500 mt-2 font-medium relative z-10">PERLU TINDAKAN SEGERA</p>
-            {/* Subtle Background Glow */}
             <div className="absolute -top-10 -right-10 w-24 h-24 bg-zinc-500/5 rounded-full blur-2xl group-hover:bg-zinc-500/10 transition-colors z-0"></div>
           </div>
         </div>
@@ -329,7 +352,7 @@ export default function DashboardPage() {
           </div>
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              {/* 💡 PERBAIKAN: Menggunakan data dari state (bukan array dummy) */}
+              {/* 💡 TERAPKAN: Menggunakan state chartData dari API */}
               <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="glassGradient" x1="0" y1="0" x2="0" y2="1">
