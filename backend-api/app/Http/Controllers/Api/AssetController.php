@@ -8,6 +8,8 @@ use App\Models\Asset;
 use App\Models\AssetLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Transaction; 
+use Carbon\Carbon;
 
 class AssetController extends Controller
 {
@@ -45,14 +47,53 @@ class AssetController extends Controller
         
         $assets = $query->paginate(15);
 
+        $assetsThisMonth = Asset::whereMonth('created_at', Carbon::now()->month)->count();
+        $assetsLastMonth = Asset::whereMonth('created_at', Carbon::now()->subMonth()->month)->count();
+
+        $totalGrowth = 0;
+        if($assetsLastMonth > 0){
+            $totalGrowth = (($assetsThisMonth - $assetsLastMonth) / $assetsLastMonth) * 100;
+        }else{
+            $totalGrowth = $assetsThisMonth > 0 ? 100 : 0;
+        }
+
+        $borrowThisMonth = Transaction::whereMonth('created_at', Carbon::now()->month)->count();
+        $borrowLastMonth = Transaction::whereMonth('created_at', Carbon::now()->subMonth()->month)->count();
+
+        $borrowGrowth = 0;
+        if($borrowLastMonth > 0){
+            $borrowGrowth = (($borrowThisMonth - $borrowLastMonth) / $borrowLastMonth) * 100;
+        } else {
+            $borrowGrowth = $borrowThisMonth > 0 ? 100 : 0;
+        }
+
+        $chartData = [];
+        for($i = 5; $i >= 0; $i--){
+            $targetMonth = Carbon::now()->subMonths($i);
+            $monthlyCount = Transaction::whereMonth('created_at', $targetMonth->month)
+            ->whereYear('created_at', $targetMonth->year)
+            ->count();
+
+            $chartData[] = [
+              'name'        => $targetMonth->translatedFormat('M'),
+              'peminjaman'  => $monthlyCount,
+            ];
+        }
+
         $stats = [
             'total'         => Asset::count(),
             'available'     => Asset::where('status', 'available')->count(),
             'in_repair'     => Asset::where('status', 'in_repair')->count(),
             'borrowed'      => Asset::where('status', 'borrowed')->count(),
+            'pending_transactions'   => Transaction::where('status', 'pending')->count(),
+            'total_growth'          => round($totalGrowth, 1),
+            'borrow_growth'         => round($borrowGrowth, 1)
         ];
 
-        return AssetResource::collection($assets)->additional(['stats'  => $stats]);
+        return AssetResource::collection($assets)->additional([
+            'stats'      => $stats,
+            'chart_data' => $chartData
+        ]);
     }
 
     /**
