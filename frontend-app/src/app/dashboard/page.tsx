@@ -252,46 +252,55 @@ export default function DashboardPage() {
         {/* 4 STAT CARDS (Vercel-like Hover & Feedback) */}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           
-          <div className="group rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_8px_30px_-12px_rgba(255,255,255,0.04)] hover:border-zinc-700/80 hover:bg-zinc-800/20">
-            <div className="flex items-center gap-2 text-zinc-400 text-sm font-medium">
+          {/* CARD 1: Total Aset Terdaftar */}
+          <div className="group rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_0_25px_-5px_rgba(255,255,255,0.12)] hover:border-zinc-500/50 hover:bg-zinc-800/20 relative overflow-hidden">
+            <div className="flex items-center gap-2 text-zinc-400 text-sm font-medium relative z-10">
               <Package className="h-4 w-4 text-zinc-300 group-hover:text-white transition-colors" /> Total Aset Terdaftar
             </div>
-            <div className="mt-4 flex items-end justify-between">
+            <div className="mt-4 flex items-end justify-between relative z-10">
               <p className="text-4xl font-bold text-zinc-100 tracking-tighter">{stats.total}</p>
               <div className="flex items-center text-[11px] font-medium text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-md mb-1 border border-emerald-400/20">
                 <ArrowUpRight className="h-3 w-3 mr-0.5" /> +12%
               </div>
             </div>
-            <p className="text-[10px] text-zinc-500 mt-2 font-medium">DIBANDING BULAN LALU</p>
+            <p className="text-[10px] text-zinc-500 mt-2 font-medium relative z-10">DIBANDING BULAN LALU</p>
+            {/* Subtle Background Glow */}
+            <div className="absolute -top-10 -right-10 w-24 h-24 bg-zinc-500/5 rounded-full blur-2xl group-hover:bg-zinc-500/10 transition-colors z-0"></div>
           </div>
 
-          <div className="group rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_8px_30px_-12px_rgba(255,255,255,0.04)] hover:border-zinc-700/80 hover:bg-zinc-800/20">
-            <div className="flex items-center gap-2 text-zinc-400 text-sm font-medium">
+          {/* CARD 2: Aset Tersedia */}
+          <div className="group rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_0_25px_-5px_rgba(255,255,255,0.12)] hover:border-zinc-500/50 hover:bg-zinc-800/20 relative overflow-hidden">
+            <div className="flex items-center gap-2 text-zinc-400 text-sm font-medium relative z-10">
               <CheckCircle2 className="h-4 w-4 text-zinc-300 group-hover:text-white transition-colors" /> Aset Tersedia
             </div>
-            <div className="mt-4 flex items-end justify-between">
+            <div className="mt-4 flex items-end justify-between relative z-10">
               <p className="text-4xl font-bold text-zinc-100 tracking-tighter">{stats.available}</p>
               <div className="flex items-center text-[11px] font-medium text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-md mb-1 border border-emerald-400/20">
                 <ArrowUpRight className="h-3 w-3 mr-0.5" /> +8%
               </div>
             </div>
-            <p className="text-[10px] text-zinc-500 mt-2 font-medium">KETERSEDIAAN MINGGU INI</p>
+            <p className="text-[10px] text-zinc-500 mt-2 font-medium relative z-10">KETERSEDIAAN MINGGU INI</p>
+            {/* Subtle Background Glow */}
+            <div className="absolute -top-10 -right-10 w-24 h-24 bg-zinc-500/5 rounded-full blur-2xl group-hover:bg-zinc-500/10 transition-colors z-0"></div>
           </div>
 
-          <div className="group rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_8px_30px_-12px_rgba(255,255,255,0.04)] hover:border-zinc-700/80 hover:bg-zinc-800/20">
-            <div className="flex items-center gap-2 text-zinc-400 text-sm font-medium">
+          {/* CARD 3: Sedang Dipinjam */}
+          <div className="group rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_0_25px_-5px_rgba(255,255,255,0.12)] hover:border-zinc-500/50 hover:bg-zinc-800/20 relative overflow-hidden">
+            <div className="flex items-center gap-2 text-zinc-400 text-sm font-medium relative z-10">
               <ArrowUpRight className="h-4 w-4 text-zinc-300 group-hover:text-white transition-colors" /> Sedang Dipinjam
             </div>
-            <div className="mt-4 flex items-end justify-between">
+            <div className="mt-4 flex items-end justify-between relative z-10">
               <p className="text-4xl font-bold text-zinc-100 tracking-tighter">{stats.borrowed}</p>
               <div className="flex items-center text-[11px] font-medium text-rose-400 bg-rose-400/10 px-2 py-1 rounded-md mb-1 border border-rose-400/20">
                 <ArrowDownRight className="h-3 w-3 mr-0.5" /> -2%
               </div>
             </div>
-            <p className="text-[10px] text-zinc-500 mt-2 font-medium">AKTIVITAS SAAT INI</p>
+            <p className="text-[10px] text-zinc-500 mt-2 font-medium relative z-10">AKTIVITAS SAAT INI</p>
+            {/* Subtle Background Glow */}
+            <div className="absolute -top-10 -right-10 w-24 h-24 bg-zinc-500/5 rounded-full blur-2xl group-hover:bg-zinc-500/10 transition-colors z-0"></div>
           </div>
 
-          <div className="group rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_8px_30px_-12px_rgba(255,255,255,0.04)] hover:border-zinc-700/80 hover:bg-zinc-800/20 relative overflow-hidden">
+          <div className="group rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_0_25px_-5px_rgba(255,255,255,0.12)] hover:border-zinc-500/50 hover:bg-zinc-800/20 relative overflow-hidden">
             <div className="flex items-center gap-2 text-zinc-400 text-sm font-medium relative z-10">
               <Clock className="h-4 w-4 text-zinc-300 group-hover:text-white transition-colors" /> Menunggu Persetujuan
             </div>
