@@ -65,8 +65,8 @@ function TableRowSkeleton() {
       </td>
 
       {/* Kolom 3: Batas Kembali */}
-      <td className="px-6 py-4">
-        <div className="h-4 w-24 rounded bg-zinc-800" />
+      <td className="px-6 py-4 text-center">
+        <div className="mx-auto h-4 w-24 rounded bg-zinc-800" />
       </td>
 
       {/* Kolom 4: Status Badge (Tengah) */}
@@ -229,7 +229,7 @@ export default function TransactionsPage() {
                 <tr>
                   <th scope="col" className="px-6 py-4 font-semibold">Nama Aset</th>
                   <th scope="col" className="px-6 py-4 font-semibold">Peminjam</th>
-                  <th scope="col" className="px-6 py-4 font-semibold">Batas Kembali</th>
+                  <th scope="col" className="px-6 py-4 font-semibold text-center">Batas Kembali</th>
                   <th scope="col" className="px-6 py-4 font-semibold text-center">Status</th>
                   <th scope="col" className="px-6 py-4 font-semibold text-center">Aksi (Admin)</th>
                 </tr>
@@ -259,7 +259,7 @@ export default function TransactionsPage() {
                         <div className="font-medium">{item.user?.name || "User Dihapus"}</div>
                         <div className="text-xs text-zinc-500 capitalize">{item.user?.role}</div>
                       </td>
-                      <td className="px-6 py-4 text-zinc-400 font-mono text-xs">
+                      <td className="px-6 py-4 text-zinc-400 font-mono text-xs text-center">
                         {new Date(item.expected_returned_date).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' })}
                       </td>
                       <td className="px-6 py-4 text-center">
