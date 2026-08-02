@@ -31,9 +31,21 @@ interface PaginationMeta {
 function TableRowSkeleton() {
   return (
     <tr className="animate-pulse border-b border-zinc-800/60">
-      <td className="px-6 py-4"><div className="h-4 w-8 rounded bg-zinc-800" /></td>
-      <td className="px-6 py-4"><div className="h-4 w-48 rounded bg-zinc-800" /></td>
-      <td className="px-6 py-4 text-center"><div className="mx-auto h-8 w-8 rounded-lg bg-zinc-800" /></td>
+      {/* Kolom 1: ID (Otomatis dibatasi w-24 oleh thead) */}
+      <td className="px-6 py-4">
+        <div className="h-4 w-8 rounded bg-zinc-800" />
+      </td>
+      
+      {/* Kolom 2: Nama Kategori */}
+      <td className="px-6 py-4">
+        <div className="h-4 w-48 rounded bg-zinc-800" />
+      </td>
+      
+      {/* Kolom 3: Aksi (Otomatis dibatasi w-32 oleh thead) */}
+      <td className="px-6 py-4 text-center">
+        {/* Menggunakan mx-auto agar kotak berada tepat di tengah */}
+        <div className="mx-auto h-8 w-8 rounded-md bg-zinc-800" />
+      </td>
     </tr>
   );
 }
