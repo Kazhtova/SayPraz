@@ -109,13 +109,21 @@ export default function TransactionsPage() {
     } catch (error) {
       console.error("Gagal memuat transaksi:", error);
     } finally {
-      setTimeout(() => { setIsInitialLoading(false); setIsRefreshing(false); }, 300);
+      setTimeout(() => { 
+        setIsInitialLoading(false); 
+        setIsRefreshing(false); 
+      }, 300);
     }
   }, [router]);
 
   useEffect(() => {
     loadTransactions();
   }, [loadTransactions]);
+
+  const handleRefreshClick = () => {
+    setIsRefreshing(true);
+    loadTransactions();
+  };
 
   const handleUpdateStatus = async (id: number, newStatus: "approved" | "rejected" | "returned") => {
     if (!window.confirm(`Konfirmasi untuk mengubah status transaksi menjadi ${newStatus.toUpperCase()}?`)) return;
@@ -216,26 +224,34 @@ export default function TransactionsPage() {
                 />
               </div>
 
-              <Button variant="outline" onClick={() => { setIsRefreshing(true); loadTransactions(); }} disabled={isRefreshing} className="border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 text-zinc-300 gap-2 h-11 w-full sm:w-auto px-5">
+              {/* TOMBOL MUAT ULANG DENGAN STYLE BARU */}
+              <Button 
+                variant="outline" 
+                onClick={handleRefreshClick} 
+                disabled={isRefreshing} 
+                className="border-zinc-800 bg-zinc-950/50 hover:bg-zinc-800 hover:text-white text-zinc-300 gap-2 h-10 px-4 rounded-lg transition-all"
+              >
                 <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} /> Muat Ulang
               </Button>
             </div>
           )}
 
-          {/* TABLE DATA WITH SKELETON */}
+          {/* TABLE DATA WITH SKELETON REFRESH */}
           <div className="overflow-x-auto min-h-[350px]">
-            <table className="w-full text-left text-sm text-zinc-400">
+            <table className="w-full text-left text-sm text-zinc-400 table-fixed">
               <thead className="border-b border-zinc-800 bg-zinc-900/60 text-xs uppercase text-zinc-400 tracking-wider">
                 <tr>
-                  <th scope="col" className="px-6 py-4 font-semibold">Nama Aset</th>
-                  <th scope="col" className="px-6 py-4 font-semibold">Peminjam</th>
-                  <th scope="col" className="px-6 py-4 font-semibold text-center">Batas Kembali</th>
-                  <th scope="col" className="px-6 py-4 font-semibold text-center">Status</th>
-                  <th scope="col" className="px-6 py-4 font-semibold text-center">Aksi (Admin)</th>
+                  {/* 2. KUNCI LEBAR MASING-MASING KOLOM DENGAN PERSENTASE */}
+                  <th scope="col" className="px-6 py-4 font-semibold w-[28%]">Nama Aset</th>
+                  <th scope="col" className="px-6 py-4 font-semibold w-[20%]">Peminjam</th>
+                  <th scope="col" className="px-6 py-4 font-semibold text-center w-[17%]">Batas Kembali</th>
+                  <th scope="col" className="px-6 py-4 font-semibold text-center w-[15%]">Status</th>
+                  <th scope="col" className="px-6 py-4 font-semibold text-center w-[20%]">Aksi (Admin)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/60">
-                {isInitialLoading ? (
+                {/* DITAMBAHKAN isRefreshing AGAR TABEL BERUBAH JADI SKELETON SAAT TOMBOL REFRESH DIKLIK */}
+                {isInitialLoading || isRefreshing ? (
                   <>
                     <TableRowSkeleton />
                     <TableRowSkeleton />
