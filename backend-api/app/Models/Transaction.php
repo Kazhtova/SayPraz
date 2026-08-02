@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Transaction extends Model
 {
     use HasFactory;
-    protected $fillable = ['asset_id', 'user_id', 'borrowed_date', 'expected_return_date', 'actual_return_date', 'status'];
+    protected $fillable = ['asset_id', 'user_id', 'borrowed_date', 'expected_returned_date', 'actual_returned_date', 'status'];
 
     public function asset(): BelongsTo
     {

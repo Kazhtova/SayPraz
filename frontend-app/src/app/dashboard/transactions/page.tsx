@@ -69,36 +69,44 @@ export default function TransactionsPage() {
   }, [loadTransactions]);
 
   // Fungsi memperbarui status transaksi (Approve / Reject / Return)
-  const handleUpdateStatus = async (id: number, newStatus: "approved" | "rejected" | "returned") => {
-    if (!window.confirm(`Konfirmasi untuk mengubah status transaksi menjadi ${newStatus.toUpperCase()}?`)) return;
+// Fungsi memperbarui status transaksi (Approve / Reject / Return)
+const handleUpdateStatus = async (id: number, newStatus: "approved" | "rejected" | "returned") => {
+  if (!window.confirm(`Konfirmasi untuk mengubah status transaksi menjadi ${newStatus.toUpperCase()}?`)) return;
 
-    setProcessingId(id);
-    const token = localStorage.getItem("token");
+  setProcessingId(id);
+  const token = localStorage.getItem("token");
 
-    try {
-      const response = await fetch(`${API_URL}/api/transactions/${id}/status`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ status: newStatus })
-      });
+  try {
+    const response = await fetch(`${API_URL}/api/transactions/${id}/status`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ 
+        status: newStatus,
+        notes: `Peminjaman di-${newStatus} oleh Admin`
+      })
+    });
 
-      const result = await response.json();
+    // Tangkap JSON secara aman tanpa membuat app crash jika server merespons non-JSON
+    const result = await response.json().catch(() => null);
 
-      if (response.ok) {
-        loadTransactions(); // Muat ulang data
-      } else {
-        alert(result.message || "Gagal memproses transaksi.");
-      }
-    } catch (error) {
-      alert("Terjadi kesalahan jaringan.");
-    } finally {
-      setProcessingId(null);
+    if (response.ok) {
+      alert(result?.message || `Status transaksi berhasil diperbarui menjadi ${newStatus}!`);
+      loadTransactions(); // Muat ulang data
+    } else {
+      console.error("Backend Error Response:", response.status, result);
+      alert(result?.message || `Gagal memproses transaksi (Status: ${response.status})`);
     }
-  };
+  } catch (error) {
+    console.error("Network/Fetch Exception:", error);
+    alert("Terjadi kesalahan koneksi ke server Laravel. Silakan cek F12 -> Console.");
+  } finally {
+    setProcessingId(null);
+  }
+};
 
   const getStatusBadge = (status: string) => {
     switch(status) {

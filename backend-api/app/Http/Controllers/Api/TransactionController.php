@@ -43,7 +43,7 @@ class TransactionController extends Controller
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
             'asset_id'                  =>  'required|exists:assets,id',
-            'expected_returned_date'    => 'required|date|after_or_equal:today'
+            'expected_returned_date'    =>  'required|date|after_or_equal:today'
         ]);
 
         if($validator->fails()){

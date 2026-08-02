@@ -207,6 +207,15 @@ export default function CatalogPage() {
     `}} />
   );
 
+  // Helper untuk mendapatkan tanggal lokal format YYYY-MM-DD tanpa bug UTC
+const getTodayLocalString = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans antialiased pb-12">
       <FontKillerStyles />
@@ -438,9 +447,9 @@ export default function CatalogPage() {
                     type="date"
                     required
                     value={returnDate}
-                    min={new Date().toISOString().split('T')[0]} 
+                    min={getTodayLocalString()} 
                     onChange={(e) => setReturnDate(e.target.value)}
-                    className="peer pl-10 bg-zinc-900/50 border-zinc-400 text-zinc-100 h-12 rounded-xl focus-visible:ring-zinc-500/30"
+                    className="peer pl-10 bg-zinc-900/50 border-zinc-700 text-zinc-100 h-12 rounded-xl focus-visible:ring-zinc-500/30"
                   />
                   <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-zinc-400 transition-colors" />
                 </div>
