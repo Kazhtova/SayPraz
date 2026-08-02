@@ -136,11 +136,9 @@ export default function DashboardPage() {
 
   const router = useRouter();
 
-  // 💡 TAMBAHAN LOGIKA 1: Helper Lencana Pintar untuk 10/10 UI/UX
   const renderGrowthBadge = (growth: number | undefined) => {
     const value = growth ?? 0;
     
-    // Status 0% atau error backend -100% dipaksa netral
     if (value === 0 || value === -100) {
       return (
         <div className="flex items-center text-[11px] font-medium px-2 py-1 rounded-md mb-1 border text-zinc-400 bg-zinc-500/10 border-zinc-500/20">
@@ -149,7 +147,6 @@ export default function DashboardPage() {
       );
     }
     
-    // Status Naik
     if (value > 0) {
       return (
         <div className="flex items-center text-[11px] font-medium px-2 py-1 rounded-md mb-1 border text-emerald-400 bg-emerald-400/10 border-emerald-400/20">
@@ -158,7 +155,6 @@ export default function DashboardPage() {
       );
     }
     
-    // Status Turun
     return (
       <div className="flex items-center text-[11px] font-medium px-2 py-1 rounded-md mb-1 border text-rose-400 bg-rose-400/10 border-rose-400/20">
         <ArrowDownRight className="h-3 w-3 mr-0.5" /> {value}%
@@ -314,16 +310,15 @@ export default function DashboardPage() {
     }
   };
 
-  // 💡 TAMBAHAN LOGIKA 2: Cek apakah chart masih benar-benar kosong
   const isChartEmpty = chartData.every(d => d.peminjaman === 0);
 
   if (isInitialLoading && items.length === 0) {
     return (
       <div className="min-h-screen bg-zinc-950 font-sans antialiased">
         <FontKillerStyles />
-        <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-10 md:space-y-14">
+        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
           <div className="space-y-2 animate-pulse"><div className="h-9 w-64 rounded-lg bg-zinc-800" /><div className="h-4 w-96 rounded bg-zinc-800" /></div>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton />
           </div>
           <ChartSkeleton />
@@ -344,7 +339,8 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans antialiased selection:bg-zinc-800">
       <FontKillerStyles />
 
-      <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 space-y-10 md:space-y-14 transition-all duration-500">
+      {/* PERBAIKAN: Vertical Rhythm. Mengubah space-y-10/14 menjadi space-y-8 */}
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8 transition-all duration-500">
         
         {/* HEADER */}
         <div className="space-y-1">
@@ -353,22 +349,25 @@ export default function DashboardPage() {
         </div>
 
         {/* 4 STAT CARDS */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {/* PERBAIKAN: Jarak antar card diperkecil menjadi gap-4 */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   
-          {/* CARD 1 */}
-          <div className="group rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-sm transition-all duration-200 ease-out hover:-translate-y-[2px] hover:shadow-[0_12px_28px_-12px_rgba(0,0,0,0.35)] hover:border-zinc-700/60 hover:bg-zinc-800/20 relative overflow-hidden">
-            <div className="flex items-center gap-2 text-zinc-400 text-sm font-medium relative z-10">
-              <Package className="h-4 w-4 text-zinc-300 group-hover:text-white transition-colors" /> Total Aset Terdaftar
+          {/* CARD 1: HERO METRIC (Hierarki Tertinggi) */}
+          <div className="group rounded-xl border border-zinc-700/80 bg-zinc-800/40 p-5 backdrop-blur-sm transition-all duration-200 ease-out shadow-[0_4px_24px_-4px_rgba(255,255,255,0.02)] relative overflow-hidden">
+            <div className="flex items-center gap-2 text-zinc-300 text-sm font-semibold relative z-10">
+              <Package className="h-4 w-4 text-zinc-200" /> Total Aset Terdaftar
             </div>
             <div className="mt-4 flex items-end justify-between relative z-10">
-              <p className="text-4xl font-bold text-zinc-100 tracking-tighter">{stats.total}</p>
+              {/* PERBAIKAN: Angka Hero Card lebih besar (text-5xl) dan putih terang */}
+              <p className="text-5xl font-bold text-white tracking-tighter drop-shadow-sm">{stats.total}</p>
               {renderGrowthBadge(stats.total_growth)}
             </div>
-            <p className="text-[10px] text-zinc-500 mt-2 font-medium relative z-10">DIBANDING BULAN LALU</p>
-            <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-white/[0.02] blur-3xl group-hover:bg-white/[0.04] transition-colors z-0"></div>
+            <p className="text-[10px] text-zinc-400 mt-3 font-semibold relative z-10 tracking-wider">DIBANDING BULAN LALU</p>
+            {/* Glow effect yang lebih kuat untuk membedakan dari card lain */}
+            <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-white/[0.04] blur-3xl z-0 pointer-events-none"></div>
           </div>
 
-          {/* CARD 2 */}
+          {/* CARD 2: SECONDARY (Diturunkan kontrasnya) */}
           <div className="group rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-5 backdrop-blur-sm transition-all duration-200 ease-out hover:-translate-y-[2px] hover:shadow-[0_12px_28px_-12px_rgba(0,0,0,0.35)] hover:border-zinc-700/60 hover:bg-zinc-800/20 relative overflow-hidden">
             <div className="flex items-center gap-2 text-zinc-400 text-sm font-medium relative z-10">
               <CheckCircle2 className="h-4 w-4 text-zinc-300 group-hover:text-white transition-colors" /> Aset Tersedia
@@ -485,7 +484,7 @@ export default function DashboardPage() {
           <div className="border-b border-zinc-800/70 p-5 flex flex-col xl:flex-row gap-4 items-center justify-between">
             <div className="relative w-full xl:w-61">
               <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-              <Input placeholder="Cari Code, Nama atau Merek" value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }} className="pl-10 bg-zinc-950/50 border-zinc-800/80 text-sm h-10 focus-visible:ring-1 focus-visible:ring-zinc-600 w-full rounded-lg transition-all" />
+              <Input placeholder="Cari aset..." value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }} className="pl-10 bg-zinc-950/50 border-zinc-800/80 text-sm h-10 focus-visible:ring-1 focus-visible:ring-zinc-600 w-full rounded-lg transition-all" />
             </div>
             <div className="flex w-full xl:w-auto gap-4.5 flex-1 xl:ml-0.5">
               <div className="relative w-full sm:w-54"><Filter className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500 pointer-events-none" /><select value={filterCategory} onChange={(e) => { setFilterCategory(e.target.value); setCurrentPage(1); }} className="pl-10 appearance-none flex h-10 w-full items-center justify-between rounded-lg border border-zinc-800/80 bg-zinc-950/50 pr-8 py-2 text-sm text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-500 transition-all cursor-pointer hover:border-zinc-600"><option value="" className="bg-zinc-900">Semua Kategori</option>{categories.map(cat => (<option key={cat.id} value={cat.name} className="bg-zinc-900">{cat.name}</option>))}<option value="Tanpa Kategori" className="bg-zinc-900">Tanpa Kategori</option></select></div>
