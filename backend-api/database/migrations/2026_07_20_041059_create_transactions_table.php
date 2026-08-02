@@ -18,7 +18,7 @@ return new class extends Migration
             $table->dateTime('borrowed_date');
             $table->dateTime('expected_returned_date');
             $table->dateTime('actual_returned_date')->nullable();
-            $table->enum('status', ['pending', 'approved', 'rejected', 'completed'])->default('pending');
+            $table->enum('status', ['pending', 'approved', 'rejected', 'returned'])->default('pending');
             $table->timestamps();
         });
     }
