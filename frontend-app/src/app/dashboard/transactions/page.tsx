@@ -22,16 +22,65 @@ interface Transaction {
 }
 
 // ==========================================
-// KOMPONEN SKELETON
+// KOMPONEN SKELETON PROPOSIONAL & PRESISI
 // ==========================================
+function HeaderSkeleton() {
+  return (
+    <div className="animate-pulse space-y-2">
+      <div className="flex items-center gap-3">
+        <div className="h-7 w-7 rounded-lg bg-zinc-800" />
+        <div className="h-8 w-64 rounded-lg bg-zinc-800" />
+      </div>
+      <div className="h-4 w-96 rounded bg-zinc-800/60" />
+    </div>
+  );
+}
+
+function ControlsSkeleton() {
+  return (
+    <div className="animate-pulse border-b border-zinc-800 p-4 flex flex-col sm:flex-row gap-4 items-center justify-between bg-zinc-900/20">
+      <div className="h-11 w-full sm:w-96 rounded-xl bg-zinc-800" />
+      <div className="h-11 w-full sm:w-32 rounded-xl bg-zinc-800" />
+    </div>
+  );
+}
+
 function TableRowSkeleton() {
   return (
     <tr className="animate-pulse border-b border-zinc-800/60">
-      <td className="px-6 py-4"><div className="h-4 w-32 rounded bg-zinc-800" /></td>
-      <td className="px-6 py-4"><div className="h-4 w-28 rounded bg-zinc-800" /></td>
-      <td className="px-6 py-4"><div className="h-4 w-24 rounded bg-zinc-800" /></td>
-      <td className="px-6 py-4 text-center"><div className="mx-auto h-6 w-20 rounded-full bg-zinc-800" /></td>
-      <td className="px-6 py-4 text-center"><div className="mx-auto h-8 w-24 rounded-lg bg-zinc-800" /></td>
+      {/* Kolom 1: Nama Aset & Merek */}
+      <td className="px-6 py-4">
+        <div className="space-y-1.5">
+          <div className="h-4 w-36 rounded bg-zinc-800" />
+          <div className="h-3 w-20 rounded bg-zinc-800/50" />
+        </div>
+      </td>
+
+      {/* Kolom 2: Peminjam & Role */}
+      <td className="px-6 py-4">
+        <div className="space-y-1.5">
+          <div className="h-4 w-28 rounded bg-zinc-800" />
+          <div className="h-3 w-16 rounded bg-zinc-800/50" />
+        </div>
+      </td>
+
+      {/* Kolom 3: Batas Kembali */}
+      <td className="px-6 py-4">
+        <div className="h-4 w-24 rounded bg-zinc-800" />
+      </td>
+
+      {/* Kolom 4: Status Badge (Tengah) */}
+      <td className="px-6 py-4 text-center">
+        <div className="mx-auto h-6 w-24 rounded-full bg-zinc-800" />
+      </td>
+
+      {/* Kolom 5: Aksi Admin (Tengah - 2 Tombol Skeleton) */}
+      <td className="px-6 py-4 text-center">
+        <div className="flex justify-center gap-2">
+          <div className="h-8 w-16 rounded-md bg-zinc-800" />
+          <div className="h-8 w-14 rounded-md bg-zinc-800/60" />
+        </div>
+      </td>
     </tr>
   );
 }
@@ -68,45 +117,42 @@ export default function TransactionsPage() {
     loadTransactions();
   }, [loadTransactions]);
 
-  // Fungsi memperbarui status transaksi (Approve / Reject / Return)
-// Fungsi memperbarui status transaksi (Approve / Reject / Return)
-const handleUpdateStatus = async (id: number, newStatus: "approved" | "rejected" | "returned") => {
-  if (!window.confirm(`Konfirmasi untuk mengubah status transaksi menjadi ${newStatus.toUpperCase()}?`)) return;
+  const handleUpdateStatus = async (id: number, newStatus: "approved" | "rejected" | "returned") => {
+    if (!window.confirm(`Konfirmasi untuk mengubah status transaksi menjadi ${newStatus.toUpperCase()}?`)) return;
 
-  setProcessingId(id);
-  const token = localStorage.getItem("token");
+    setProcessingId(id);
+    const token = localStorage.getItem("token");
 
-  try {
-    const response = await fetch(`${API_URL}/api/transactions/${id}/status`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify({ 
-        status: newStatus,
-        notes: `Peminjaman di-${newStatus} oleh Admin`
-      })
-    });
+    try {
+      const response = await fetch(`${API_URL}/api/transactions/${id}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ 
+          status: newStatus,
+          notes: `Peminjaman di-${newStatus} oleh Admin`
+        })
+      });
 
-    // Tangkap JSON secara aman tanpa membuat app crash jika server merespons non-JSON
-    const result = await response.json().catch(() => null);
+      const result = await response.json().catch(() => null);
 
-    if (response.ok) {
-      alert(result?.message || `Status transaksi berhasil diperbarui menjadi ${newStatus}!`);
-      loadTransactions(); // Muat ulang data
-    } else {
-      console.error("Backend Error Response:", response.status, result);
-      alert(result?.message || `Gagal memproses transaksi (Status: ${response.status})`);
+      if (response.ok) {
+        alert(result?.message || `Status transaksi berhasil diperbarui menjadi ${newStatus}!`);
+        loadTransactions(); 
+      } else {
+        console.error("Backend Error Response:", response.status, result);
+        alert(result?.message || `Gagal memproses transaksi (Status: ${response.status})`);
+      }
+    } catch (error) {
+      console.error("Network/Fetch Exception:", error);
+      alert("Terjadi kesalahan koneksi ke server Laravel. Silakan cek F12 -> Console.");
+    } finally {
+      setProcessingId(null);
     }
-  } catch (error) {
-    console.error("Network/Fetch Exception:", error);
-    alert("Terjadi kesalahan koneksi ke server Laravel. Silakan cek F12 -> Console.");
-  } finally {
-    setProcessingId(null);
-  }
-};
+  };
 
   const getStatusBadge = (status: string) => {
     switch(status) {
@@ -141,31 +187,42 @@ const handleUpdateStatus = async (id: number, newStatus: "approved" | "rejected"
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
         
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-100 flex items-center gap-3">
-            <ArrowLeftRight className="h-7 w-7 text-indigo-400" /> Transaksi Peminjaman
-          </h1>
-          <p className="text-zinc-400 text-sm mt-1">Kelola persetujuan peminjaman dan pengembalian aset sekolah.</p>
-        </div>
+        {/* HEADER SECTION WITH SKELETON */}
+        {isInitialLoading ? (
+          <HeaderSkeleton />
+        ) : (
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-zinc-100 flex items-center gap-3">
+              <ArrowLeftRight className="h-7 w-7 text-indigo-400" /> Transaksi Peminjaman
+            </h1>
+            <p className="text-zinc-400 text-sm mt-1">Kelola persetujuan peminjaman dan pengembalian aset sekolah.</p>
+          </div>
+        )}
 
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm overflow-hidden flex flex-col">
           
-          <div className="border-b border-zinc-800 p-4 flex flex-col sm:flex-row gap-4 items-center justify-between bg-zinc-900/20">
-            <div className="relative w-full sm:w-96">
-              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-              <Input 
-                placeholder="Cari peminjam atau nama aset..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-zinc-900/50 border-zinc-800 text-sm h-11 focus-visible:ring-zinc-500/50 w-full"
-              />
+          {/* CONTROL SEARCH & REFRESH WITH SKELETON */}
+          {isInitialLoading ? (
+            <ControlsSkeleton />
+          ) : (
+            <div className="border-b border-zinc-800 p-4 flex flex-col sm:flex-row gap-4 items-center justify-between bg-zinc-900/20">
+              <div className="relative w-full sm:w-96">
+                <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                <Input 
+                  placeholder="Cari peminjam atau nama aset..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 bg-zinc-900/50 border-zinc-800 text-sm h-11 focus-visible:ring-zinc-500/50 w-full"
+                />
+              </div>
+
+              <Button variant="outline" onClick={() => { setIsRefreshing(true); loadTransactions(); }} disabled={isRefreshing} className="border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 text-zinc-300 gap-2 h-11 w-full sm:w-auto px-5">
+                <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} /> Muat Ulang
+              </Button>
             </div>
+          )}
 
-            <Button variant="outline" onClick={() => { setIsRefreshing(true); loadTransactions(); }} disabled={isRefreshing} className="border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 text-zinc-300 gap-2 h-11 w-full sm:w-auto px-5">
-              <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} /> Muat Ulang
-            </Button>
-          </div>
-
+          {/* TABLE DATA WITH SKELETON */}
           <div className="overflow-x-auto min-h-[350px]">
             <table className="w-full text-left text-sm text-zinc-400">
               <thead className="border-b border-zinc-800 bg-zinc-900/60 text-xs uppercase text-zinc-400 tracking-wider">
@@ -179,7 +236,12 @@ const handleUpdateStatus = async (id: number, newStatus: "approved" | "rejected"
               </thead>
               <tbody className="divide-y divide-zinc-800/60">
                 {isInitialLoading ? (
-                  <><TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton /></>
+                  <>
+                    <TableRowSkeleton />
+                    <TableRowSkeleton />
+                    <TableRowSkeleton />
+                    <TableRowSkeleton />
+                  </>
                 ) : filteredTransactions.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="px-6 py-12 text-center text-zinc-500">
@@ -205,7 +267,6 @@ const handleUpdateStatus = async (id: number, newStatus: "approved" | "rejected"
                       </td>
                       <td className="px-6 py-4 text-center">
                         <div className="flex justify-center gap-2">
-                          {/* Tombol Aksi berdasarkan State Peminjaman */}
                           {item.status === 'pending' && (
                             <>
                               <Button 
