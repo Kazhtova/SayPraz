@@ -174,7 +174,7 @@ export default function AddAssetPage() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-zinc-100 flex items-center gap-2">
-              <PackagePlus className="h-6 w-6 text-indigo-400" />
+              <PackagePlus className="h-6 w-6 text-zinc-400" />
               Penambahan Aset Baru
             </h1>
             <p className="text-sm text-zinc-400 mt-1">Masukkan detail spesifikasi aset ke dalam sistem inventaris.</p>
@@ -281,7 +281,7 @@ export default function AddAssetPage() {
                 <Input 
                   value={formData.qr_code} 
                   readOnly
-                  className="appearance-none bg-zinc-950 border-zinc-800/80 text-indigo-400 h-11 font-mono uppercase font-bold text-center cursor-not-allowed select-none w-full sm:w-56 focus-visible:ring-0" 
+                  className="appearance-none bg-zinc-950 border-zinc-800/80 text-zinc-100 h-11 font-mono uppercase font-bold text-center cursor-not-allowed select-none w-full sm:w-56 focus-visible:ring-0" 
                 />
                 {formErrors.qr_code && <p className="text-xs text-red-500 mt-1">{formErrors.qr_code[0]}</p>}
               </div>
@@ -302,7 +302,7 @@ export default function AddAssetPage() {
               <Button 
                 type="submit" 
                 disabled={isSubmitting} 
-                className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 h-11 px-8 font-semibold rounded-md shadow-lg shadow-indigo-900/20 transition-all"
+                className="bg-slate-900 hover:bg-slate-950 text-white gap-2 h-11 px-8 font-semibold rounded-md shadow-lg shadow-indigo-900/20 transition-all"
               >
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                 {isSubmitting ? "Menyimpan Data..." : "Tambah Aset"}
