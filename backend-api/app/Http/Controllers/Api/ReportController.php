@@ -10,12 +10,25 @@ use Illuminate\Http\Request;
 class ReportController extends Controller
 {
     public function exportAssetPdf(){
-        $asset = Asset::with('category')->orderBy('name', 'desc');
+        try {
+            // PERBAIKAN 1: Tambahkan ->get() di akhir query
+            // Saya juga mengubah nama variabel menjadi $assets (jamak) karena datanya lebih dari satu
+            $assets = Asset::with('category')->orderBy('name', 'desc')->get();
 
-        $pdf = Pdf::loadView('reports.assets', compact('asset'));
+            // PERBAIKAN 2: Kirim variabel $assets
+            $pdf = Pdf::loadView('reports.assets', compact('assets'));
 
-        $pdf->setPaper('a4', 'potrait');
+            // PERBAIKAN 3: Perbaiki typo 'potrait' menjadi 'portrait'
+            $pdf->setPaper('A4', 'portrait');
 
-        return $pdf->download('Laporan-Asset-Inventaris.pdf');
+            return $pdf->download('Laporan-Asset-Inventaris.pdf');
+
+        } catch (\Exception $e) {
+            // BEST PRACTICE: Tangkap error agar Laravel tidak melempar halaman HTML 500 yang merusak frontend
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal membuat dokumen PDF: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
