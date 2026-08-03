@@ -234,9 +234,17 @@ export default function DashboardPage() {
     try {
       const response = await fetch(`${API_URL}/api/reports/assets/pdf`, {
         method: "GET",
-        headers: { "Authorization": `Bearer ${token}` }
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/json" 
+        }
       });
-      if (!response.ok) throw new Error("Gagal mengambil dokumen PDF");
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.message || `Status HTTP ${response.status}: Periksa server Laravel`);
+      }
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -246,9 +254,9 @@ export default function DashboardPage() {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error downloading PDF:", error);
-      alert("Gagal mengunduh dokumen PDF. Pastikan backend siap.");
+      alert(`Gagal PDF: ${error.message}`);
     } finally {
       setIsDownloading(false);
     }
