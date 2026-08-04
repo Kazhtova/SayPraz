@@ -201,7 +201,7 @@ export default function TransactionsPage() {
         ) : (
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-zinc-100 flex items-center gap-3">
-              <ArrowLeftRight className="h-7 w-7 text-indigo-400" /> Transaksi Peminjaman
+              <ArrowLeftRight className="h-7 w-7 text-zinc-300" /> Transaksi Peminjaman
             </h1>
             <p className="text-zinc-400 text-sm mt-1">Kelola persetujuan peminjaman dan pengembalian aset sekolah.</p>
           </div>
