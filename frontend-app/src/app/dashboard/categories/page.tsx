@@ -151,7 +151,7 @@ export default function CategoriesPage() {
           </Button>
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-zinc-100 flex items-center gap-3">
-              <FolderOpen className="h-7 w-7 text-indigo-400" /> Manajemen Kategori
+              <FolderOpen className="h-7 w-7 text-zinc-400" /> Manajemen Kategori
             </h1>
             <p className="text-zinc-400 text-sm mt-1">Kelola daftar Kategori untuk inventaris aset.</p>
           </div>
