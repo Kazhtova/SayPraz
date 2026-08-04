@@ -54,7 +54,6 @@ export default function AddCategoryPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
   
-  // ✅ PERBAIKAN: Menambahkan kolom description ke dalam form state
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -126,7 +125,7 @@ export default function AddCategoryPage() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-zinc-100 flex items-center gap-2">
-              <FolderPlus className="h-6 w-6 text-indigo-400" />
+              <FolderPlus className="h-6 w-6 text-zinc-400" />
               Tambah Kategori Baru
             </h1>
             <p className="text-sm text-zinc-400 mt-1">Buat klasifikasi baru untuk mengelompokkan aset inventaris.</p>
@@ -187,7 +186,7 @@ export default function AddCategoryPage() {
               <Button 
                 type="submit" 
                 disabled={isSubmitting} 
-                className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 h-11 px-8 font-semibold rounded-md shadow-lg shadow-indigo-900/20 transition-all"
+                className="bg-slate-800 hover:bg-slate-950 text-white gap-2 h-11 px-8 font-semibold rounded-md shadow-lg shadow-indigo-900/20 transition-all"
               >
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                 {isSubmitting ? "Menyimpan..." : "Tambah Kategori"}
