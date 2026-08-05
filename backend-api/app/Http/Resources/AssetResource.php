@@ -25,7 +25,7 @@ class AssetResource extends JsonResource
             'category_name' => $this->category?->name ?? 'Tanpa Kategori',
             'image'         => $this->image,
             'image_url'     => $this->image_url,
-            'created_at'    => $this->created_at->format('Y-m-d H:i:s'),
-        ];
-    }
+            'created_at'    => $this->created_at?->format('Y-m-d H:i:s'),
+];
+}
 }
