@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Asset extends Model
 {
     use HasFactory;
-    protected $fillable = ['category_id', 'name', 'brand', 'qr_code', 'status', 'purchase_year'];
+    protected $fillable = ['category_id', 'name', 'brand', 'qr_code', 'status', 'purchase_year', 'image'];
 
     // Milik satu kategori (Child)
     public function category(): BelongsTo
