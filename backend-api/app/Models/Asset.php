@@ -12,6 +12,8 @@ class Asset extends Model
     use HasFactory;
     protected $fillable = ['category_id', 'name', 'brand', 'qr_code', 'status', 'purchase_year', 'image'];
 
+    protected $appends = ['image_url'];
+
     // Milik satu kategori (Child)
     public function category(): BelongsTo
     {

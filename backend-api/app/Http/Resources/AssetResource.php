@@ -15,15 +15,17 @@ class AssetResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'brand' => $this->brand,
-            'qr_code' => $this->qr_code,
-            'status' => $this->status,
+            'id'            => $this->id,
+            'name'          => $this->name,
+            'brand'         => $this->brand,
+            'qr_code'       => $this->qr_code,
+            'status'        => $this->status,
             'purchase_year' => $this->purchase_year,
             'category_id'   => $this->category_id,
             'category_name' => $this->category?->name ?? 'Tanpa Kategori',
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'image'         => $this->image,
+            'image_url'     => $this->image_url,
+            'created_at'    => $this->created_at->format('Y-m-d H:i:s'),
         ];
     }
 }
