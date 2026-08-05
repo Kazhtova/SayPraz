@@ -61,16 +61,20 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        // Ambil token & role dengan pembacaan aman (fallback/optional chaining)
+        // Ambil token, role, dan name dengan pembacaan aman dari berbagai format JSON Laravel
         const token = data.access_token || data.token;
-        const role = data.user?.role || data.role || "student";
+        const role = data.user?.role || data.data?.role || data.role || "student";
+        
+        // 💡 PERBAIKAN: Menambahkan data.data?.name agar format Laravel API Resource terbaca sempurna
+        const name = data.user?.name || data.data?.name || data.name || "Pengguna";
 
-        // 1. Simpan Kredensial
+        // 1. Simpan Kredensial & Profil Pengguna
         localStorage.setItem("token", token);
         localStorage.setItem("role", role);
+        localStorage.setItem("name", name); // 👈 Sekarang nama asli user dipastikan tersimpan!
 
         // 2. Pengalihan Cerdas Berdasarkan Role (Smart Redirect)
-        if (role === "admin") {
+        if (role === "admin" || role === "staff") {
           router.push("/dashboard");
         } else {
           router.push("/catalog");
