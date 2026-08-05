@@ -12,6 +12,7 @@ use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class AssetController extends Controller
 {
@@ -110,6 +111,7 @@ class AssetController extends Controller
             'qr_code' => 'required|string|unique:assets,qr_code',
             'status' => 'required|in:available,borrowed,in_repair',
             'purchase_year' => 'required|integer|min:1900|max:' . date('Y'),
+            'image'         => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120'
         ]);
 
         if($validator->fails()) {
@@ -120,8 +122,15 @@ class AssetController extends Controller
             ], 422);
         }
 
-        $asset = DB::transaction(function() use ($request) {
-            $createdAset = Asset::create($request->all());
+        $data = $validator->validated();
+
+        if($request->hasFile('image')){
+            $data['image'] = $request->file('image')->store('assets', 's3');
+            Storage::disk('s3')->setVisibility($data['image'], 'public');
+        }
+
+        $asset = DB::transaction(function() use ($data) {
+            $createdAset = Asset::create($data);
 
             AssetLog::create([
                 'asset_id'      => $createdAset->id,
@@ -164,6 +173,7 @@ class AssetController extends Controller
             'qr_code' => 'sometimes|required|string|unique:assets,qr_code,' . $asset->id,
             'status' => 'sometimes|required|in:available,borrowed,in_repair',
             'purchase_year' => 'sometimes|required|integer|min:1900|max:' . date('Y'),
+            'image'         => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
         if($validator->fails()) {
@@ -173,9 +183,20 @@ class AssetController extends Controller
             ], 422);
         }
 
-        DB::transaction(function() use ($request, $asset){
+        $data = $validator->validated();
+
+        if($request->hasFile('image')){
+            if($asset->image){
+                Storage::disk('s3')->delete($asset->image);
+            }
+
+            $data['image'] = $request->file('image')->store('assets', 's3');
+            Storage::disk('s3')->setVisibility($data['image'], 'public');
+        }
+
+        DB::transaction(function() use ($request, $asset, $data){
             $oldStatus = $asset->status;
-            $asset->update($request->all());
+            $asset->update($data);
 
             if($request->has('status') && $oldStatus !== $asset->status){
                 AssetLog::create([
@@ -202,6 +223,10 @@ class AssetController extends Controller
     {
 
         DB::transaction(function() use ($asset){
+
+            if($asset->image){
+                Storage::disk('s3')->delete($asset->image);
+            }
             
             AssetLog::where('asset_id', $asset->id)->delete();
             $asset->delete();
