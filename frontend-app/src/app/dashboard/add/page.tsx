@@ -248,7 +248,7 @@ export default function AddAssetPage() {
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
                   <ImageIcon className="h-4 w-4 text-zinc-400" />
-                  Foto Aset <span className="text-zinc-500 font-normal lowercase">(opsional)</span>
+                  Foto Aset <span className="text-zinc-500 font-normal lowercase"></span>
                 </label>
 
                 {!imagePreview ? (
@@ -404,7 +404,7 @@ export default function AddAssetPage() {
               <Button 
                 type="submit" 
                 disabled={isSubmitting} 
-                className="bg-indigo-600 hover:bg-indigo-500 text-white gap-2 h-11 px-8 font-semibold rounded-md shadow-lg shadow-indigo-900/20 transition-all"
+                className="bg-slate-600 hover:bg-slate-800 text-white gap-2 h-11 px-8 font-semibold rounded-md shadow-lg shadow-slate-900/20 transition-all"
               >
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                 {isSubmitting ? "Menyimpan Data..." : "Tambah Aset"}
