@@ -16,9 +16,10 @@ import {
   FolderOpen,
   CalendarDays,
   ChevronDown,
-  UploadCloud, // 💡 Icon Upload
-  X,           // 💡 Icon Hapus Preview
-  ImageIcon    // 💡 Icon File Gambar
+  UploadCloud, 
+  X,          
+  ImageIcon,
+  Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -70,9 +71,12 @@ export default function AddAssetPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
   
-  // 💡 State Baru untuk File & Preview Gambar
+  // State File & Preview Gambar
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  // State Modal Lightbox Gambar Layar Lebar
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   const generateQRCode = () => {
     const timestamp = Date.now().toString().slice(-6);
@@ -120,7 +124,18 @@ export default function AddAssetPage() {
     fetchCategories();
   }, [router]);
 
-  // 💡 Handler Pilih Gambar & Generate URL Preview
+  // Handler Tutup Modal Lightbox jika tombol ESC ditekan
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsLightboxOpen(false);
+    };
+    if (isLightboxOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isLightboxOpen]);
+
+  // Handler Pilih Gambar & Generate URL Preview
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -133,13 +148,14 @@ export default function AddAssetPage() {
     }
   };
 
-  // 💡 Handler Hapus Gambar yang Dipilih
+  // Handler Hapus Gambar yang Dipilih
   const handleRemoveImage = () => {
     setSelectedFile(null);
     if (imagePreview) {
       URL.revokeObjectURL(imagePreview);
       setImagePreview(null);
     }
+    setIsLightboxOpen(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -149,7 +165,7 @@ export default function AddAssetPage() {
 
     const token = localStorage.getItem("token");
 
-    // 💡 Gunakan FormData untuk mengirim file biner
+    // Gunakan FormData untuk mengirim file biner
     const payload = new FormData();
     payload.append("name", formData.name);
     payload.append("brand", formData.brand);
@@ -166,11 +182,10 @@ export default function AddAssetPage() {
       const response = await fetch(`${API_URL}/api/assets`, {
         method: "POST",
         headers: {
-          // ⚠️ JANGAN tambahkan "Content-Type" agar browser mengisi boundary multipart/form-data
           "Accept": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: payload, // 👈 Kirim FormData
+        body: payload,
       });
 
       const result = await response.json();
@@ -229,7 +244,7 @@ export default function AddAssetPage() {
             
             <div className="space-y-6">
               
-              {/* 💡 INPUT GAMBAR ASET */}
+              {/* INPUT GAMBAR ASET WITH FULL-SCREEN LIGHTBOX PREVIEW */}
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
                   <ImageIcon className="h-4 w-4 text-zinc-400" />
@@ -251,24 +266,22 @@ export default function AddAssetPage() {
                     />
                   </label>
                 ) : (
-                  <div className="relative w-full h-48 rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950 group">
+                  <div 
+                    onClick={() => setIsLightboxOpen(true)}
+                    className="relative w-full h-52 rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950 cursor-pointer group transition-all hover:border-zinc-700"
+                  >
                     <Image 
                       src={imagePreview} 
                       alt="Preview Foto Aset" 
                       fill 
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        onClick={handleRemoveImage}
-                        className="gap-2 shadow-lg"
-                      >
-                        <X className="h-4 w-4" />
-                        Hapus Foto
-                      </Button>
+                    
+                    {/* Subtle Overlay Badge Info saat Hover */}
+                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-start p-3">
+                      <span className="bg-zinc-900/80 backdrop-blur-md text-xs text-zinc-200 px-3 py-1.5 rounded-lg border border-zinc-700/60 font-medium shadow-lg">
+                        Klik untuk memperbesar gambar
+                      </span>
                     </div>
                   </div>
                 )}
@@ -401,6 +414,55 @@ export default function AddAssetPage() {
           </form>
         </div>
       </div>
+
+      {/* MODAL OVERLAY LIGHTBOX GAMBAR FULLSCREEN */}
+      {isLightboxOpen && imagePreview && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-8 animate-in fade-in duration-200"
+          onClick={() => setIsLightboxOpen(false)}
+        >
+          {/* Header Action Bar Modal (Hapus Foto & Tutup Modal) */}
+          <div 
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 flex items-center gap-3 z-[101]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Button
+              type="button"
+              variant="destructive"
+              size="sm"
+              onClick={handleRemoveImage}
+              className="gap-2 shadow-xl"
+            >
+              <Trash2 className="h-4 w-4" />
+              Hapus Foto
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => setIsLightboxOpen(false)}
+              className="h-9 w-9 rounded-full border-zinc-700 bg-zinc-900/80 text-zinc-300 hover:text-white hover:bg-zinc-800 shadow-xl"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+
+          {/* Container Gambar Utama */}
+          <div 
+            className="relative w-full max-w-4xl max-h-[85vh] h-[80vh] rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image 
+              src={imagePreview} 
+              alt="Detail Gambar Aset Fullscreen" 
+              fill 
+              className="object-contain"
+              priority
+            />
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
