@@ -4,6 +4,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { 
   ArrowLeft, 
   Save, 
@@ -14,7 +15,10 @@ import {
   Tag,
   FolderOpen,
   CalendarDays,
-  ChevronDown
+  ChevronDown,
+  UploadCloud, // 💡 Icon Upload
+  X,           // 💡 Icon Hapus Preview
+  ImageIcon    // 💡 Icon File Gambar
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -66,6 +70,10 @@ export default function AddAssetPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
   
+  // 💡 State Baru untuk File & Preview Gambar
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
   const generateQRCode = () => {
     const timestamp = Date.now().toString().slice(-6);
     const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
@@ -112,6 +120,28 @@ export default function AddAssetPage() {
     fetchCategories();
   }, [router]);
 
+  // 💡 Handler Pilih Gambar & Generate URL Preview
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Ukuran gambar maksimal adalah 5MB!");
+        return;
+      }
+      setSelectedFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  // 💡 Handler Hapus Gambar yang Dipilih
+  const handleRemoveImage = () => {
+    setSelectedFile(null);
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+      setImagePreview(null);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -119,15 +149,28 @@ export default function AddAssetPage() {
 
     const token = localStorage.getItem("token");
 
+    // 💡 Gunakan FormData untuk mengirim file biner
+    const payload = new FormData();
+    payload.append("name", formData.name);
+    payload.append("brand", formData.brand);
+    payload.append("qr_code", formData.qr_code);
+    payload.append("category_id", formData.category_id);
+    payload.append("status", formData.status);
+    payload.append("purchase_year", formData.purchase_year);
+
+    if (selectedFile) {
+      payload.append("image", selectedFile);
+    }
+
     try {
       const response = await fetch(`${API_URL}/api/assets`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          // ⚠️ JANGAN tambahkan "Content-Type" agar browser mengisi boundary multipart/form-data
           "Accept": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: payload, // 👈 Kirim FormData
       });
 
       const result = await response.json();
@@ -153,7 +196,6 @@ export default function AddAssetPage() {
     `}} />
   );
 
-  // Tampilkan Skeleton saat kategori dimuat di awal
   if (isLoadingCategories) return <><FontKillerStyles /><AddFormSkeleton /></>;
 
   return (
@@ -186,6 +228,53 @@ export default function AddAssetPage() {
           <form onSubmit={handleSubmit} className="space-y-8">
             
             <div className="space-y-6">
+              
+              {/* 💡 INPUT GAMBAR ASET */}
+              <div className="space-y-2">
+                <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <ImageIcon className="h-4 w-4 text-zinc-400" />
+                  Foto Aset <span className="text-zinc-500 font-normal lowercase">(opsional)</span>
+                </label>
+
+                {!imagePreview ? (
+                  <label className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-zinc-800 hover:border-zinc-700 bg-zinc-900/30 hover:bg-zinc-900/60 rounded-xl cursor-pointer transition-all">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
+                      <UploadCloud className="w-8 h-8 mb-2 text-zinc-400" />
+                      <p className="text-sm text-zinc-300 font-medium">Klik untuk upload foto aset</p>
+                      <p className="text-xs text-zinc-500 mt-1">PNG, JPG, WEBP (Maksimal 5MB)</p>
+                    </div>
+                    <input 
+                      type="file" 
+                      accept="image/png, image/jpeg, image/jpg, image/webp"
+                      onChange={handleFileChange}
+                      className="hidden" 
+                    />
+                  </label>
+                ) : (
+                  <div className="relative w-full h-48 rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950 group">
+                    <Image 
+                      src={imagePreview} 
+                      alt="Preview Foto Aset" 
+                      fill 
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={handleRemoveImage}
+                        className="gap-2 shadow-lg"
+                      >
+                        <X className="h-4 w-4" />
+                        Hapus Foto
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                {formErrors.image && <p className="text-xs text-red-500 mt-1">{formErrors.image[0]}</p>}
+              </div>
+
               {/* Baris 1: Nama & Merek */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -302,7 +391,7 @@ export default function AddAssetPage() {
               <Button 
                 type="submit" 
                 disabled={isSubmitting} 
-                className="bg-slate-900 hover:bg-slate-950 text-white gap-2 h-11 px-8 font-semibold rounded-md shadow-lg shadow-indigo-900/20 transition-all"
+                className="bg-indigo-600 hover:bg-indigo-500 text-white gap-2 h-11 px-8 font-semibold rounded-md shadow-lg shadow-indigo-900/20 transition-all"
               >
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                 {isSubmitting ? "Menyimpan Data..." : "Tambah Aset"}
