@@ -31,33 +31,74 @@ interface Category {
 }
 
 // ==========================================
-// KOMPONEN SKELETON HALAMAN TAMBAH ASET
+// KOMPONEN SKELETON HALAMAN TAMBAH ASET (1:1 PRESISI)
 // ==========================================
 function AddFormSkeleton() {
   return (
     <div className="min-h-screen bg-zinc-950 py-10 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-2xl space-y-6">
+        
+        {/* Header Skeleton */}
         <div className="flex items-center gap-4 animate-pulse">
-          <div className="h-10 w-10 rounded-md bg-zinc-800" />
+          <div className="h-10 w-10 rounded-md bg-zinc-900 border border-zinc-800" />
           <div className="space-y-2">
-            <div className="h-6 w-48 rounded bg-zinc-800" />
-            <div className="h-4 w-64 rounded bg-zinc-800/50" />
+            <div className="h-7 w-60 rounded-md bg-zinc-800" />
+            <div className="h-4 w-80 rounded-md bg-zinc-900" />
           </div>
         </div>
+
+        {/* Card Form Skeleton */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-6 sm:p-8 animate-pulse space-y-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="space-y-2"><div className="h-3 w-24 rounded bg-zinc-800" /><div className="h-11 rounded-md bg-zinc-800/50" /></div>
-            <div className="space-y-2"><div className="h-3 w-24 rounded bg-zinc-800" /><div className="h-11 rounded-md bg-zinc-800/50" /></div>
+          
+          <div className="space-y-6">
+            {/* 1. Skeleton Foto Aset */}
+            <div className="space-y-2">
+              <div className="h-4 w-28 rounded bg-zinc-800" />
+              <div className="h-36 w-full rounded-xl bg-zinc-900/60 border-2 border-dashed border-zinc-800/80" />
+            </div>
+
+            {/* 2. Skeleton Nama & Merek */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <div className="h-3 w-24 rounded bg-zinc-800" />
+                <div className="h-11 rounded-md bg-zinc-900 border border-zinc-800" />
+              </div>
+              <div className="space-y-2">
+                <div className="h-3 w-20 rounded bg-zinc-800" />
+                <div className="h-11 rounded-md bg-zinc-900 border border-zinc-800" />
+              </div>
+            </div>
+
+            {/* 3. Skeleton Kategori & Tahun Pembelian */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <div className="h-3 w-24 rounded bg-zinc-800" />
+                <div className="h-11 rounded-md bg-zinc-900 border border-zinc-800" />
+              </div>
+              <div className="space-y-2">
+                <div className="h-3 w-32 rounded bg-zinc-800" />
+                <div className="h-11 rounded-md bg-zinc-900 border border-zinc-800" />
+              </div>
+            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="space-y-2"><div className="h-3 w-24 rounded bg-zinc-800" /><div className="h-11 rounded-md bg-zinc-800/50" /></div>
-            <div className="space-y-2"><div className="h-3 w-24 rounded bg-zinc-800" /><div className="h-11 rounded-md bg-zinc-800/50" /></div>
+
+          {/* 4. Skeleton Sistem QR Otomatis Box */}
+          <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/40 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-2">
+              <div className="h-4 w-40 rounded bg-zinc-800" />
+              <div className="h-3 w-64 rounded bg-zinc-900" />
+            </div>
+            <div className="h-11 w-full sm:w-56 rounded-md bg-zinc-950 border border-zinc-800" />
           </div>
-          <div className="h-20 rounded-md bg-zinc-800/30" />
-          <div className="flex justify-end gap-3 pt-2">
-            <div className="h-11 w-20 rounded-md bg-zinc-800" />
-            <div className="h-11 w-32 rounded-md bg-zinc-800" />
+
+          <hr className="border-zinc-800/60" />
+
+          {/* 5. Skeleton Action Buttons */}
+          <div className="flex items-center justify-end gap-3 pt-2">
+            <div className="h-11 w-20 rounded-md bg-zinc-900 border border-zinc-800" />
+            <div className="h-11 w-36 rounded-md bg-zinc-800" />
           </div>
+
         </div>
       </div>
     </div>
@@ -248,7 +289,7 @@ export default function AddAssetPage() {
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
                   <ImageIcon className="h-4 w-4 text-zinc-400" />
-                  Foto Aset <span className="text-zinc-500 font-normal lowercase"></span>
+                  Foto Aset <span className="text-zinc-500 font-normal lowercase">(opsional)</span>
                 </label>
 
                 {!imagePreview ? (
