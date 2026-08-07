@@ -125,8 +125,19 @@ class AssetController extends Controller
         $data = $validator->validated();
 
         if($request->hasFile('image')){
-            $data['image'] = $request->file('image')->store('assets', 's3');
-            Storage::disk('s3')->setVisibility($data['image'], 'public');
+            $file = $request->file('image');
+            $mimeType = $file->getClientMimeType(); // image/jpeg, image/png, image/webp
+
+            // Upload dengan ContentType spesifik ke S3
+            $data['image'] = $file->storePubliclyAs(
+                'assets',
+                $file->hashName(),
+                [
+                    'disk'        => 's3',
+                    'visibility'  => 'public',
+                    'ContentType' => $mimeType,
+                ]
+            );
         }
 
         $asset = DB::transaction(function() use ($data) {
@@ -187,12 +198,35 @@ class AssetController extends Controller
         $data = $validator->validated();
 
         if($request->hasFile('image')){
-            if($asset->image){
+            // Hapus foto lama di Supabase jika ada
+            if($asset->image && Storage::disk('s3')->exists($asset->image)){
                 Storage::disk('s3')->delete($asset->image);
             }
 
-            $data['image'] = $request->file('image')->store('assets', 's3');
-            Storage::disk('s3')->setVisibility($data['image'], 'public');
+            $file = $request->file('image');
+            $mimeType = $file->getClientMimeType();
+
+            // Upload dengan ContentType spesifik ke S3
+            $data['image'] = $file->storePubliclyAs(
+                'assets',
+                $file->hashName(),
+                [
+                    'disk'        => 's3',
+                    'visibility'  => 'public',
+                    'ContentType' => $mimeType,
+                ]
+            );
+        } 
+        // 2. Jika secara eksplisit meminta hapus foto (misal: image dikirim null)
+        else if ($request->exists('image') && empty($request->input('image'))) {
+            if($asset->image && Storage::disk('s3')->exists($asset->image)){
+                Storage::disk('s3')->delete($asset->image);
+            }
+            $data['image'] = null;
+        } 
+        // 3. Jika input image tidak dikirim sama sekali saat update
+        else {
+            unset($data['image']);
         }
 
         DB::transaction(function() use ($request, $asset, $data){

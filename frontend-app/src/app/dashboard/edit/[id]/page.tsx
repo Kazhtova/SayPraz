@@ -124,6 +124,7 @@ export default function EditAssetPage() {
   // State File & Preview Gambar
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageError, setImageError] = useState(false);
 
   // State Modal Lightbox Gambar Fullscreen
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -165,6 +166,7 @@ export default function EditAssetPage() {
 
           if (asset.image_url) {
             setImagePreview(asset.image_url);
+            setImageError(false);
           }
         } else {
           alert("Gagal menemukan data aset.");
@@ -201,6 +203,7 @@ export default function EditAssetPage() {
       }
       setSelectedFile(file);
       setImagePreview(URL.createObjectURL(file));
+      setImageError(false);
     }
   };
 
@@ -211,6 +214,7 @@ export default function EditAssetPage() {
       URL.revokeObjectURL(imagePreview);
     }
     setImagePreview(null);
+    setImageError(false);
     setIsLightboxOpen(false);
   };
 
@@ -341,12 +345,22 @@ export default function EditAssetPage() {
                     onClick={() => setIsLightboxOpen(true)}
                     className="relative w-full h-52 rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950 cursor-pointer group transition-all hover:border-zinc-700"
                   >
-                    <Image 
-                      src={imagePreview} 
-                      alt="Preview Foto Aset" 
-                      fill 
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
+                    {!imageError ? (
+                      <Image 
+                        src={imagePreview} 
+                        alt="Preview Foto Aset" 
+                        fill 
+                        unoptimized
+                        onError={() => setImageError(true)}
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <img 
+                        src={imagePreview} 
+                        alt="Preview Foto Aset" 
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    )}
                     
                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-start p-3">
                       <span className="bg-zinc-900/80 backdrop-blur-md text-xs text-zinc-200 px-3 py-1.5 rounded-lg border border-zinc-700/60 font-medium shadow-lg">
@@ -447,7 +461,6 @@ export default function EditAssetPage() {
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 <Button type="button" variant="ghost" onClick={() => router.back()} disabled={isSubmitting || isDeleting} className="w-full sm:w-auto text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 h-11 px-6 rounded-md">Batal</Button>
                 
-                {/* 💡 TOMBOL DISESUAIKAN DENGAN STYLE SAMA PERSIS */}
                 <Button 
                   type="submit" 
                   disabled={isSubmitting || isDeleting} 
@@ -485,7 +498,6 @@ export default function EditAssetPage() {
               Hapus Foto
             </Button>
             
-            {/* 💡 TOMBOL DISESUAIKAN PRESISI DENGAN STYLE SAMA PERSIS */}
             <Button
               type="button"
               onClick={() => setIsLightboxOpen(false)}
@@ -498,16 +510,24 @@ export default function EditAssetPage() {
 
           {/* Container Gambar Utama */}
           <div 
-            className="relative w-full max-w-4xl max-h-[85vh] h-[80vh] rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl"
+            className="relative w-full max-w-4xl max-h-[85vh] h-[80vh] rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex items-center justify-center bg-zinc-950"
             onClick={(e) => e.stopPropagation()}
           >
+            {!imageError ? (
             <Image 
               src={imagePreview} 
               alt="Detail Gambar Aset Fullscreen" 
               fill 
+              unoptimized
+              onError={() => setImageError(true)}
               className="object-contain"
               priority
             />
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-zinc-500 text-sm">
+              <p>Gagal memuat pratinjau gambar.</p>
+            </div>
+          )}
           </div>
         </div>
       )}

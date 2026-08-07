@@ -12,34 +12,51 @@ use Illuminate\Support\Facades\Storage;
 class Asset extends Model
 {
     use HasFactory;
+
     protected $fillable = ['category_id', 'name', 'brand', 'qr_code', 'status', 'purchase_year', 'image'];
 
     protected $appends = ['image_url'];
 
     protected function imageUrl(): Attribute
-    {
-        return Attribute::make(
-            get: function (){
-                /** @var \Illuminate\Contracts\Filesystem\Cloud $disk */
-                $disk = Storage::disk('s3');
-                return $this->image ? $disk->url($this->image) : null;
-            }
-        );
-    }
+{
+    return Attribute::make(
+        get: function () {
+            if (!$this->image) return null;
 
-    // Milik satu kategori (Child)
+            // Jika nilai kolom sudah berupa URL utuh
+            if (filter_var($this->image, FILTER_VALIDATE_URL)) {
+                return $this->image;
+            }
+
+            // Cek apakah file benar-benar ada di Supabase S3
+            if (!Storage::disk('s3')->exists($this->image)) {
+                return null;
+            }
+
+            $endpoint = config('filesystems.disks.s3.endpoint');
+            $bucket   = config('filesystems.disks.s3.bucket');
+
+            if (!$endpoint || !$bucket) return null;
+
+            $domain = parse_url($endpoint, PHP_URL_HOST);
+            $cleanDomain = str_replace('.storage.', '.', $domain);
+            $path = ltrim($this->image, '/');
+
+            return "https://{$cleanDomain}/storage/v1/object/public/{$bucket}/{$path}";
+        }
+    );
+}
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    // Memiliki banyak riwayat peminjaman (Parent)
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
     }
 
-    // Memiliki banyak riwayat perubahan kondisi/log (Parent)
     public function logs(): HasMany
     {
         return $this->hasMany(AssetLog::class);
