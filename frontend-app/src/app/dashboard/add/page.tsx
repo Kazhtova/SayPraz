@@ -339,11 +339,11 @@ export default function AddAssetPage() {
                     <Input 
                       value={formData.name} 
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-indigo-500/50 text-zinc-100 h-11 transition-all" 
+                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-500/50 text-zinc-100 h-11 transition-all" 
                       placeholder="Cth: Proyektor Epson EB-X51" 
                       required 
                     />
-                    <Type className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-indigo-400 transition-colors" />
+                    <Type className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-zinc-400 transition-colors" />
                   </div>
                   {formErrors.name && <p className="text-xs text-red-500">{formErrors.name[0]}</p>}
                 </div>
@@ -356,11 +356,11 @@ export default function AddAssetPage() {
                     <Input 
                       value={formData.brand} 
                       onChange={(e) => setFormData({...formData, brand: e.target.value})}
-                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-indigo-500/50 text-zinc-100 h-11 transition-all" 
+                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-500/50 text-zinc-100 h-11 transition-all" 
                       placeholder="Cth: Epson" 
                       required 
                     />
-                    <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-indigo-400 transition-colors" />
+                    <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-zinc-400 transition-colors" />
                   </div>
                   {formErrors.brand && <p className="text-xs text-red-500">{formErrors.brand[0]}</p>}
                 </div>
@@ -376,7 +376,7 @@ export default function AddAssetPage() {
                     <select 
                       value={formData.category_id} 
                       onChange={(e) => setFormData({...formData, category_id: e.target.value})}
-                      className="peer appearance-none flex h-11 w-full items-center rounded-md border border-zinc-800 bg-zinc-900/50 pl-10 pr-8 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 cursor-pointer transition-all"
+                      className="peer appearance-none flex h-11 w-full items-center rounded-md border border-zinc-800 bg-zinc-900/50 pl-10 pr-8 py-2 text-sm text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-200/80 cursor-pointer transition-all"
                       required
                     >
                       <option value="" className="bg-zinc-900">-- Pilih Kategori --</option>
@@ -384,8 +384,8 @@ export default function AddAssetPage() {
                         <option key={cat.id} value={cat.id} className="bg-zinc-900">{cat.name}</option>
                       ))}
                     </select>
-                    <FolderOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-indigo-400 pointer-events-none transition-colors" />
-                    <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
+                    <FolderOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 peer-focus:text-zinc-400 pointer-events-none transition-colors" />
+                    <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
                   </div>
                   {formErrors.category_id && <p className="text-xs text-red-500">{formErrors.category_id[0]}</p>}
                 </div>
@@ -399,12 +399,12 @@ export default function AddAssetPage() {
                       type="number" 
                       value={formData.purchase_year} 
                       onChange={(e) => setFormData({...formData, purchase_year: e.target.value})}
-                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-indigo-500/50 text-zinc-100 h-11 transition-all" 
+                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-500/50 text-zinc-400 h-11 transition-all" 
                       min="1900" 
                       max={new Date().getFullYear()} 
                       required 
                     />
-                    <CalendarDays className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-indigo-400 transition-colors" />
+                    <CalendarDays className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-zinc-400 transition-colors" />
                   </div>
                   {formErrors.purchase_year && <p className="text-xs text-red-500">{formErrors.purchase_year[0]}</p>}
                 </div>
@@ -445,7 +445,7 @@ export default function AddAssetPage() {
               <Button 
                 type="submit" 
                 disabled={isSubmitting} 
-                className="bg-slate-600 hover:bg-slate-800 text-white gap-2 h-11 px-8 font-semibold rounded-md shadow-lg shadow-slate-900/40 transition-all"
+                className="w-full sm:w-auto bg-zinc-800 hover:bg-zinc-950 text-white gap-2 h-11 px-8 font-semibold rounded-md shadow-lg shadow-indigo-900/20 transition-all"
               >
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                 {isSubmitting ? "Menyimpan Data..." : "Tambah Aset"}
@@ -477,13 +477,15 @@ export default function AddAssetPage() {
               <Trash2 className="h-4 w-4" />
               Hapus Foto
             </Button>
+            
+            {/* 💡 TOMBOL DISESUAIKAN PRESISI DENGAN STYLE SAMA PERSIS */}
             <Button
               type="button"
-              variant="outline"
-              size="icon"
-              className="h-9 w-9 rounded-full border-zinc-700 bg-zinc-900 text-zinc-300 hover:text-white hover:bg-zinc-950 shadow-xl shadow-indigo-900/20 transition-all"
+              onClick={() => setIsLightboxOpen(false)}
+              className="w-full sm:w-auto bg-zinc-800 hover:bg-zinc-950 text-white gap-2 h-11 px-8 font-semibold rounded-md shadow-lg shadow-zinc-900/20 transition-all"
             >
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4" />
+              Tutup
             </Button>
           </div>
 
