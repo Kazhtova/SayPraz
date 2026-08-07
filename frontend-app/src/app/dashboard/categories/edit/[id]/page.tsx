@@ -160,7 +160,6 @@ export default function EditCategoryPage() {
       if (response.ok) {
         router.push("/dashboard/categories");
       } else if (response.status === 400) {
-        // MENANGKAP PESAN ERROR DARI LARAVEL (Jika kategori masih punya aset)
         alert(result.message || "Kategori tidak dapat dihapus karena masih digunakan.");
         setIsDeleting(false);
       } else {
@@ -288,7 +287,6 @@ export default function EditCategoryPage() {
                 </Button>
               </div>
             </div>
-
           </form>
         </div>
       </div>

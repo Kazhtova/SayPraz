@@ -481,8 +481,7 @@ export default function AddAssetPage() {
               type="button"
               variant="outline"
               size="icon"
-              onClick={() => setIsLightboxOpen(false)}
-              className="h-9 w-9 rounded-full border-zinc-700 bg-zinc-900/80 text-zinc-300 hover:text-white hover:bg-zinc-800 shadow-xl"
+              className="h-9 w-9 rounded-full border-zinc-700 bg-zinc-900 text-zinc-300 hover:text-white hover:bg-zinc-950 shadow-xl shadow-indigo-900/20 transition-all"
             >
               <X className="h-5 w-5" />
             </Button>
