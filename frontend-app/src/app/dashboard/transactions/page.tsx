@@ -22,7 +22,7 @@ interface Transaction {
 }
 
 // ==========================================
-// KOMPONEN SKELETON PROPOSIONAL & PRESISI
+// KOMPONEN SKELETON PROPOSIONAL & PRESISI (1:1)
 // ==========================================
 function HeaderSkeleton() {
   return (
@@ -40,8 +40,33 @@ function ControlsSkeleton() {
   return (
     <div className="animate-pulse border-b border-zinc-800 p-4 flex flex-col sm:flex-row gap-4 items-center justify-between bg-zinc-900/20">
       <div className="h-11 w-full sm:w-96 rounded-xl bg-zinc-800" />
-      <div className="h-11 w-full sm:w-32 rounded-xl bg-zinc-800" />
+      <div className="h-10 w-full sm:w-32 rounded-lg bg-zinc-800" />
     </div>
+  );
+}
+
+// 💡 SKELETON HEADER TABEL UNTUK MENCEGAH FLASH / SHIFT
+function TableHeaderSkeleton() {
+  return (
+    <thead className="border-b border-zinc-800 bg-zinc-900/60 text-xs uppercase text-zinc-400 tracking-wider">
+      <tr className="animate-pulse">
+        <th scope="col" className="px-6 py-4 w-[28%]">
+          <div className="h-3.5 w-24 rounded bg-zinc-800" />
+        </th>
+        <th scope="col" className="px-6 py-4 w-[20%]">
+          <div className="h-3.5 w-20 rounded bg-zinc-800" />
+        </th>
+        <th scope="col" className="px-6 py-4 text-center w-[17%]">
+          <div className="mx-auto h-3.5 w-24 rounded bg-zinc-800" />
+        </th>
+        <th scope="col" className="px-6 py-4 text-center w-[15%]">
+          <div className="mx-auto h-3.5 w-16 rounded bg-zinc-800" />
+        </th>
+        <th scope="col" className="px-6 py-4 text-center w-[20%]">
+          <div className="mx-auto h-3.5 w-24 rounded bg-zinc-800" />
+        </th>
+      </tr>
+    </thead>
   );
 }
 
@@ -50,16 +75,16 @@ function TableRowSkeleton() {
     <tr className="animate-pulse border-b border-zinc-800/60">
       {/* Kolom 1: Nama Aset & Merek */}
       <td className="px-6 py-4">
-        <div className="space-y-1.5">
-          <div className="h-4 w-36 rounded bg-zinc-800" />
+        <div className="space-y-2">
+          <div className="h-4 w-40 rounded bg-zinc-800" />
           <div className="h-3 w-20 rounded bg-zinc-800/50" />
         </div>
       </td>
 
       {/* Kolom 2: Peminjam & Role */}
       <td className="px-6 py-4">
-        <div className="space-y-1.5">
-          <div className="h-4 w-28 rounded bg-zinc-800" />
+        <div className="space-y-2">
+          <div className="h-4 w-32 rounded bg-zinc-800" />
           <div className="h-3 w-16 rounded bg-zinc-800/50" />
         </div>
       </td>
@@ -69,12 +94,12 @@ function TableRowSkeleton() {
         <div className="mx-auto h-4 w-24 rounded bg-zinc-800" />
       </td>
 
-      {/* Kolom 4: Status Badge (Tengah) */}
+      {/* Kolom 4: Status Badge */}
       <td className="px-6 py-4 text-center">
         <div className="mx-auto h-6 w-24 rounded-full bg-zinc-800" />
       </td>
 
-      {/* Kolom 5: Aksi Admin (Tengah - 2 Tombol Skeleton) */}
+      {/* Kolom 5: Aksi Admin */}
       <td className="px-6 py-4 text-center">
         <div className="flex justify-center gap-2">
           <div className="h-8 w-16 rounded-md bg-zinc-800" />
@@ -224,7 +249,6 @@ export default function TransactionsPage() {
                 />
               </div>
 
-              {/* TOMBOL MUAT ULANG DENGAN STYLE BARU */}
               <Button 
                 variant="outline" 
                 onClick={handleRefreshClick} 
@@ -239,20 +263,26 @@ export default function TransactionsPage() {
           {/* TABLE DATA WITH SKELETON REFRESH */}
           <div className="overflow-x-auto min-h-[350px]">
             <table className="w-full text-left text-sm text-zinc-400 table-fixed">
-              <thead className="border-b border-zinc-800 bg-zinc-900/60 text-xs uppercase text-zinc-400 tracking-wider">
-                <tr>
-                  {/* 2. KUNCI LEBAR MASING-MASING KOLOM DENGAN PERSENTASE */}
-                  <th scope="col" className="px-6 py-4 font-semibold w-[28%]">Nama Aset</th>
-                  <th scope="col" className="px-6 py-4 font-semibold w-[20%]">Peminjam</th>
-                  <th scope="col" className="px-6 py-4 font-semibold text-center w-[17%]">Batas Kembali</th>
-                  <th scope="col" className="px-6 py-4 font-semibold text-center w-[15%]">Status</th>
-                  <th scope="col" className="px-6 py-4 font-semibold text-center w-[20%]">Aksi (Admin)</th>
-                </tr>
-              </thead>
+              
+              {/* HASIL PERBAIKAN: THEAD DENGAN SKELETON DAN LOCK RATIO LEBAR KOLOM */}
+              {isInitialLoading ? (
+                <TableHeaderSkeleton />
+              ) : (
+                <thead className="border-b border-zinc-800 bg-zinc-900/60 text-xs uppercase text-zinc-400 tracking-wider">
+                  <tr>
+                    <th scope="col" className="px-6 py-4 font-semibold w-[28%]">Nama Aset</th>
+                    <th scope="col" className="px-6 py-4 font-semibold w-[20%]">Peminjam</th>
+                    <th scope="col" className="px-6 py-4 font-semibold text-center w-[17%]">Batas Kembali</th>
+                    <th scope="col" className="px-6 py-4 font-semibold text-center w-[15%]">Status</th>
+                    <th scope="col" className="px-6 py-4 font-semibold text-center w-[20%]">Aksi (Admin)</th>
+                  </tr>
+                </thead>
+              )}
+
               <tbody className="divide-y divide-zinc-800/60">
-                {/* DITAMBAHKAN isRefreshing AGAR TABEL BERUBAH JADI SKELETON SAAT TOMBOL REFRESH DIKLIK */}
                 {isInitialLoading || isRefreshing ? (
                   <>
+                    <TableRowSkeleton />
                     <TableRowSkeleton />
                     <TableRowSkeleton />
                     <TableRowSkeleton />
