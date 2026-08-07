@@ -135,6 +135,7 @@ class AssetController extends Controller
             AssetLog::create([
                 'asset_id'      => $createdAset->id,
                 'admin_id'      => Auth::id(),
+                'handle_by'     => Auth::id(),
                 'old_status'    => 'none',
                 'new_status'    => $createdAset->status,
                 'notes'         => 'Aset baru berhasil terdaftar di sistem sarpras.'
@@ -203,6 +204,7 @@ class AssetController extends Controller
                    'asset_id'   => $asset->id,
                    'admin_id'   => Auth::id(),
                    'old_status' => $oldStatus,
+                   'handle_by'  => Auth::id(),
                    'new_status' => $asset->status,
                    'notes'      => $request->input('notes', 'Status aset diperbarui oleh administrator.') 
                 ]);

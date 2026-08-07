@@ -163,7 +163,6 @@ export default function EditAssetPage() {
             purchase_year: asset.purchase_year ? asset.purchase_year.toString() : "",
           });
 
-          // Set pratinjau gambar jika aset sudah memiliki gambar di Supabase
           if (asset.image_url) {
             setImagePreview(asset.image_url);
           }
@@ -222,9 +221,8 @@ export default function EditAssetPage() {
 
     const token = localStorage.getItem("token");
 
-    // Gunakan FormData untuk mengirimkan file biner + Method Spoofing
     const payload = new FormData();
-    payload.append("_method", "PUT"); // 💡 METHOD SPOOFING UNTUK LARAVEL
+    payload.append("_method", "PUT");
     payload.append("name", formData.name);
     payload.append("brand", formData.brand);
     payload.append("qr_code", formData.qr_code);
@@ -238,7 +236,7 @@ export default function EditAssetPage() {
 
     try {
       const response = await fetch(`${API_URL}/api/assets/${assetId}`, {
-        method: "POST", // 💡 GUNAKAN POST DENGAN _method: "PUT"
+        method: "POST",
         headers: { 
           "Accept": "application/json", 
           "Authorization": `Bearer ${token}` 
@@ -350,7 +348,6 @@ export default function EditAssetPage() {
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                     
-                    {/* Subtle Overlay Badge Info saat Hover */}
                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-start p-3">
                       <span className="bg-zinc-900/80 backdrop-blur-md text-xs text-zinc-200 px-3 py-1.5 rounded-lg border border-zinc-700/60 font-medium shadow-lg">
                         Klik untuk memperbesar gambar
@@ -449,7 +446,13 @@ export default function EditAssetPage() {
 
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 <Button type="button" variant="ghost" onClick={() => router.back()} disabled={isSubmitting || isDeleting} className="w-full sm:w-auto text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 h-11 px-6 rounded-md">Batal</Button>
-                <Button type="submit" disabled={isSubmitting || isDeleting} className="w-full sm:w-auto bg-slate-600 hover:bg-slate-800 text-white gap-2 h-11 px-8 font-semibold rounded-md shadow-lg shadow-slate-900/40 transition-all">
+                
+                {/* 💡 TOMBOL DISESUAIKAN DENGAN STYLE SAMA PERSIS */}
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting || isDeleting} 
+                  className="w-full sm:w-auto bg-zinc-800 hover:bg-zinc-950 text-white gap-2 h-11 px-8 font-semibold rounded-md shadow-lg shadow-indigo-900/20 transition-all"
+                >
                   {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                   {isSubmitting ? "Menyimpan..." : "Simpan"}
                 </Button>
@@ -481,14 +484,15 @@ export default function EditAssetPage() {
               <Trash2 className="h-4 w-4" />
               Hapus Foto
             </Button>
+            
+            {/* 💡 TOMBOL DISESUAIKAN PRESISI DENGAN STYLE SAMA PERSIS */}
             <Button
               type="button"
-              variant="outline"
-              size="icon"
               onClick={() => setIsLightboxOpen(false)}
-              className="h-9 w-9 rounded-full border-zinc-700 bg-zinc-900/80 text-zinc-300 hover:text-white hover:bg-zinc-800 shadow-xl"
+              className="w-full sm:w-auto bg-zinc-800 hover:bg-zinc-950 text-white gap-2 h-11 px-8 font-semibold rounded-md shadow-lg shadow-indigo-900/20 transition-all"
             >
-              <X className="h-5 w-5" />
+              <X className="h-4 w-4" />
+              Tutup
             </Button>
           </div>
 
