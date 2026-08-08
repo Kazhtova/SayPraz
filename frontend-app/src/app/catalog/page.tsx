@@ -236,19 +236,51 @@ export default function CatalogPage() {
         
         <div className="flex flex-col border-b border-zinc-800/60 pb-8">
           <div className="w-full lg:w-full">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight text-zinc-100">Jelajahi Aset Sarpras</h1>
-                <p className="text-zinc-400 text-sm mt-2 leading-relaxed">
-                  Temukan dan ajukan peminjaman alat praktik atau sarana prasarana sekolah yang Anda butuhkan dengan mudah.
-                </p>
+            {/* HEADER KATALOG MODERN & ELEGAN */}
+            <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between mb-8 pb-6 border-b border-zinc-800/80">
+              
+              {/* SISI KIRI: SYSTEM BADGE, JUDUL & DESKRIPSI */}
+              <div className="space-y-3 max-w-2xl">
+                
+                {/* Portal Badge & Tanggal */}
+                <div className="flex items-center gap-2.5">
+                  <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-800 text-zinc-400">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    Portal Sarpras Active
+                  </span>
+                  <span className="text-zinc-700">•</span>
+                  <span className="text-xs font-mono text-zinc-500">Katalog Digital</span>
+                </div>
+
+                {/* Judul Utama & Sub-Deskripsi */}
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
+                    Jelajahi Aset Sarpras
+                  </h1>
+                  <p className="text-zinc-400 text-xs sm:text-sm mt-1.5 leading-relaxed">
+                    Temukan dan ajukan peminjaman alat praktik atau sarana prasarana sekolah yang Anda butuhkan secara terintegrasi dan real-time.
+                  </p>
+                </div>
               </div>
+
+              {/* SISI KANAN: STATISTIK TOTAL ASET */}
               {!isLoading && (
-                <div className="inline-flex items-center px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-sm font-medium text-zinc-200 whitespace-nowrap w-fit">
-                  <Package className="h-4 w-4 mr-2 text-zinc-200" />
-                  Total: {allAssets.length} Aset
+                <div className="flex items-center gap-3 self-start md:self-auto shrink-0">
+                  <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-zinc-900/60 border border-zinc-800/90 text-xs font-semibold text-zinc-200 shadow-sm backdrop-blur-md">
+                    <div className="flex items-center justify-center p-1.5 rounded-lg bg-zinc-800 text-zinc-200">
+                      <Package className="h-4 w-4" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] uppercase font-mono font-medium text-zinc-200/70 tracking-wider">Total Aset</span>
+                      <span className="text-sm font-bold text-white font-mono">{allAssets.length} <span className="text-xs font-normal text-zinc-200/70 font-sans">Barang</span></span>
+                    </div>
+                  </div>
                 </div>
               )}
+
             </div>
             
             {/* KONTROL PENCARIAN, FILTER, DAN SORTING */}
