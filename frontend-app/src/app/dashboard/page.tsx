@@ -351,9 +351,21 @@ export default function DashboardPage() {
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8 transition-all duration-500">
         
         {/* HEADER */}
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-100">Dasbor Kontrol Inventaris</h1>
-          <p className="text-zinc-400 text-sm">Kelola aset dan peminjaman Sarpras secara real-time.</p>
+        <div className="space-y-2">
+          {/* System Badge & Status */}
+          <div className="flex items-center gap-2.5">
+            <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-800 text-zinc-400">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              Sarpras SMKN 10 Surabaya Active
+            </span>
+            <span className="text-zinc-700">•</span>
+            <span className="text-xs font-mono text-zinc-500">
+              {new Date().toLocaleDateString("id-ID", { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}
+            </span>
+          </div>
         </div>
 
         {/* 4 STAT CARDS */}
