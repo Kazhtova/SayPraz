@@ -339,7 +339,7 @@ export default function CatalogPage() {
                   {/* SISI KANAN: STATISTIK TOTAL ASET */}
                   <div className="flex items-center gap-3 self-start md:self-auto shrink-0">
                     <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-zinc-900/60 border border-zinc-800/90 text-xs font-semibold text-zinc-200 shadow-sm backdrop-blur-md">
-                      <div className="flex items-center justify-center p-1.5 rounded-lg bg-zinc-800 text-zinc-200">
+                      <div className="flex items-center justify-center p-1.5 rounded-lg bg-zinc-800 text-zinc-100">
                         <Package className="h-4 w-4" />
                       </div>
                       <div className="flex flex-col">
