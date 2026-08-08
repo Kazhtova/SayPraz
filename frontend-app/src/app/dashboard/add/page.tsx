@@ -289,7 +289,7 @@ export default function AddAssetPage() {
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
                   <ImageIcon className="h-4 w-4 text-zinc-400" />
-                  Foto Aset <span className="text-zinc-500 font-normal lowercase">(opsional)</span>
+                  Foto Aset <span className="text-zinc-500 font-normal lowercase"></span>
                 </label>
 
                 {!imagePreview ? (
