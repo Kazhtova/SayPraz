@@ -29,14 +29,50 @@ interface Asset {
 }
 
 // =========================================================================
-// KOMPONEN SKELETON KATALOG (1:1 PRESISI DENGAN TAMPILAN ASLI)
+// SKELETON KHUSUS CARD GRID SAJA (PRESISI 1:1)
 // =========================================================================
-function CatalogSkeleton() {
+function CardGridSkeleton() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-pulse">
+      {Array.from({ length: 8 }).map((_, index) => (
+        <div key={index} className="flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900/30 overflow-hidden shadow-sm">
+          {/* Skeleton Gambar Aset */}
+          <div className="h-48 bg-zinc-900/60 border-b border-zinc-800/50 relative">
+            <div className="absolute top-3 left-3 h-5 w-20 rounded-md bg-zinc-800" />
+          </div>
+
+          {/* Skeleton Detail Aset */}
+          <div className="flex-1 p-5 flex flex-col space-y-4">
+            <div className="h-5 w-24 rounded bg-zinc-800/80" />
+            <div className="space-y-2">
+              <div className="h-6 w-3/4 rounded bg-zinc-800" />
+              <div className="h-4 w-1/2 rounded bg-zinc-900" />
+            </div>
+            
+            {/* Grid 4 Atribut */}
+            <div className="grid grid-cols-2 gap-3 pt-2 pb-5 border-b border-zinc-800/60">
+              <div className="h-3 rounded bg-zinc-800/60" />
+              <div className="h-3 rounded bg-zinc-800/60" />
+              <div className="h-3 rounded bg-zinc-800/60" />
+              <div className="h-3 rounded bg-zinc-800/60" />
+            </div>
+
+            {/* Skeleton Tombol Aksi */}
+            <div className="h-10 rounded-xl bg-zinc-800/50 mt-auto" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// =========================================================================
+// SKELETON HALAMAN AWAL (SEBELUM DATA PERTAMA MASUK)
+// =========================================================================
+function FullPageSkeleton() {
   return (
     <div className="space-y-8 animate-pulse">
-      {/* 1. HEADER & SEARCH CONTROLS SKELETON */}
       <div className="flex flex-col border-b border-zinc-800/60 pb-8 space-y-8">
-        {/* Header Top Skeleton */}
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between border-b border-zinc-800/80 pb-6">
           <div className="space-y-3 max-w-2xl w-full">
             <div className="h-5 w-44 rounded-full bg-zinc-900 border border-zinc-800" />
@@ -46,7 +82,6 @@ function CatalogSkeleton() {
           <div className="h-10 w-36 rounded-xl bg-zinc-900 border border-zinc-800/90" />
         </div>
 
-        {/* Search & Filter Controls Skeleton */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="h-12 w-full sm:flex-1 lg:w-[65%] rounded-xl bg-zinc-900/60 border border-zinc-800" />
           <div className="flex gap-3 w-full sm:w-auto">
@@ -56,37 +91,7 @@ function CatalogSkeleton() {
         </div>
       </div>
 
-      {/* 2. CARD GRID SKELETON (16 ITEM) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {Array.from({ length: 8 }).map((_, index) => (
-          <div key={index} className="flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900/30 overflow-hidden shadow-sm">
-            {/* Skeleton Gambar Aset */}
-            <div className="h-48 bg-zinc-900/60 border-b border-zinc-800/50 relative">
-              <div className="absolute top-3 left-3 h-5 w-20 rounded-md bg-zinc-800" />
-            </div>
-
-            {/* Skeleton Detail Aset */}
-            <div className="flex-1 p-5 flex flex-col space-y-4">
-              <div className="h-5 w-24 rounded bg-zinc-800/80" />
-              <div className="space-y-2">
-                <div className="h-6 w-3/4 rounded bg-zinc-800" />
-                <div className="h-4 w-1/2 rounded bg-zinc-900" />
-              </div>
-              
-              {/* Grid 4 Atribut */}
-              <div className="grid grid-cols-2 gap-3 pt-2 pb-5 border-b border-zinc-800/60">
-                <div className="h-3 rounded bg-zinc-800/60" />
-                <div className="h-3 rounded bg-zinc-800/60" />
-                <div className="h-3 rounded bg-zinc-800/60" />
-                <div className="h-3 rounded bg-zinc-800/60" />
-              </div>
-
-              {/* Skeleton Tombol Aksi */}
-              <div className="h-10 rounded-xl bg-zinc-800/50 mt-auto" />
-            </div>
-          </div>
-        ))}
-      </div>
+      <CardGridSkeleton />
     </div>
   );
 }
@@ -95,13 +100,11 @@ export default function CatalogPage() {
   const router = useRouter();
   
   const [allAssets, setAllAssets] = useState<Asset[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   
-  // State lacak gambar yang error dimuat
   const [failedImages, setFailedImages] = useState<Record<number, boolean>>({});
-
-  // === STATE MODAL LIGHTBOX GAMBAR FULLSCREEN ===
   const [lightboxImage, setLightboxImage] = useState<{ url: string; title: string } | null>(null);
 
   // === STATE FILTER & SORTING ===
@@ -122,7 +125,6 @@ export default function CatalogPage() {
     router.replace("/login"); 
   }, [router]);
 
-  // Handler Tutup Modal Lightbox jika tombol ESC ditekan
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setLightboxImage(null);
@@ -138,7 +140,7 @@ export default function CatalogPage() {
     const token = localStorage.getItem("token");
     if (!token) { router.push("/login"); return; }
 
-    setIsLoading(true);
+    setIsSearching(true);
     try {
       const params1 = new URLSearchParams({ page: "1" });
       if (search) params1.append("search", search);
@@ -195,7 +197,8 @@ export default function CatalogPage() {
     } catch (error) {
       console.error("Gagal memuat katalog:", error);
     } finally {
-      setIsLoading(false);
+      setIsInitialLoading(false);
+      setIsSearching(false);
     }
   }, [handleLogout, router]);
 
@@ -297,11 +300,12 @@ export default function CatalogPage() {
 
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-10 space-y-8">
         
-        {/* LOADING STATE - SKELETON LOADER SELURUH HALAMAN */}
-        {isLoading ? (
-          <CatalogSkeleton />
+        {/* SKELETON AWAL SAAT PERTAMA KALI MEMUAT APPS */}
+        {isInitialLoading ? (
+          <FullPageSkeleton />
         ) : (
           <>
+            {/* HEADER KATALOG & FORM CONTROL STATIS */}
             <div className="flex flex-col border-b border-zinc-800/60 pb-8">
               <div className="w-full lg:w-full">
                 
@@ -393,8 +397,10 @@ export default function CatalogPage() {
               </div>
             </div>
 
-            {/* HASIL KATALOG ASET */}
-            {sortedAssets.length === 0 ? (
+            {/* HANYA AREA INI YANG MENJADI SKELETON SAAT SEARCHING / FILTERING */}
+            {isSearching ? (
+              <CardGridSkeleton />
+            ) : sortedAssets.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/20 py-24 text-center">
                 <Package className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
                 <p className="text-zinc-400">Aset tidak ditemukan. Coba ubah kata kunci atau filter status.</p>
@@ -507,7 +513,7 @@ export default function CatalogPage() {
                     <Button
                       variant="outline"
                       onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                      disabled={currentPage === 1 || isLoading}
+                      disabled={currentPage === 1 || isSearching}
                       className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white rounded-xl h-10 px-4 disabled:opacity-50"
                     >
                       <ChevronLeft className="h-4 w-4 mr-2" />
@@ -521,7 +527,7 @@ export default function CatalogPage() {
                     <Button
                       variant="outline"
                       onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                      disabled={currentPage === totalPages || isLoading}
+                      disabled={currentPage === totalPages || isSearching}
                       className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white rounded-xl h-10 px-4 disabled:opacity-50"
                     >
                       Selanjutnya
