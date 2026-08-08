@@ -273,7 +273,7 @@ export default function MyTransactionsPage() {
                     </div>
                     <div className="flex flex-col">
                       <span className="text-[10px] uppercase font-mono font-medium text-zinc-200/70 tracking-wider">Total Riwayat</span>
-                      <span className="text-sm font-bold text-white font-mono">{transactions.length} <span className="text-xs font-normal text-zinc-200/70 font-sans">Sesi</span></span>
+                      <span className="text-sm font-bold text-white font-mono">{transactions.length} <span className="text-xs font-normal text-zinc-200/70 font-sans">Peminjaman</span></span>
                     </div>
                   </div>
                 </div>
