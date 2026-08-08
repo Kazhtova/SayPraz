@@ -8,7 +8,7 @@ import Image from "next/image";
 import { 
   Search, Package, Calendar, Clock, Loader2, ArrowRight, CheckCircle2,
   FolderOpen, MapPin, Activity, Layers, ChevronLeft, ChevronRight, Filter, 
-  ArrowDownAZ, ArrowUpZA, ImageIcon
+  ArrowDownAZ, ArrowUpZA, X, Maximize2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,7 @@ interface Asset {
   name: string;
   brand: string;
   qr_code: string;
-  image_url?: string | null; // 👈 Properti URL Gambar dari Supabase
+  image_url?: string | null;
   category_name?: string;
   stock?: number;
   condition?: string;
@@ -37,6 +37,9 @@ export default function CatalogPage() {
   
   // State lacak gambar yang error dimuat
   const [failedImages, setFailedImages] = useState<Record<number, boolean>>({});
+
+  // === STATE MODAL LIGHTBOX GAMBAR FULLSCREEN ===
+  const [lightboxImage, setLightboxImage] = useState<{ url: string; title: string } | null>(null);
 
   // === STATE FILTER & SORTING ===
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
@@ -55,6 +58,17 @@ export default function CatalogPage() {
     localStorage.removeItem("role");
     router.replace("/login"); 
   }, [router]);
+
+  // Handler Tutup Modal Lightbox jika tombol ESC ditekan
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightboxImage(null);
+    };
+    if (lightboxImage) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxImage]);
 
   // === TEKNIK PARALLEL FETCHING ===
   const loadAvailableAssets = useCallback(async (search: string = "") => {
@@ -174,7 +188,6 @@ export default function CatalogPage() {
     }
   };
 
-  // Handler jika gambar gagal dimuat
   const handleImageError = (id: number) => {
     setFailedImages(prev => ({ ...prev, [id]: true }));
   };
@@ -321,19 +334,34 @@ export default function CatalogPage() {
                 return (
                   <div key={asset.id} className="group flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900/30 overflow-hidden hover:border-zinc-400 hover:bg-zinc-900/60 transition-all duration-300 shadow-sm relative">
                     
-                    {/* CONTAINER GAMBAR ASET */}
-                    <div className="h-48 bg-zinc-950 relative border-b border-zinc-800/50 overflow-hidden flex items-center justify-center">
-                      
+                    {/* CONTAINER GAMBAR ASET WITH CLICK TO LIGHTBOX */}
+                    <div 
+                      onClick={() => {
+                        if (hasValidImage) {
+                          setLightboxImage({ url: asset.image_url!, title: asset.name });
+                        }
+                      }}
+                      className={`h-48 bg-zinc-950 relative border-b border-zinc-800/50 overflow-hidden flex items-center justify-center ${hasValidImage ? "cursor-pointer group/img" : ""}`}
+                    >
                       {/* TAMPILKAN GAMBAR DARI SUPABASE S3 */}
                       {hasValidImage ? (
-                        <Image 
-                          src={asset.image_url!} 
-                          alt={asset.name}
-                          fill
-                          unoptimized // 👈 Menghindari timeout image optimization di local
-                          onError={() => handleImageError(asset.id)}
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
+                        <>
+                          <Image 
+                            src={asset.image_url!} 
+                            alt={asset.name}
+                            fill
+                            unoptimized
+                            onError={() => handleImageError(asset.id)}
+                            className="object-cover transition-transform duration-500 group-hover/img:scale-105"
+                          />
+                          
+                          {/* OVERLAY HOVER BADGE PERBESAR GAMBAR */}
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center p-3 z-10">
+                            <span className="bg-zinc-900/90 backdrop-blur-md text-[11px] text-zinc-200 px-3 py-1.5 rounded-lg border border-zinc-700/80 font-medium shadow-xl flex items-center gap-1.5">
+                              <Maximize2 className="h-3.5 w-3.5" /> Klik untuk memperbesar
+                            </span>
+                          </div>
+                        </>
                       ) : (
                         <div className="flex flex-col items-center justify-center text-zinc-700 group-hover:text-zinc-500 transition-colors">
                           <Package className="h-12 w-12 mb-1" />
@@ -343,11 +371,11 @@ export default function CatalogPage() {
 
                       {/* BADGE DINAMIS BERDASARKAN STATUS */}
                       {isAvailable ? (
-                        <span className="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[9px] font-bold border bg-emerald-950/80 text-emerald-400 border-emerald-500/30 backdrop-blur-md uppercase tracking-widest shadow-lg">
+                        <span className="absolute top-3 left-3 z-20 inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[9px] font-bold border bg-emerald-950/80 text-emerald-400 border-emerald-500/30 backdrop-blur-md uppercase tracking-widest shadow-lg">
                           <CheckCircle2 className="h-3 w-3" /> Tersedia
                         </span>
                       ) : (
-                        <span className="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[9px] font-bold border bg-rose-950/80 text-rose-400 border-rose-500/30 backdrop-blur-md uppercase tracking-widest shadow-lg">
+                        <span className="absolute top-3 left-3 z-20 inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[9px] font-bold border bg-rose-950/80 text-rose-400 border-rose-500/30 backdrop-blur-md uppercase tracking-widest shadow-lg">
                           <Activity className="h-3 w-3" /> Tidak Tersedia
                         </span>
                       )}
@@ -434,6 +462,48 @@ export default function CatalogPage() {
           </div>
         )}
       </main>
+
+      {/* MODAL OVERLAY LIGHTBOX GAMBAR FULLSCREEN */}
+      {lightboxImage && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-8 animate-in fade-in duration-200"
+          onClick={() => setLightboxImage(null)}
+        >
+          {/* Action Bar Modal */}
+          <div 
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 flex items-center gap-3 z-[101]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Button
+              type="button"
+              onClick={() => setLightboxImage(null)}
+              className="bg-zinc-800 hover:bg-zinc-900 text-white gap-2 h-11 px-6 font-semibold rounded-xl shadow-lg border border-zinc-700 transition-all"
+            >
+              <X className="h-4 w-4" />
+              Tutup
+            </Button>
+          </div>
+
+          {/* Container Gambar Utama Fullscreen */}
+          <div 
+            className="relative w-full max-w-5xl max-h-[85vh] h-[80vh] rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex items-center justify-center bg-zinc-950"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image 
+              src={lightboxImage.url} 
+              alt={lightboxImage.title} 
+              fill 
+              unoptimized
+              className="object-contain"
+              priority
+            />
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 sm:p-6 flex items-center justify-between">
+              <span className="text-sm font-semibold text-zinc-200">{lightboxImage.title}</span>
+              <span className="text-xs text-zinc-400 font-mono">Pratinjau Foto Aset</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal Pengajuan Peminjaman */}
       {selectedAsset && (
