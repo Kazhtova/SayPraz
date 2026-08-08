@@ -28,6 +28,69 @@ interface Asset {
   status?: string;
 }
 
+// =========================================================================
+// KOMPONEN SKELETON KATALOG (1:1 PRESISI DENGAN TAMPILAN ASLI)
+// =========================================================================
+function CatalogSkeleton() {
+  return (
+    <div className="space-y-8 animate-pulse">
+      {/* 1. HEADER & SEARCH CONTROLS SKELETON */}
+      <div className="flex flex-col border-b border-zinc-800/60 pb-8 space-y-8">
+        {/* Header Top Skeleton */}
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between border-b border-zinc-800/80 pb-6">
+          <div className="space-y-3 max-w-2xl w-full">
+            <div className="h-5 w-44 rounded-full bg-zinc-900 border border-zinc-800" />
+            <div className="h-8 w-72 rounded-lg bg-zinc-800" />
+            <div className="h-4 w-full sm:w-96 rounded bg-zinc-900" />
+          </div>
+          <div className="h-10 w-36 rounded-xl bg-zinc-900 border border-zinc-800/90" />
+        </div>
+
+        {/* Search & Filter Controls Skeleton */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="h-12 w-full sm:flex-1 lg:w-[65%] rounded-xl bg-zinc-900/60 border border-zinc-800" />
+          <div className="flex gap-3 w-full sm:w-auto">
+            <div className="h-12 w-full sm:w-36 rounded-xl bg-zinc-900/60 border border-zinc-800" />
+            <div className="h-12 w-full sm:w-28 rounded-xl bg-zinc-900/60 border border-zinc-800" />
+          </div>
+        </div>
+      </div>
+
+      {/* 2. CARD GRID SKELETON (16 ITEM) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {Array.from({ length: 8 }).map((_, index) => (
+          <div key={index} className="flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900/30 overflow-hidden shadow-sm">
+            {/* Skeleton Gambar Aset */}
+            <div className="h-48 bg-zinc-900/60 border-b border-zinc-800/50 relative">
+              <div className="absolute top-3 left-3 h-5 w-20 rounded-md bg-zinc-800" />
+            </div>
+
+            {/* Skeleton Detail Aset */}
+            <div className="flex-1 p-5 flex flex-col space-y-4">
+              <div className="h-5 w-24 rounded bg-zinc-800/80" />
+              <div className="space-y-2">
+                <div className="h-6 w-3/4 rounded bg-zinc-800" />
+                <div className="h-4 w-1/2 rounded bg-zinc-900" />
+              </div>
+              
+              {/* Grid 4 Atribut */}
+              <div className="grid grid-cols-2 gap-3 pt-2 pb-5 border-b border-zinc-800/60">
+                <div className="h-3 rounded bg-zinc-800/60" />
+                <div className="h-3 rounded bg-zinc-800/60" />
+                <div className="h-3 rounded bg-zinc-800/60" />
+                <div className="h-3 rounded bg-zinc-800/60" />
+              </div>
+
+              {/* Skeleton Tombol Aksi */}
+              <div className="h-10 rounded-xl bg-zinc-800/50 mt-auto" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function CatalogPage() {
   const router = useRouter();
   
@@ -234,264 +297,241 @@ export default function CatalogPage() {
 
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-10 space-y-8">
         
-        <div className="flex flex-col border-b border-zinc-800/60 pb-8">
-          <div className="w-full lg:w-full">
-            {/* HEADER KATALOG MODERN & ELEGAN */}
-            <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between mb-8 pb-6 border-b border-zinc-800/80">
-              
-              {/* SISI KIRI: SYSTEM BADGE, JUDUL & DESKRIPSI */}
-              <div className="space-y-3 max-w-2xl">
-                
-                {/* Portal Badge & Tanggal */}
-                <div className="flex items-center gap-2.5">
-                  <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-800 text-zinc-400">
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                    </span>
-                    Portal Sarpras Active
-                  </span>
-                  <span className="text-zinc-700">•</span>
-                  <span className="text-xs font-mono text-zinc-500">Katalog Digital</span>
-                </div>
-
-                {/* Judul Utama & Sub-Deskripsi */}
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-                    Jelajahi Aset Sarpras
-                  </h1>
-                  <p className="text-zinc-400 text-xs sm:text-sm mt-1.5 leading-relaxed">
-                    Temukan dan ajukan peminjaman alat praktik atau sarana prasarana sekolah yang Anda butuhkan secara terintegrasi dan real-time.
-                  </p>
-                </div>
-              </div>
-
-              {/* SISI KANAN: STATISTIK TOTAL ASET */}
-              {!isLoading && (
-                <div className="flex items-center gap-3 self-start md:self-auto shrink-0">
-                  <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-zinc-900/60 border border-zinc-800/90 text-xs font-semibold text-zinc-200 shadow-sm backdrop-blur-md">
-                    <div className="flex items-center justify-center p-1.5 rounded-lg bg-zinc-800 text-zinc-200">
-                      <Package className="h-4 w-4" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] uppercase font-mono font-medium text-zinc-200/70 tracking-wider">Total Aset</span>
-                      <span className="text-sm font-bold text-white font-mono">{allAssets.length} <span className="text-xs font-normal text-zinc-200/70 font-sans">Barang</span></span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-            </div>
-            
-            {/* KONTROL PENCARIAN, FILTER, DAN SORTING */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <div className="relative w-full sm:flex-1 lg:w-[65%]">
-                <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-                <Input 
-                  placeholder="Cari proyektor, mikrotik, kamera..." 
-                  value={searchQuery}
-                  onChange={handleSearchChange} 
-                  className="pl-10 bg-zinc-900/40 border-zinc-700 text-sm h-12 rounded-xl focus-visible:ring-zinc-200/30 transition-all w-full"
-                />
-              </div>
-
-              <div className="flex gap-3 w-full sm:w-auto">
-                <div className="relative flex-1 sm:flex-none">
-                  <select 
-                    value={statusFilter}
-                    onChange={(e) => {
-                      setStatusFilter(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                    className="w-full sm:w-auto h-12 px-4 pr-10 appearance-none bg-zinc-900/40 border border-zinc-700 rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-1 focus:ring-zinc-500 cursor-pointer transition-colors hover:border-zinc-500"
-                  >
-                    <option value="all">Semua Status</option>
-                    <option value="available">Tersedia Saja</option>
-                    <option value="unavailable">Tidak Tersedia</option>
-                  </select>
-                  <Filter className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
-                </div>
-
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    setSortOrder(prev => prev === "asc" ? "desc" : "asc");
-                    setCurrentPage(1);
-                  }}
-                  className="h-12 bg-zinc-900/40 border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white rounded-xl px-4 w-full sm:w-auto flex-1 sm:flex-none"
-                >
-                  {sortOrder === "asc" ? <ArrowDownAZ className="h-4 w-4 mr-2 text-zinc-200" /> : <ArrowUpZA className="h-4 w-4 mr-2 text-zinc-200" />}
-                  {sortOrder === "asc" ? "A - Z" : "Z - A"}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* LOADING STATE - SKELETON LOADER */}
+        {/* LOADING STATE - SKELETON LOADER SELURUH HALAMAN */}
         {isLoading ? (
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {Array.from({ length: 8 }).map((_, index) => (
-                <div key={index} className="flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900/30 overflow-hidden shadow-sm animate-pulse">
-                  <div className="h-48 bg-zinc-800/40 border-b border-zinc-800/50" />
-                  <div className="flex-1 p-5 flex flex-col space-y-4">
-                    <div className="h-4 w-20 bg-zinc-800 rounded" />
-                    <div className="h-6 w-3/4 bg-zinc-800 rounded" />
-                    <div className="h-4 w-1/2 bg-zinc-800 rounded mb-2" />
-                    <div className="grid grid-cols-2 gap-2 pb-5 border-b border-zinc-800/60">
-                      <div className="h-3 bg-zinc-800 rounded" />
-                      <div className="h-3 bg-zinc-800 rounded" />
-                      <div className="h-3 bg-zinc-800 rounded" />
-                      <div className="h-3 bg-zinc-800 rounded" />
+          <CatalogSkeleton />
+        ) : (
+          <>
+            <div className="flex flex-col border-b border-zinc-800/60 pb-8">
+              <div className="w-full lg:w-full">
+                
+                {/* HEADER KATALOG MODERN & ELEGAN */}
+                <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between mb-8 pb-6 border-b border-zinc-800/80">
+                  
+                  {/* SISI KIRI: SYSTEM BADGE, JUDUL & DESKRIPSI */}
+                  <div className="space-y-3 max-w-2xl">
+                    <div className="flex items-center gap-2.5">
+                      <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-mono font-medium bg-zinc-900 border border-zinc-800 text-zinc-400">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        Portal Sarpras Active
+                      </span>
+                      <span className="text-zinc-700">•</span>
+                      <span className="text-xs font-mono text-zinc-500">Katalog Digital</span>
                     </div>
-                    <div className="h-10 bg-zinc-800/50 rounded-xl mt-auto" />
+
+                    <div>
+                      <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
+                        Jelajahi Aset Sarpras
+                      </h1>
+                      <p className="text-zinc-400 text-xs sm:text-sm mt-1.5 leading-relaxed">
+                        Temukan dan ajukan peminjaman alat praktik atau sarana prasarana sekolah yang Anda butuhkan secara terintegrasi dan real-time.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* SISI KANAN: STATISTIK TOTAL ASET */}
+                  <div className="flex items-center gap-3 self-start md:self-auto shrink-0">
+                    <div className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-zinc-900/60 border border-zinc-800/90 text-xs font-semibold text-zinc-200 shadow-sm backdrop-blur-md">
+                      <div className="flex items-center justify-center p-1.5 rounded-lg bg-zinc-800 text-zinc-200">
+                        <Package className="h-4 w-4" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[10px] uppercase font-mono font-medium text-zinc-200/70 tracking-wider">Total Aset</span>
+                        <span className="text-sm font-bold text-white font-mono">{allAssets.length} <span className="text-xs font-normal text-zinc-200/70 font-sans">Barang</span></span>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+                
+                {/* KONTROL PENCARIAN, FILTER, DAN SORTING */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="relative w-full sm:flex-1 lg:w-[65%]">
+                    <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                    <Input 
+                      placeholder="Cari proyektor, mikrotik, kamera..." 
+                      value={searchQuery}
+                      onChange={handleSearchChange} 
+                      className="pl-10 bg-zinc-900/40 border-zinc-700 text-sm h-12 rounded-xl focus-visible:ring-zinc-200/30 transition-all w-full"
+                    />
+                  </div>
+
+                  <div className="flex gap-3 w-full sm:w-auto">
+                    <div className="relative flex-1 sm:flex-none">
+                      <select 
+                        value={statusFilter}
+                        onChange={(e) => {
+                          setStatusFilter(e.target.value);
+                          setCurrentPage(1);
+                        }}
+                        className="w-full sm:w-auto h-12 px-4 pr-10 appearance-none bg-zinc-900/40 border border-zinc-700 rounded-xl text-sm text-zinc-200 focus:outline-none focus:ring-1 focus:ring-zinc-500 cursor-pointer transition-colors hover:border-zinc-500"
+                      >
+                        <option value="all">Semua Status</option>
+                        <option value="available">Tersedia Saja</option>
+                        <option value="unavailable">Tidak Tersedia</option>
+                      </select>
+                      <Filter className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
+                    </div>
+
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        setSortOrder(prev => prev === "asc" ? "desc" : "asc");
+                        setCurrentPage(1);
+                      }}
+                      className="h-12 bg-zinc-900/40 border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white rounded-xl px-4 w-full sm:w-auto flex-1 sm:flex-none"
+                    >
+                      {sortOrder === "asc" ? <ArrowDownAZ className="h-4 w-4 mr-2 text-zinc-200" /> : <ArrowUpZA className="h-4 w-4 mr-2 text-zinc-200" />}
+                      {sortOrder === "asc" ? "A - Z" : "Z - A"}
+                    </Button>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        ) : sortedAssets.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/20 py-24 text-center">
-            <Package className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
-            <p className="text-zinc-400">Aset tidak ditemukan. Coba ubah kata kunci atau filter status.</p>
-          </div>
-        ) : (
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {paginatedAssets.map((asset) => {
-                const isAvailable = asset.status === 'available';
-                const hasValidImage = asset.image_url && !failedImages[asset.id];
 
-                return (
-                  <div key={asset.id} className="group flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900/30 overflow-hidden hover:border-zinc-400 hover:bg-zinc-900/60 transition-all duration-300 shadow-sm relative">
-                    
-                    {/* CONTAINER GAMBAR ASET WITH CLICK TO LIGHTBOX */}
-                    <div 
-                      onClick={() => {
-                        if (hasValidImage) {
-                          setLightboxImage({ url: asset.image_url!, title: asset.name });
-                        }
-                      }}
-                      className={`h-48 bg-zinc-950 relative border-b border-zinc-800/50 overflow-hidden flex items-center justify-center ${hasValidImage ? "cursor-pointer group/img" : ""}`}
-                    >
-                      {/* TAMPILKAN GAMBAR DARI SUPABASE S3 */}
-                      {hasValidImage ? (
-                        <>
-                          <Image 
-                            src={asset.image_url!} 
-                            alt={asset.name}
-                            fill
-                            unoptimized
-                            onError={() => handleImageError(asset.id)}
-                            className="object-cover transition-transform duration-500 group-hover/img:scale-105"
-                          />
-                          
-                          {/* OVERLAY HOVER BADGE PERBESAR GAMBAR */}
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center p-3 z-10">
-                            <span className="bg-zinc-900/90 backdrop-blur-md text-[11px] text-zinc-200 px-3 py-1.5 rounded-lg border border-zinc-700/80 font-medium shadow-xl flex items-center gap-1.5">
-                              <Maximize2 className="h-3.5 w-3.5" /> Klik untuk memperbesar
+              </div>
+            </div>
+
+            {/* HASIL KATALOG ASET */}
+            {sortedAssets.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/20 py-24 text-center">
+                <Package className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
+                <p className="text-zinc-400">Aset tidak ditemukan. Coba ubah kata kunci atau filter status.</p>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {paginatedAssets.map((asset) => {
+                    const isAvailable = asset.status === 'available';
+                    const hasValidImage = asset.image_url && !failedImages[asset.id];
+
+                    return (
+                      <div key={asset.id} className="group flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900/30 overflow-hidden hover:border-zinc-400 hover:bg-zinc-900/60 transition-all duration-300 shadow-sm relative">
+                        
+                        {/* CONTAINER GAMBAR ASET WITH LIGHTBOX */}
+                        <div 
+                          onClick={() => {
+                            if (hasValidImage) {
+                              setLightboxImage({ url: asset.image_url!, title: asset.name });
+                            }
+                          }}
+                          className={`h-48 bg-zinc-950 relative border-b border-zinc-800/50 overflow-hidden flex items-center justify-center ${hasValidImage ? "cursor-pointer group/img" : ""}`}
+                        >
+                          {hasValidImage ? (
+                            <>
+                              <Image 
+                                src={asset.image_url!} 
+                                alt={asset.name}
+                                fill
+                                unoptimized
+                                onError={() => handleImageError(asset.id)}
+                                className="object-cover transition-transform duration-500 group-hover/img:scale-105"
+                              />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center p-3 z-10">
+                                <span className="bg-zinc-900/90 backdrop-blur-md text-[11px] text-zinc-200 px-3 py-1.5 rounded-lg border border-zinc-700/80 font-medium shadow-xl flex items-center gap-1.5">
+                                  <Maximize2 className="h-3.5 w-3.5" /> Klik untuk memperbesar
+                                </span>
+                              </div>
+                            </>
+                          ) : (
+                            <div className="flex flex-col items-center justify-center text-zinc-700 group-hover:text-zinc-500 transition-colors">
+                              <Package className="h-12 w-12 mb-1" />
+                              <span className="text-[10px] text-zinc-600 font-mono">Tanpa Foto</span>
+                            </div>
+                          )}
+
+                          {isAvailable ? (
+                            <span className="absolute top-3 left-3 z-20 inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[9px] font-bold border bg-emerald-950/80 text-emerald-400 border-emerald-500/30 backdrop-blur-md uppercase tracking-widest shadow-lg">
+                              <CheckCircle2 className="h-3 w-3" /> Tersedia
+                            </span>
+                          ) : (
+                            <span className="absolute top-3 left-3 z-20 inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[9px] font-bold border bg-rose-950/80 text-rose-400 border-rose-500/30 backdrop-blur-md uppercase tracking-widest shadow-lg">
+                              <Activity className="h-3 w-3" /> Tidak Tersedia
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex-1 p-5 flex flex-col">
+                          <div className="mb-3">
+                            <span className="text-[10px] font-mono font-medium text-zinc-200 bg-zinc-800 px-2 py-1 rounded border border-zinc-600 shadow-sm">
+                              {asset.qr_code}
                             </span>
                           </div>
-                        </>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center text-zinc-700 group-hover:text-zinc-500 transition-colors">
-                          <Package className="h-12 w-12 mb-1" />
-                          <span className="text-[10px] text-zinc-600 font-mono">Tanpa Foto</span>
-                        </div>
-                      )}
+                          
+                          <h3 className={`text-lg font-bold leading-tight transition-colors ${isAvailable ? "text-zinc-100 group-hover:text-zinc-100" : "text-zinc-500"}`}>
+                            {asset.name}
+                          </h3>
+                          <p className="text-sm font-normal text-zinc-400 mt-1 mb-5">{asset.brand}</p>
+                          
+                          <div className="grid grid-cols-2 gap-y-3 gap-x-2 mt-auto pb-5 border-b border-zinc-800/60 mb-5">
+                            <div className="flex items-center gap-2 text-xs font-normal text-zinc-400">
+                              <FolderOpen className="h-3.5 w-3.5 text-zinc-500" />
+                              <span className="truncate">{asset.category_name || "Umum"}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-xs font-normal text-zinc-400">
+                              <Layers className="h-3.5 w-3.5 text-zinc-500" />
+                              <span>Stok: {asset.stock || 1}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-xs font-normal text-zinc-400">
+                              <Activity className="h-3.5 w-3.5 text-zinc-500" />
+                              <span>{asset.condition || "Kondisi Baik"}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-xs font-normal text-zinc-400">
+                              <MapPin className="h-3.5 w-3.5 text-zinc-500" />
+                              <span className="truncate">{asset.location || "Pusat"}</span>
+                            </div>
+                          </div>
 
-                      {/* BADGE DINAMIS BERDASARKAN STATUS */}
-                      {isAvailable ? (
-                        <span className="absolute top-3 left-3 z-20 inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[9px] font-bold border bg-emerald-950/80 text-emerald-400 border-emerald-500/30 backdrop-blur-md uppercase tracking-widest shadow-lg">
-                          <CheckCircle2 className="h-3 w-3" /> Tersedia
-                        </span>
-                      ) : (
-                        <span className="absolute top-3 left-3 z-20 inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[9px] font-bold border bg-rose-950/80 text-rose-400 border-rose-500/30 backdrop-blur-md uppercase tracking-widest shadow-lg">
-                          <Activity className="h-3 w-3" /> Tidak Tersedia
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex-1 p-5 flex flex-col">
-                      <div className="mb-3">
-                        <span className="text-[10px] font-mono font-medium text-zinc-200 bg-zinc-800 px-2 py-1 rounded border border-zinc-600 shadow-sm">
-                          {asset.qr_code}
-                        </span>
-                      </div>
-                      
-                      <h3 className={`text-lg font-bold leading-tight transition-colors ${isAvailable ? "text-zinc-100 group-hover:text-zinc-100" : "text-zinc-500"}`}>
-                        {asset.name}
-                      </h3>
-                      <p className="text-sm font-normal text-zinc-400 mt-1 mb-5">{asset.brand}</p>
-                      
-                      <div className="grid grid-cols-2 gap-y-3 gap-x-2 mt-auto pb-5 border-b border-zinc-800/60 mb-5">
-                        <div className="flex items-center gap-2 text-xs font-normal text-zinc-400">
-                          <FolderOpen className="h-3.5 w-3.5 text-zinc-500" />
-                          <span className="truncate">{asset.category_name || "Umum"}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-xs font-normal text-zinc-400">
-                          <Layers className="h-3.5 w-3.5 text-zinc-500" />
-                          <span>Stok: {asset.stock || 1}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-xs font-normal text-zinc-400">
-                          <Activity className="h-3.5 w-3.5 text-zinc-500" />
-                          <span>{asset.condition || "Kondisi Baik"}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-xs font-normal text-zinc-400">
-                          <MapPin className="h-3.5 w-3.5 text-zinc-500" />
-                          <span className="truncate">{asset.location || "Pusat"}</span>
+                          <Button 
+                            onClick={() => isAvailable && setSelectedAsset(asset)}
+                            disabled={!isAvailable}
+                            className={`mx-2 mb-2 gap-2 font-medium rounded-xl transition-all h-10 ${
+                              isAvailable 
+                                ? "bg-indigo-500/10 hover:bg-indigo-950/10 border border-indigo-400/40 text-zinc-200" 
+                                : "bg-zinc-800/30 text-zinc-600 border border-zinc-800/50 cursor-not-allowed"
+                            }`}
+                          >
+                            {isAvailable ? "Ajukan Pinjam" : "Tidak Tersedia"} 
+                            {isAvailable && <ArrowRight className="h-4 w-4 opacity-70" />}
+                          </Button>
                         </div>
                       </div>
+                    );
+                  })}
+                </div>
 
-                      {/* TOMBOL DINAMIS BERDASARKAN STATUS */}
-                      <Button 
-                        onClick={() => isAvailable && setSelectedAsset(asset)}
-                        disabled={!isAvailable}
-                        className={`mx-2 mb-2 gap-2 font-medium rounded-xl transition-all h-10 ${
-                          isAvailable 
-                            ? "bg-indigo-500/10 hover:bg-indigo-950/10 border border-indigo-400/40 text-zinc-200" 
-                            : "bg-zinc-800/30 text-zinc-600 border border-zinc-800/50 cursor-not-allowed"
-                        }`}
-                      >
-                        {isAvailable ? "Ajukan Pinjam" : "Tidak Tersedia"} 
-                        {isAvailable && <ArrowRight className="h-4 w-4 opacity-70" />}
-                      </Button>
-                    </div>
+                {/* NAVIGASI PAGINATION */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-4 pt-4 border-t border-zinc-800/50">
+                    <Button
+                      variant="outline"
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1 || isLoading}
+                      className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white rounded-xl h-10 px-4 disabled:opacity-50"
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-2" />
+                      Sebelumnya
+                    </Button>
+                    
+                    <span className="text-sm font-medium text-zinc-400">
+                      Halaman <span className="text-zinc-100">{currentPage}</span> dari <span className="text-zinc-100">{totalPages}</span>
+                    </span>
+                    
+                    <Button
+                      variant="outline"
+                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages || isLoading}
+                      className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white rounded-xl h-10 px-4 disabled:opacity-50"
+                    >
+                      Selanjutnya
+                      <ChevronRight className="h-4 w-4 ml-2" />
+                    </Button>
                   </div>
-                );
-              })}
-            </div>
-
-            {/* NAVIGASI PAGINATION */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-4 pt-4 border-t border-zinc-800/50">
-                <Button
-                  variant="outline"
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1 || isLoading}
-                  className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white rounded-xl h-10 px-4 disabled:opacity-50"
-                >
-                  <ChevronLeft className="h-4 w-4 mr-2" />
-                  Sebelumnya
-                </Button>
-                
-                <span className="text-sm font-medium text-zinc-400">
-                  Halaman <span className="text-zinc-100">{currentPage}</span> dari <span className="text-zinc-100">{totalPages}</span>
-                </span>
-                
-                <Button
-                  variant="outline"
-                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                  disabled={currentPage === totalPages || isLoading}
-                  className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white rounded-xl h-10 px-4 disabled:opacity-50"
-                >
-                  Selanjutnya
-                  <ChevronRight className="h-4 w-4 ml-2" />
-                </Button>
+                )}
               </div>
             )}
-          </div>
+          </>
         )}
       </main>
 
@@ -501,7 +541,6 @@ export default function CatalogPage() {
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-8 animate-in fade-in duration-200"
           onClick={() => setLightboxImage(null)}
         >
-          {/* Action Bar Modal */}
           <div 
             className="absolute top-4 right-4 sm:top-6 sm:right-6 flex items-center gap-3 z-[101]"
             onClick={(e) => e.stopPropagation()}
@@ -516,7 +555,6 @@ export default function CatalogPage() {
             </Button>
           </div>
 
-          {/* Container Gambar Utama Fullscreen */}
           <div 
             className="relative w-full max-w-5xl max-h-[85vh] h-[80vh] rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex items-center justify-center bg-zinc-950"
             onClick={(e) => e.stopPropagation()}
@@ -537,7 +575,7 @@ export default function CatalogPage() {
         </div>
       )}
 
-      {/* Modal Pengajuan Peminjaman */}
+      {/* MODAL PENGAJUAN PEMINJAMAN */}
       {selectedAsset && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 w-full max-w-md shadow-2xl">
