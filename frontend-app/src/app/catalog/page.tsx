@@ -320,7 +320,7 @@ export default function CatalogPage() {
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                           <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                         </span>
-                        Portal Sarpras Active
+                        App Sarpras Active
                       </span>
                       <span className="text-zinc-700">•</span>
                       <span className="text-xs font-mono text-zinc-500">Katalog Digital</span>
@@ -331,7 +331,7 @@ export default function CatalogPage() {
                         Jelajahi Aset Sarpras
                       </h1>
                       <p className="text-zinc-400 text-xs sm:text-sm mt-1.5 leading-relaxed">
-                        Temukan dan ajukan peminjaman alat praktik atau sarana prasarana sekolah yang Anda butuhkan secara terintegrasi dan real-time.
+                        Temukan dan ajukan peminjaman alat praktik atau sarana prasarana sekolah yang Anda butuhkan secara mudah dan cepat.
                       </p>
                     </div>
                   </div>
