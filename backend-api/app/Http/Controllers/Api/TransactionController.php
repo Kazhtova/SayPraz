@@ -61,10 +61,11 @@ class TransactionController extends Controller
             ], 400);
         }
 
+        // 💡 DISESUAIKAN DENGAN PHPMYADMIN: borrowed_date
         $transaction = Transaction::create([
             'asset_id'                  => $request->asset_id,
             'user_id'                   => Auth::id(),
-            'borrowed_at'               => now(),
+            'borrowed_date'             => now(),
             'expected_returned_date'    => $request->expected_returned_date,
             'status'                    => TransactionStatus::PENDING
         ]);
@@ -106,7 +107,8 @@ class TransactionController extends Controller
                    ($transaction->status === TransactionStatus::APPROVED || $transaction->status === TransactionStatus::OVERDUE)){
                 
                 $transaction->status = TransactionStatus::RETURNED;
-                $transaction->returned_at = now(); 
+                // 💡 DISESUAIKAN DENGAN PHPMYADMIN: actual_returned_date
+                $transaction->actual_returned_date = now(); 
                 $newStatus = 'available';
                 $asset->update(['status' => $newStatus]);
             } 

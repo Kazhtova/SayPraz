@@ -14,22 +14,19 @@ class Transaction extends Model
     protected $fillable = [
         'asset_id', 
         'user_id', 
-        'status',
+        'borrowed_date', 
         'expected_returned_date', 
-        'borrowed_at', 
-        'returned_at', 
+        'actual_returned_date', 
+        'status'
     ];
 
-    /**
-     * Dapatkan aturan casting atribut.
-     */
     protected function casts(): array
     {
         return [
             'status'                 => TransactionStatus::class,
             'expected_returned_date' => 'date',
-            'borrowed_at'            => 'datetime',
-            'returned_at'            => 'datetime',
+            'borrowed_date'          => 'datetime',
+            'actual_returned_date'   => 'datetime',
         ];
     }
 
