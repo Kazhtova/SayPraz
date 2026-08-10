@@ -249,7 +249,7 @@ export default function MyTransactionsPage() {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                       </span>
-                      System Transaction Log Active
+                      My Transaction Log Active
                     </span>
                     <span className="text-zinc-700">•</span>
                     <span className="text-xs font-mono text-zinc-500">Riwayat Pengguna</span>
