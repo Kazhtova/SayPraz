@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Asset;
 use App\Models\AssetLog;
 use App\Models\Transaction;
+use App\Enums\TransactionStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Enum;
 
 class TransactionController extends Controller
 {
@@ -62,9 +64,9 @@ class TransactionController extends Controller
         $transaction = Transaction::create([
             'asset_id'                  => $request->asset_id,
             'user_id'                   => Auth::id(),
-            'borrowed_date'             => now(),
+            'borrowed_at'               => now(),
             'expected_returned_date'    => $request->expected_returned_date,
-            'status'                    => 'pending'
+            'status'                    => TransactionStatus::PENDING
         ]);
 
         return response()->json([
@@ -74,9 +76,9 @@ class TransactionController extends Controller
         ], 201);
     }
 
-    public function updateStatus(Request $request,int $id){
+    public function updateStatus(Request $request, int $id){
         $validator = Validator::make($request->all(), [
-            'status'    => 'in:approved,rejected,returned',
+            'status'    => ['required', new Enum(TransactionStatus::class)],
             'notes'     => 'nullable|string'
         ]);
 
@@ -93,17 +95,23 @@ class TransactionController extends Controller
             $oldStatus = $asset->status;
             $newStatus = $oldStatus;
 
-            if($request->status === 'approved' && $transaction->status === 'pending'){
-                $transaction->status = 'approved';
+            $requestedStatus = TransactionStatus::from($request->status);
+
+            if($requestedStatus === TransactionStatus::APPROVED && $transaction->status === TransactionStatus::PENDING){
+                $transaction->status = TransactionStatus::APPROVED;
                 $newStatus = 'borrowed';
                 $asset->update(['status' => $newStatus]);
-            } elseif ($request->status === 'returned' && $transaction->status === 'approved'){
-                $transaction->status = 'returned';
-                $transaction->actual_returned_date = now();
+            } 
+            elseif ($requestedStatus === TransactionStatus::RETURNED && 
+                   ($transaction->status === TransactionStatus::APPROVED || $transaction->status === TransactionStatus::OVERDUE)){
+                
+                $transaction->status = TransactionStatus::RETURNED;
+                $transaction->returned_at = now(); 
                 $newStatus = 'available';
                 $asset->update(['status' => $newStatus]);
-            } elseif ($request->status === 'rejected'){
-                $transaction->status = 'rejected';
+            } 
+            elseif ($requestedStatus === TransactionStatus::REJECTED){
+                $transaction->status = TransactionStatus::REJECTED;
             }
 
             $transaction->save();
