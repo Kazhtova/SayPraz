@@ -39,7 +39,6 @@ class CheckOverdueTransactions extends Command
             
             $count++;
 
-            // Best Practice: Catat di file log (storage/logs/laravel.log) untuk audit
             Log::warning("Auto-Update: Transaksi ID {$transaction->id} (Asset ID: {$transaction->asset_id}) ditandai sebagai TERLAMBAT.");
         }
 

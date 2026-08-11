@@ -12,5 +12,9 @@
         "laravel-vite-plugin": "^3.1",
         "tailwindcss": "^4.0.0",
         "vite": "^8.0.0"
+    },
+    "dependencies": {
+        "@yudiel/react-qr-scanner": "^2.6.0",
+        "qrcode.react": "^4.2.0"
     }
 }
