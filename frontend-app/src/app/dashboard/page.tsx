@@ -9,7 +9,7 @@ import {
   Boxes, Package, AlertTriangle, CheckCircle2, ArrowUpRight, ArrowDownRight,
   Search, Plus, RefreshCw, ChevronLeft, ChevronRight, Filter, 
   SlidersHorizontal, Pencil, History, X, Activity, Clock, Download,
-  BarChart3
+  BarChart3, QrCode
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,6 +69,7 @@ function TableRowSkeleton() {
       </td>
       <td className="px-6 py-4 text-center">
         <div className="flex justify-center gap-1">
+          <div className="h-8 w-8 rounded-md bg-zinc-800" />
           <div className="h-8 w-8 rounded-md bg-zinc-800" />
           <div className="h-8 w-8 rounded-md bg-zinc-800" />
         </div>
@@ -572,6 +573,7 @@ export default function DashboardPage() {
                       
                       <td className="px-6 py-4 text-center">
                         <div className="flex justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <Button variant="ghost" size="icon" onClick={() => router.push(`/dashboard/assets/print-qr/${item.id}`)} className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-700/50 rounded-md" title="Print QR Code"><QrCode className="h-4 w-4" /></Button>
                           <Button variant="ghost" size="icon" onClick={() => handleOpenLogs(item.id, item.name)} className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-700/50 rounded-md" title="Riwayat Aset"><History className="h-4 w-4" /></Button>
                           <Button variant="ghost" size="icon" onClick={() => router.push(`/dashboard/edit/${item.id}`)} className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-700/50 rounded-md" title="Kelola Aset"><Pencil className="h-4 w-4" /></Button>
                         </div>
