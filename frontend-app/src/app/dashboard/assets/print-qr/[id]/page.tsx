@@ -1,11 +1,10 @@
-/* eslint-disable react-hooks/static-components */
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
-import { Printer, ArrowLeft, Loader2, AlertCircle, ScanLine } from "lucide-react";
+import { Printer, ArrowLeft, AlertCircle, ScanLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { API_URL } from "@/lib/constants";
 
@@ -16,6 +15,66 @@ interface Asset {
   qr_code: string;
   category_name?: string;
   purchase_year?: number;
+}
+
+// =========================================================================
+// BEST PRACTICE: Pindahkan style statis ke luar agar tidak re-render
+// =========================================================================
+const FontKillerStyles = () => (
+  <style dangerouslySetInnerHTML={{__html: `
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+    * { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important; }
+    
+    @media print {
+      @page { size: 50mm 50mm; margin: 0; }
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  `}} />
+);
+
+// =========================================================================
+// SKELETON KHUSUS HALAMAN PRINT QR (PRESISI 1:1 DENGAN STIKER ASLI)
+// =========================================================================
+function PrintSkeleton() {
+  return (
+    <div className="min-h-screen bg-zinc-950 py-12 flex flex-col items-center relative overflow-hidden font-sans">
+      {/* Efek Glow Latar Belakang */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
+
+      {/* Skeleton Navigasi & Kontrol */}
+      <div className="relative z-10 w-full max-w-sm mb-10 flex items-center justify-between bg-zinc-900/60 backdrop-blur-xl p-4 rounded-2xl border border-zinc-800/80 shadow-2xl animate-pulse">
+        <div className="h-10 w-28 bg-zinc-800 rounded-xl"></div>
+        <div className="h-10 w-28 bg-zinc-800 rounded-xl"></div>
+      </div>
+
+      {/* Skeleton Kanvas Kertas Stiker */}
+      <div className="relative z-10 bg-white border border-zinc-200 p-6 rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center w-[320px] animate-pulse">
+        
+        {/* Skeleton Header Stiker */}
+        <div className="text-center mb-2 w-full border-b-[1.5px] border-zinc-200 pb-1.5 flex flex-col items-center gap-1.5">
+          <div className="h-5 w-40 bg-zinc-200 rounded-md"></div>
+          <div className="h-2 w-24 bg-zinc-200 rounded-sm"></div>
+        </div>
+
+        {/* Skeleton Kotak QR Code */}
+        <div className="bg-zinc-200 w-[164px] h-[164px] rounded-lg mb-2"></div>
+
+        {/* Skeleton Identitas Aset */}
+        <div className="text-center w-full flex flex-col items-center gap-2 mt-2">
+          <div className="h-4 w-48 bg-zinc-200 rounded-md"></div>
+          <div className="h-2 w-32 bg-zinc-200 rounded-sm mb-1"></div>
+          <div className="h-5 w-32 bg-zinc-200 rounded-md mt-0.5"></div>
+        </div>
+
+      </div>
+
+      {/* Skeleton Panduan Pengguna */}
+      <div className="relative z-10 mt-10 flex flex-col items-center gap-2 animate-pulse">
+        <div className="h-3 w-64 bg-zinc-800/60 rounded-sm"></div>
+        <div className="h-2 w-48 bg-zinc-800/60 rounded-sm"></div>
+      </div>
+    </div>
+  );
 }
 
 export default function PrintQrPage() {
@@ -64,26 +123,13 @@ export default function PrintQrPage() {
     window.print();
   };
 
-  // Menyamakan font dengan keseluruhan aplikasi
-  const FontKillerStyles = () => (
-    <style dangerouslySetInnerHTML={{__html: `
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
-      * { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important; }
-      
-      @media print {
-        @page { size: 50mm 50mm; margin: 0; }
-        body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      }
-    `}} />
-  );
-
+  // Render Skeleton saat data sedang di-fetch
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-950 text-zinc-100">
+      <>
         <FontKillerStyles />
-        <Loader2 className="h-10 w-10 animate-spin text-indigo-500 mb-4" />
-        <p className="font-medium text-zinc-400">Menyiapkan kanvas cetak...</p>
-      </div>
+        <PrintSkeleton />
+      </>
     );
   }
 
@@ -112,9 +158,9 @@ export default function PrintQrPage() {
       {/* KONTROL UI NAVIGASI & CETAK (GLASSMORPHISM) */}
       <div className="print:hidden relative z-10 w-full max-w-sm mb-10 flex items-center justify-between bg-zinc-900/60 backdrop-blur-xl p-4 rounded-2xl border border-zinc-800/80 shadow-2xl">
         <Button variant="ghost" onClick={() => router.back()} className="text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl h-10 transition-colors">
-          <ArrowLeft className="h-4 w-4 mr-2" /> Batal
+          <ArrowLeft className="h-4 w-4 mr-2" /> Kembali
         </Button>
-        <Button onClick={handlePrint} className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-10 px-5 shadow-lg shadow-indigo-900/20 transition-all hover:scale-105 active:scale-95">
+        <Button onClick={handlePrint} className="bg-zinc-600 hover:bg-zinc-800 text-white rounded-xl h-10 px-5 shadow-lg shadow-zinc-900/40 transition-all hover:scale-105 active:scale-95">
           <Printer className="h-4 w-4 mr-2" /> Cetak
         </Button>
       </div>
@@ -137,7 +183,7 @@ export default function PrintQrPage() {
         <div className="bg-white p-0.5 mb-2 relative z-10">
           <QRCodeSVG 
             value={asset.qr_code} 
-            size={164} // <-- DIPERBESAR DARI 128 KE 164
+            size={164} 
             bgColor={"#ffffff"} 
             fgColor={"#000000"} 
             level={"M"} 
@@ -161,7 +207,7 @@ export default function PrintQrPage() {
       {/* PANDUAN PENGGUNA (HANYA DI LAYAR) */}
       <div className="print:hidden relative z-10 mt-10 text-center space-y-1">
         <p className="text-xs font-medium text-zinc-500">
-          <span className="text-indigo-400 font-bold">Tips:</span> Gunakan kertas stiker ukuran <span className="text-zinc-300">50mm x 50mm</span> (Printer Thermal).
+          <span className="text-slate-100 font-bold">Tips:</span> Gunakan kertas stiker ukuran <span className="text-zinc-300">50mm x 50mm</span> (Printer Thermal).
         </p>
         <p className="text-[11px] text-zinc-600">
           Pastikan opsi margin pada browser diatur ke None saat mencetak.
