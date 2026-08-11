@@ -8,12 +8,14 @@ import Image from "next/image";
 import { 
   Search, Package, Calendar, Clock, Loader2, ArrowRight, CheckCircle2,
   FolderOpen, MapPin, Activity, Layers, ChevronLeft, ChevronRight, Filter, 
-  ArrowDownAZ, ArrowUpZA, X, Maximize2
+  ArrowDownAZ, ArrowUpZA, X, Maximize2, QrCode
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { API_URL } from "@/lib/constants";
 import { Navbar } from "@/components/Navbar";
+import { QRCodeSVG } from "qrcode.react";
+import { QrScannerModal } from "@/components/QrScannerModal";
 
 interface Asset {
   id: number;
@@ -106,6 +108,9 @@ export default function CatalogPage() {
   
   const [failedImages, setFailedImages] = useState<Record<number, boolean>>({});
   const [lightboxImage, setLightboxImage] = useState<{ url: string; title: string } | null>(null);
+
+  // === STATE SCANNER QR ===
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   // === STATE FILTER & SORTING ===
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
@@ -258,6 +263,23 @@ export default function CatalogPage() {
     setFailedImages(prev => ({ ...prev, [id]: true }));
   };
 
+  // Logika ketika kamera berhasil membaca QR Code
+  const handleScanResult = (decodedText: string) => {
+    setIsScannerOpen(false);
+
+    const foundAsset = allAssets.find(asset => asset.qr_code === decodedText);
+
+    if (foundAsset) {
+      if (foundAsset.status === 'available') {
+        setSelectedAsset(foundAsset); 
+      } else {
+        alert(`Aset "${foundAsset.name}" sedang tidak tersedia (Status: ${foundAsset.status}).`);
+      }
+    } else {
+      alert(`Aset dengan QR Code [${decodedText}] tidak ditemukan di katalog.`);
+    }
+  };
+
   // === LOGIKA FILTERING & SORTING DI MEMORI BROWSER ===
   const filteredAssets = allAssets.filter((asset) => {
     if (statusFilter === "all") return true;
@@ -351,16 +373,27 @@ export default function CatalogPage() {
 
                 </div>
                 
-                {/* KONTROL PENCARIAN, FILTER, DAN SORTING */}
+                {/* KONTROL PENCARIAN, FILTER, SORTING, DAN SCANNER */}
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="relative w-full sm:flex-1 lg:w-[65%]">
-                    <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-                    <Input 
-                      placeholder="Cari proyektor, mikrotik, kamera..." 
-                      value={searchQuery}
-                      onChange={handleSearchChange} 
-                      className="pl-10 bg-zinc-900/40 border-zinc-700 text-sm h-12 rounded-xl focus-visible:ring-zinc-200/30 transition-all w-full"
-                    />
+                  <div className="relative w-full sm:flex-1 lg:w-[65%] flex gap-2">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                      <Input 
+                        placeholder="Cari proyektor, mikrotik, kamera..." 
+                        value={searchQuery}
+                        onChange={handleSearchChange} 
+                        className="pl-10 bg-zinc-900/40 border-zinc-700 text-sm h-12 rounded-xl focus-visible:ring-zinc-200/30 transition-all w-full"
+                      />
+                    </div>
+                    
+                    {/* TOMBOL SCAN QR KHUSUS */}
+                    <Button 
+                      onClick={() => setIsScannerOpen(true)}
+                      className="h-12 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium flex items-center gap-2 shadow-lg shadow-indigo-900/20 shrink-0"
+                    >
+                      <QrCode className="h-5 w-5" />
+                      <span className="hidden sm:inline">Scan QR</span>
+                    </Button>
                   </div>
 
                   <div className="flex gap-3 w-full sm:w-auto">
@@ -459,8 +492,19 @@ export default function CatalogPage() {
                         </div>
 
                         <div className="flex-1 p-5 flex flex-col">
-                          <div className="mb-3">
-                            <span className="text-[10px] font-mono font-medium text-zinc-200 bg-zinc-800 px-2 py-1 rounded border border-zinc-600 shadow-sm">
+                          
+                          {/* VISUAL QR CODE MODERN */}
+                          <div className="mb-4 flex items-start justify-between">
+                            <div className="p-1.5 bg-white rounded-lg shadow-sm">
+                              <QRCodeSVG 
+                                value={asset.qr_code} 
+                                size={40} 
+                                bgColor={"#ffffff"} 
+                                fgColor={"#000000"} 
+                                level={"L"} 
+                              />
+                            </div>
+                            <span className="text-[10px] font-mono font-medium text-zinc-400 bg-zinc-800/50 px-2 py-1 rounded border border-zinc-700/50">
                               {asset.qr_code}
                             </span>
                           </div>
@@ -635,6 +679,13 @@ export default function CatalogPage() {
           </div>
         </div>
       )}
+
+      {/* PANGGIL KOMPONEN SCANNER MODAL */}
+      <QrScannerModal 
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onScan={handleScanResult}
+      />
 
     </div>
   );
