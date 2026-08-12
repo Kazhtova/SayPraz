@@ -395,7 +395,7 @@ export default function CatalogPage() {
                     {/* TOMBOL SCAN QR KHUSUS */}
                     <Button 
                       onClick={() => setIsScannerOpen(true)}
-                      className="h-12 px-4 rounded-xl bg-zinc-900/40 hover:bg-zinc-900/40 border-zinc-700 font-medium focus-visible:ring-zinc-200/30 flex items-center gap-2 shadow-lg shadow-zinc-900/20 shrink-0"
+                      className="h-12 px-4 rounded-xl bg-zinc-900/40 hover:bg-zinc-900/40 border-[0.5px] border-zinc-700 hover:border-zinc-50 transition-colors duration-300 font-medium flex items-center gap-2 shadow-lg shadow-zinc-900/20 shrink-0"
                       title="Scan QR Aset"
                     >
                       <ScanLine className="h-5 w-5" />
