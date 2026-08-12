@@ -194,7 +194,7 @@ export default function CategoriesPage() {
                 <Plus className="h-4 w-4" /> Tambah Kategori
               </Button>
               
-              <Button variant="outline" onClick={handleRefreshClick} disabled={isTableRefreshing} className="border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 text-zinc-300 gap-2 h-11 w-full sm:w-auto px-5">
+              <Button variant="outline" onClick={handleRefreshClick} disabled={isTableRefreshing} className="border-zinc-800 bg-zinc-950/50 hover:bg-zinc-800 hover:text-white text-zinc-300 gap-2 h-11 w-full sm:w-auto px-5 transition-all">
                 <RefreshCw className={`h-4 w-4 ${isTableRefreshing ? "animate-spin" : ""}`} /> Muat Ulang
               </Button>
             </div>
