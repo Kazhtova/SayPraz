@@ -657,7 +657,7 @@ export default function CatalogPage() {
                   type="button" 
                   variant="ghost" 
                   onClick={() => { setSelectedAsset(null); setReturnDate(""); }}
-                  className="text-zinc-400 hover:text-white rounded-xl"
+                  className="text-zinc-100 hover:text-black rounded-xl"
                   disabled={isSubmitting}
                 >
                   Batal
