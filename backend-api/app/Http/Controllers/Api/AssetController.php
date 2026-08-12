@@ -84,14 +84,14 @@ class AssetController extends Controller
         }
 
         $stats = [
-            'total'         => Asset::count(),
-            'available'     => Asset::where('status', 'available')->count(),
-            'in_repair'     => Asset::where('status', 'in_repair')->count(),
-            'borrowed'      => Asset::where('status', 'borrowed')->count(),
-            'pending_transactions'   => Transaction::where('status', 'pending')->count(),
-            'total_growth'          => round($totalGrowth, 1),
-            'borrow_growth'         => round($borrowGrowth, 1)
-        ];
+            'total'                     => Asset::count(),
+            'available'                 => Asset::where('status', 'available')->count(),
+            'in_repair'                 => Asset::where('status', 'in_repair')->count(),
+            'borrowed'                  => Asset::where('status', 'borrowed')->count(),
+            'pending_transactions'      => Transaction::where('status', 'pending')->count(),
+            'total_growth'              => round($totalGrowth, 1),
+            'borrow_growth'             => round($borrowGrowth, 1)
+        ];  
 
         return AssetResource::collection($assets)->additional([
             'stats'      => $stats,
@@ -105,20 +105,20 @@ class AssetController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'category_id' => 'nullable|exists:categories,id',
-            'name' => 'required|string|max:255',
-            'brand' => 'required|string|max:255',
-            'qr_code' => 'required|string|unique:assets,qr_code',
-            'status' => 'required|in:available,borrowed,in_repair',
+            'category_id'   => 'nullable|exists:categories,id',
+            'name'          => 'required|string|max:255',
+            'brand'         => 'required|string|max:255',
+            'qr_code'       => 'required|string|unique:assets,qr_code',
+            'status'        => 'required|in:available,borrowed,in_repair',
             'purchase_year' => 'required|integer|min:1900|max:' . date('Y'),
             'image'         => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120'
         ]);
 
         if($validator->fails()) {
             return response()->json([
-                'success' => false,
-                'message' => 'Validasi Error',
-                'errors' => $validator->errors()
+                'success'   => false,
+                'message'   => 'Validasi Error',
+                'errors'    => $validator->errors()
             ], 422);
         }
 
@@ -179,11 +179,11 @@ class AssetController extends Controller
     public function update(Request $request, Asset $asset)
     {
         $validator = Validator::make($request->all(), [
-            'category_id' => 'sometimes|required|exists:categories,id',
-            'name' => 'sometimes|required|string|max:255',
-            'brand' => 'sometimes|required|string|max:255',
-            'qr_code' => 'sometimes|required|string|unique:assets,qr_code,' . $asset->id,
-            'status' => 'sometimes|required|in:available,borrowed,in_repair',
+            'category_id'   => 'sometimes|required|exists:categories,id',
+            'name'          => 'sometimes|required|string|max:255',
+            'brand'         => 'sometimes|required|string|max:255',
+            'qr_code'       => 'sometimes|required|string|unique:assets,qr_code,' . $asset->id,
+            'status'        => 'sometimes|required|in:available,borrowed,in_repair',
             'purchase_year' => 'sometimes|required|integer|min:1900|max:' . date('Y'),
             'image'         => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
