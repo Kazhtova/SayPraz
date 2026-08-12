@@ -630,7 +630,7 @@ export default function CatalogPage() {
             
             <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 mb-6">
               <p className="text-xs text-zinc-500 uppercase font-semibold mb-1">Aset Terpilih:</p>
-              <p className="text-base font-bold text-zinc-200">{selectedAsset.name}</p>
+              <p className="text-base font-dark text-zinc-200">{selectedAsset.name}</p>
               <p className="text-sm font-normal text-zinc-400">{selectedAsset.brand}</p>
             </div>
 
