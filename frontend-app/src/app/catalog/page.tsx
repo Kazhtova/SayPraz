@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { 
-  Search, Package, Calendar, Clock, Loader2, ArrowRight, CheckCircle2,
+  Search, Package, Calendar as CalendarIcon, Clock, Loader2, ArrowRight, CheckCircle2,
   FolderOpen, MapPin, Activity, Layers, ChevronLeft, ChevronRight, Filter, 
   ArrowDownAZ, ArrowUpZA, X, Maximize2, ScanLine
 } from "lucide-react";
@@ -15,6 +15,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { API_URL } from "@/lib/constants";
 import { Navbar } from "@/components/Navbar";
+
+// === IMPORT KOMPONEN MODERN CALENDAR SHADCN ===
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 
 // === DYNAMIC IMPORT UNTUK MENCEGAH OUT OF MEMORY ===
 const QrScannerModal = dynamic(
@@ -119,7 +126,9 @@ export default function CatalogPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
-  const [returnDate, setReturnDate] = useState("");
+  
+  // === STATE RETURN DATE MENGGUNAKAN TIPE DATE OBJECT ===
+  const [returnDate, setReturnDate] = useState<Date>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // === STATE SCANNER QR ===
@@ -243,7 +252,8 @@ export default function CatalogPage() {
         },
         body: JSON.stringify({
           asset_id: selectedAsset.id,
-          expected_returned_date: returnDate
+          // Convert tipe Date menjadi string YYYY-MM-DD untuk backend
+          expected_returned_date: returnDate ? format(returnDate, "yyyy-MM-dd") : ""
         })
       });
 
@@ -252,7 +262,7 @@ export default function CatalogPage() {
       if (response.ok || response.status === 201) {
         alert("Pengajuan berhasil! Silakan tunggu persetujuan Admin.");
         setSelectedAsset(null); 
-        setReturnDate(""); 
+        setReturnDate(undefined); 
         loadAvailableAssets(searchQuery); 
       } else {
         alert(result.message || "Gagal mengajukan peminjaman.");
@@ -311,14 +321,6 @@ export default function CatalogPage() {
       * { font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important; }
     `}} />
   );
-
-  const getTodayLocalString = () => {
-    const d = new Date();
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans antialiased pb-12">
@@ -621,7 +623,7 @@ export default function CatalogPage() {
         </div>
       )}
 
-      {/* MODAL PENGAJUAN PEMINJAMAN */}
+      {/* MODAL PENGAJUAN PEMINJAMAN DENGAN CALENDAR SHADCN */}
       {selectedAsset && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 w-full max-w-md shadow-2xl">
@@ -630,34 +632,61 @@ export default function CatalogPage() {
             
             <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 mb-6">
               <p className="text-xs text-zinc-500 uppercase font-semibold mb-1">Aset Terpilih:</p>
-              <p className="text-base font-dark text-zinc-200">{selectedAsset.name}</p> 
+              <p className="text-base font-bold text-zinc-200">{selectedAsset.name}</p> 
               <p className="text-sm font-normal text-zinc-400">{selectedAsset.brand}</p>
             </div>
 
             <form onSubmit={handleBorrowSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+              
+              <div className="space-y-2 flex flex-col">
+                <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">
                   Rencana Tanggal Kembali <span className="text-rose-500">*</span>
                 </label>
-                <div className="relative">
-                  <Input 
-                    type="date"
-                    required
-                    value={returnDate}
-                    min={getTodayLocalString()} 
-                    onChange={(e) => setReturnDate(e.target.value)}
-                    className="peer pl-10 bg-zinc-900/50 border-zinc-700 text-zinc-100 h-12 rounded-xl focus-visible:ring-zinc-500/30"
-                  />
-                  <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-zinc-400 transition-colors" />
-                </div>
+                
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full h-12 justify-start text-left font-normal rounded-xl bg-zinc-900/50 border-zinc-700 hover:bg-zinc-800 hover:text-zinc-200 transition-all",
+                        !returnDate && "text-zinc-500"
+                      )}
+                    >
+                      <CalendarIcon className="mr-3 h-4 w-4 text-zinc-400" />
+                      {returnDate ? (
+                        <span className="text-zinc-200">
+                          {format(returnDate, "PPP", { locale: id })}
+                        </span>
+                      ) : (
+                        <span>Pilih tanggal kembali...</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-zinc-950 border border-zinc-800 shadow-2xl rounded-xl" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={returnDate}
+                      onSelect={setReturnDate}
+                      disabled={(date) => date <= new Date()}
+                      initialFocus
+                      className="text-zinc-200 pointer-events-auto"
+                      classNames={{
+                        day_selected: "bg-indigo-600 text-white hover:bg-indigo-600 hover:text-white focus:bg-indigo-600 focus:text-white",
+                        day_today: "bg-zinc-800 text-zinc-100",
+                        day_outside: "text-zinc-700 opacity-50",
+                        day_disabled: "text-zinc-700 opacity-50",
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-2">
                 <Button 
                   type="button" 
                   variant="ghost" 
-                  onClick={() => { setSelectedAsset(null); setReturnDate(""); }}
-                  className="text-zinc-100 hover:text-black rounded-xl"
+                  onClick={() => { setSelectedAsset(null); setReturnDate(undefined); }}
+                  className="text-zinc-400 hover:text-white rounded-xl"
                   disabled={isSubmitting}
                 >
                   Batal
