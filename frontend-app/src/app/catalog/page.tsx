@@ -644,23 +644,20 @@ export default function CatalogPage() {
                 </label>
                 
                 <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full h-12 justify-start text-left font-normal rounded-xl bg-zinc-900/50 border-zinc-700 hover:bg-zinc-800 hover:text-zinc-200 transition-all",
-                        !returnDate && "text-zinc-500"
-                      )}
-                    >
-                      <CalendarIcon className="mr-3 h-4 w-4 text-zinc-400" />
-                      {returnDate ? (
-                        <span className="text-zinc-200">
-                          {format(returnDate, "PPP", { locale: id })}
-                        </span>
-                      ) : (
-                        <span>Pilih tanggal kembali...</span>
-                      )}
-                    </Button>
+                  <PopoverTrigger
+                    className={cn(
+                      "w-full h-12 flex items-center justify-start px-4 text-left font-normal rounded-xl bg-zinc-900/50 border border-zinc-700 hover:bg-zinc-800 hover:text-zinc-200 transition-all cursor-pointer",
+                      !returnDate && "text-zinc-500"
+                    )}
+                  >
+                    <CalendarIcon className="mr-3 h-4 w-4 text-zinc-400 shrink-0" />
+                    {returnDate ? (
+                      <span className="text-zinc-200">
+                        {format(returnDate, "PPP", { locale: id })}
+                      </span>
+                    ) : (
+                      <span>Pilih tanggal kembali...</span>
+                    )}
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0 bg-zinc-950 border border-zinc-800 shadow-2xl rounded-xl" align="start">
                     <Calendar
