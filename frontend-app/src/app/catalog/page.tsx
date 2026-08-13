@@ -616,7 +616,7 @@ export default function CatalogPage() {
               priority
             />
             <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 sm:p-6 flex items-center justify-between">
-              <span className="text-sm font-semibold text-zinc-200">{lightboxImage.title}</span>
+              <span className="text-sm font-bold text-zinc-200">{lightboxImage.title}</span>
               <span className="text-xs text-zinc-400 font-mono">Pratinjau Foto Aset</span>
             </div>
           </div>
