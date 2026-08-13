@@ -209,7 +209,7 @@ export default function PrintQrPage() {
         <p className="text-xs font-medium text-zinc-500">
           <span className="text-slate-100 font-bold">Tips:</span> Gunakan kertas stiker ukuran <span className="text-zinc-300">50mm x 50mm</span> (Printer Thermal).
         </p>
-        <p className="text-[11px] text-zinc-600">
+        <p className="text-[11px] font-medium text-zinc-600">
           Pastikan opsi margin pada browser diatur ke None saat mencetak.
         </p>
       </div>
