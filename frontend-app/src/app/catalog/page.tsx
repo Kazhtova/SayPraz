@@ -659,20 +659,14 @@ export default function CatalogPage() {
                       <span>Pilih tanggal kembali...</span>
                     )}
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-zinc-950 border border-zinc-800 shadow-2xl rounded-xl" align="start">
+                  
+                  <PopoverContent className="w-auto p-0 bg-zinc-950 border border-zinc-800 shadow-2xl rounded-xl" align="start" side="top">
                     <Calendar
                       mode="single"
                       selected={returnDate}
                       onSelect={setReturnDate}
                       disabled={(date) => date <= new Date()}
-                      initialFocus
                       className="text-zinc-200 pointer-events-auto"
-                      classNames={{
-                        day_selected: "bg-indigo-600 text-white hover:bg-indigo-600 hover:text-white focus:bg-indigo-600 focus:text-white",
-                        day_today: "bg-zinc-800 text-zinc-100",
-                        day_outside: "text-zinc-700 opacity-50",
-                        day_disabled: "text-zinc-700 opacity-50",
-                      }}
                     />
                   </PopoverContent>
                 </Popover>

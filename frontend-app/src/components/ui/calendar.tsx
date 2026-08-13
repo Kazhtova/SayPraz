@@ -16,7 +16,7 @@ function Calendar({
   className,
   classNames,
   showOutsideDays = true,
-  captionLayout = "label",
+  captionLayout = "dropdown",
   buttonVariant = "ghost",
   locale,
   formatters,
@@ -157,9 +157,7 @@ function Calendar({
             )
           }
 
-          return (
-            <ChevronDownIcon className={cn("size-4", className)} {...props} />
-          )
+          return null
         },
         DayButton: ({ ...props }) => (
           <CalendarDayButton locale={locale} {...props} />
