@@ -231,7 +231,7 @@ export default function CategoriesPage() {
                             variant="ghost" 
                             size="icon" 
                             onClick={() => router.push(`/dashboard/categories/edit/${cat.id}`)}
-                            className="h-8 w-8 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-200/10"
+                            className="h-8 w-8 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-200/10"
                             title="Edit Kategori"
                           >
                             <Pencil className="h-4 w-4" />
