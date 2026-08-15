@@ -94,8 +94,8 @@ export function QrScannerModal({ isOpen, onClose, onScan }: QrScannerModalProps)
               
               {/* Overlay Target UI */}
               <div className="absolute inset-0 pointer-events-none border-[40px] border-black/40">
-                <div className="w-full h-full border-2 border-indigo-500/50 rounded-2xl relative shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]">
-                   <div className="absolute top-1/2 left-0 w-full h-0.5 bg-indigo-500/50 animate-[scan_2s_ease-in-out_infinite]" />
+                <div className="w-full h-full border-2 border-zinc-500/50 rounded-2xl relative shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]">
+                   <div className="absolute top-1/2 left-0 w-full h-0.5 bg-zinc-500/50 animate-[scan_2s_ease-in-out_infinite]" />
                 </div>
               </div>
             </>
