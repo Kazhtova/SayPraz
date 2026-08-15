@@ -45,7 +45,7 @@ function ControlsSkeleton() {
   );
 }
 
-// 💡 SKELETON HEADER TABEL UNTUK MENCEGAH FLASH / SHIFT
+// SKELETON HEADER TABEL UNTUK MENCEGAH FLASH / SHIFT
 function TableHeaderSkeleton() {
   return (
     <thead className="border-b border-zinc-800 bg-zinc-900/60 text-xs uppercase text-zinc-400 tracking-wider">
@@ -73,33 +73,24 @@ function TableHeaderSkeleton() {
 function TableRowSkeleton() {
   return (
     <tr className="animate-pulse border-b border-zinc-800/60">
-      {/* Kolom 1: Nama Aset & Merek */}
       <td className="px-6 py-4">
         <div className="space-y-2">
           <div className="h-4 w-40 rounded bg-zinc-800" />
           <div className="h-3 w-20 rounded bg-zinc-800/50" />
         </div>
       </td>
-
-      {/* Kolom 2: Peminjam & Role */}
       <td className="px-6 py-4">
         <div className="space-y-2">
           <div className="h-4 w-32 rounded bg-zinc-800" />
           <div className="h-3 w-16 rounded bg-zinc-800/50" />
         </div>
       </td>
-
-      {/* Kolom 3: Batas Kembali */}
       <td className="px-6 py-4 text-center">
         <div className="mx-auto h-4 w-24 rounded bg-zinc-800" />
       </td>
-
-      {/* Kolom 4: Status Badge */}
       <td className="px-6 py-4 text-center">
         <div className="mx-auto h-6 w-24 rounded-full bg-zinc-800" />
       </td>
-
-      {/* Kolom 5: Aksi Admin */}
       <td className="px-6 py-4 text-center">
         <div className="flex justify-center gap-2">
           <div className="h-8 w-16 rounded-md bg-zinc-800" />
@@ -202,7 +193,10 @@ export default function TransactionsPage() {
     }
   };
 
-  const filteredTransactions = transactions.filter(t => 
+  // === PENAMBAHAN LOGIKA FILTERING (MENGABAIKAN STATUS RETURNED) ===
+  const activeTransactions = transactions.filter(t => t.status !== "returned");
+
+  const filteredTransactions = activeTransactions.filter(t => 
     t.asset?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     t.user?.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -264,7 +258,6 @@ export default function TransactionsPage() {
           <div className="overflow-x-auto min-h-[350px]">
             <table className="w-full text-left text-sm text-zinc-400 table-fixed">
               
-              {/* HASIL PERBAIKAN: THEAD DENGAN SKELETON DAN LOCK RATIO LEBAR KOLOM */}
               {isInitialLoading ? (
                 <TableHeaderSkeleton />
               ) : (
@@ -291,7 +284,7 @@ export default function TransactionsPage() {
                 ) : filteredTransactions.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="px-6 py-12 text-center text-zinc-500">
-                      {searchQuery ? "Transaksi tidak ditemukan." : "Belum ada riwayat transaksi peminjaman."}
+                      {searchQuery ? "Transaksi tidak ditemukan." : "Belum ada transaksi peminjaman aktif."}
                     </td>
                   </tr>
                 ) : (
@@ -346,7 +339,7 @@ export default function TransactionsPage() {
                             </Button>
                           )}
 
-                          {(item.status === 'returned' || item.status === 'rejected') && (
+                          {item.status === 'rejected' && (
                             <span className="text-xs text-zinc-600 italic">Selesai</span>
                           )}
                         </div>
