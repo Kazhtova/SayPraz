@@ -46,7 +46,7 @@ export function Navbar() {
     { name: "Aset Inventaris", href: "/dashboard", icon: Package },
     { name: "Kategori", href: "/dashboard/categories", icon: FolderOpen },
     { name: "Transaksi Peminjaman", href: "/dashboard/transactions", icon: ArrowLeftRight },
-    { name: "Riwayat Transaksi", href: "/dashboard/history", icon: History },
+    { name: "Riwayat Peminjaman", href: "/dashboard/history", icon: History },
   ];
 
   const userLinks = [
