@@ -145,7 +145,7 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* 💡 TAMBAHAN: PANEL MENU MOBILE (DROPDOWN MODAL) */}
+      {/* TAMBAHAN: PANEL MENU MOBILE (DROPDOWN MODAL) */}
       {isMobileMenuOpen && (
         <div className="md:hidden border-b border-zinc-800 bg-zinc-950/95 backdrop-blur-2xl px-4 pt-3 pb-6 space-y-4 animate-in slide-in-from-top-2 duration-200">
           

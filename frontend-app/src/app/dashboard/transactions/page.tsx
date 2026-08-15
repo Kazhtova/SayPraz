@@ -333,7 +333,7 @@ export default function TransactionsPage() {
                               size="sm" 
                               onClick={() => handleUpdateStatus(item.id, 'returned')}
                               disabled={processingId === item.id}
-                              className="bg-indigo-600 hover:bg-indigo-700 text-white h-8 text-xs font-semibold px-3 gap-1"
+                              className="bg-slate-600 hover:bg-slate-800 text-white h-8 text-xs font-semibold px-3 gap-1"
                             >
                               <RotateCcw className="h-3 w-3" /> Kembalikan
                             </Button>
