@@ -17,7 +17,7 @@ export function Navbar() {
   const [role, setRole] = useState<string | null>(null);
   const [userName, setUserName] = useState<string>("Pengguna");
   const [isMounted, setIsMounted] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // 💡 TAMBAHAN: State Mobile Menu
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); 
 
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
@@ -54,7 +54,6 @@ export function Navbar() {
     { name: "Riwayat Peminjaman", href: "/my-transactions", icon: History },
   ];
 
-  // 💡 PERBAIKAN: Admin & Staff diarahkan ke Dasbor Admin
   const isAdminOrStaff = role === "admin" || role === "staff";
   const navLinks = isAdminOrStaff ? adminLinks : userLinks;
 
@@ -131,7 +130,7 @@ export function Navbar() {
               <span className="font-medium">Keluar</span>
             </Button>
 
-            {/* 💡 TAMBAHAN: Tombol Hamburger untuk Layar HP */}
+            {/*  Tombol Hamburger untuk Layar HP */}
             <Button
               variant="ghost"
               size="icon"
