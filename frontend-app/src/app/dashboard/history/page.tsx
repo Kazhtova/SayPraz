@@ -1,0 +1,261 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-hooks/static-components */
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { 
+  Search, RefreshCw, RotateCcw, Clock, CheckCircle2, XCircle, History
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { API_URL } from "@/lib/constants";
+
+interface Transaction {
+  id: number;
+  borrowed_date: string;
+  expected_returned_date: string;
+  actual_returned_date?: string;
+  status: "pending" | "approved" | "rejected" | "returned";
+  asset?: { id: number; name: string; brand: string };
+  user?: { id: number; name: string; role: string };
+}
+
+// ==========================================
+// KOMPONEN SKELETON PROPOSIONAL & PRESISI (1:1)
+// ==========================================
+function HeaderSkeleton() {
+  return (
+    <div className="animate-pulse space-y-2">
+      <div className="flex items-center gap-3">
+        <div className="h-7 w-7 rounded-lg bg-zinc-800" />
+        <div className="h-8 w-64 rounded-lg bg-zinc-800" />
+      </div>
+      <div className="h-4 w-96 rounded bg-zinc-800/60" />
+    </div>
+  );
+}
+
+function ControlsSkeleton() {
+  return (
+    <div className="animate-pulse border-b border-zinc-800 p-4 flex flex-col sm:flex-row gap-4 items-center justify-between bg-zinc-900/20">
+      <div className="h-11 w-full sm:w-96 rounded-xl bg-zinc-800" />
+      <div className="h-10 w-full sm:w-32 rounded-lg bg-zinc-800" />
+    </div>
+  );
+}
+
+function TableHeaderSkeleton() {
+  return (
+    <thead className="border-b border-zinc-800 bg-zinc-900/60 text-xs uppercase text-zinc-400 tracking-wider">
+      <tr className="animate-pulse">
+        <th scope="col" className="px-6 py-4 w-[25%]"><div className="h-3.5 w-24 rounded bg-zinc-800" /></th>
+        <th scope="col" className="px-6 py-4 w-[25%]"><div className="h-3.5 w-20 rounded bg-zinc-800" /></th>
+        <th scope="col" className="px-6 py-4 text-center w-[15%]"><div className="mx-auto h-3.5 w-24 rounded bg-zinc-800" /></th>
+        <th scope="col" className="px-6 py-4 text-center w-[15%]"><div className="mx-auto h-3.5 w-24 rounded bg-zinc-800" /></th>
+        <th scope="col" className="px-6 py-4 text-center w-[20%]"><div className="mx-auto h-3.5 w-24 rounded bg-zinc-800" /></th>
+      </tr>
+    </thead>
+  );
+}
+
+function TableRowSkeleton() {
+  return (
+    <tr className="animate-pulse border-b border-zinc-800/60">
+      <td className="px-6 py-4">
+        <div className="space-y-2"><div className="h-4 w-40 rounded bg-zinc-800" /><div className="h-3 w-20 rounded bg-zinc-800/50" /></div>
+      </td>
+      <td className="px-6 py-4">
+        <div className="space-y-2"><div className="h-4 w-32 rounded bg-zinc-800" /><div className="h-3 w-16 rounded bg-zinc-800/50" /></div>
+      </td>
+      <td className="px-6 py-4 text-center"><div className="mx-auto h-4 w-24 rounded bg-zinc-800" /></td>
+      <td className="px-6 py-4 text-center"><div className="mx-auto h-4 w-24 rounded bg-zinc-800" /></td>
+      <td className="px-6 py-4 text-center"><div className="mx-auto h-6 w-28 rounded-full bg-zinc-800" /></td>
+    </tr>
+  );
+}
+
+export default function HistoryTransactionsPage() {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const router = useRouter();
+
+  const loadTransactions = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token) { router.push("/login"); return; }
+
+    try {
+      const response = await fetch(`${API_URL}/api/transactions`, {
+        headers: { "Authorization": `Bearer ${token}`, "Accept": "application/json" }
+      });
+      if (response.ok) {
+        const result = await response.json();
+        setTransactions(result.data || []);
+      }
+    } catch (error) {
+      console.error("Gagal memuat transaksi:", error);
+    } finally {
+      setTimeout(() => { 
+        setIsInitialLoading(false); 
+        setIsRefreshing(false); 
+      }, 300);
+    }
+  }, [router]);
+
+  useEffect(() => {
+    loadTransactions();
+  }, [loadTransactions]);
+
+  const handleRefreshClick = () => {
+    setIsRefreshing(true);
+    loadTransactions();
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch(status) {
+      case 'returned': 
+        return <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold border bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-sm shadow-emerald-500/10"><RotateCcw className="h-3 w-3" /> Dikembalikan</span>;
+      default: 
+        return <span>{status}</span>;
+    }
+  };
+
+  // === FILTERING KHUSUS TRANSAKSI DIKEMBALIKAN ===
+  const historyTransactions = transactions.filter(t => t.status === "returned");
+  
+  const filteredTransactions = historyTransactions.filter(t => 
+    t.asset?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.user?.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const FontKillerStyles = () => (
+    <style dangerouslySetInnerHTML={{__html: `
+      @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+      * { font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important; }
+    `}} />
+  );
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "-";
+    return new Date(dateString).toLocaleDateString("id-ID", { 
+      day: 'numeric', month: 'short', year: 'numeric' 
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans antialiased">
+      <FontKillerStyles />
+
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
+        
+        {/* HEADER SECTION WITH SKELETON */}
+        {isInitialLoading ? (
+          <HeaderSkeleton />
+        ) : (
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-zinc-100 flex items-center gap-3">
+              <History className="h-7 w-7 text-zinc-300" /> Riwayat Transaksi
+            </h1>
+            <p className="text-zinc-400 text-sm mt-1">Lihat daftar histori aset sekolah yang telah selesai dipinjam dan dikembalikan.</p>
+          </div>
+        )}
+
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm overflow-hidden flex flex-col shadow-lg shadow-zinc-950/50">
+          
+          {/* CONTROL SEARCH & REFRESH WITH SKELETON */}
+          {isInitialLoading ? (
+            <ControlsSkeleton />
+          ) : (
+            <div className="border-b border-zinc-800 p-4 flex flex-col sm:flex-row gap-4 items-center justify-between bg-zinc-900/20">
+              <div className="relative w-full sm:w-96">
+                <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                <Input 
+                  placeholder="Cari histori berdasarkan aset atau peminjam..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 bg-zinc-900/50 border-zinc-800 text-sm h-11 focus-visible:ring-zinc-500/50 w-full"
+                />
+              </div>
+
+              <Button 
+                variant="outline" 
+                onClick={handleRefreshClick} 
+                disabled={isRefreshing} 
+                className="border-zinc-800 bg-zinc-950/50 hover:bg-zinc-800 hover:text-white text-zinc-300 gap-2 h-10 px-4 rounded-lg transition-all"
+              >
+                <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} /> Muat Ulang
+              </Button>
+            </div>
+          )}
+
+          {/* TABLE DATA WITH SKELETON REFRESH */}
+          <div className="overflow-x-auto min-h-[350px]">
+            <table className="w-full text-left text-sm text-zinc-400 table-fixed">
+              
+              {isInitialLoading ? (
+                <TableHeaderSkeleton />
+              ) : (
+                <thead className="border-b border-zinc-800 bg-zinc-900/60 text-xs uppercase text-zinc-400 tracking-wider">
+                  <tr>
+                    <th scope="col" className="px-6 py-4 font-semibold w-[25%]">Nama Aset</th>
+                    <th scope="col" className="px-6 py-4 font-semibold w-[25%]">Peminjam</th>
+                    <th scope="col" className="px-6 py-4 font-semibold text-center w-[15%]">Batas Kembali</th>
+                    <th scope="col" className="px-6 py-4 font-semibold text-center w-[15%]">Tgl Dikembalikan</th>
+                    <th scope="col" className="px-6 py-4 font-semibold text-center w-[20%]">Status</th>
+                  </tr>
+                </thead>
+              )}
+
+              <tbody className="divide-y divide-zinc-800/60">
+                {isInitialLoading || isRefreshing ? (
+                  <>
+                    <TableRowSkeleton />
+                    <TableRowSkeleton />
+                    <TableRowSkeleton />
+                    <TableRowSkeleton />
+                    <TableRowSkeleton />
+                  </>
+                ) : filteredTransactions.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center text-zinc-500">
+                      <div className="flex flex-col items-center justify-center gap-3">
+                        <History className="h-10 w-10 text-zinc-700" />
+                        {searchQuery ? "Histori transaksi tidak ditemukan." : "Belum ada riwayat aset yang dikembalikan."}
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredTransactions.map((item) => (
+                    <tr key={item.id} className="hover:bg-zinc-800/40 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="font-medium text-zinc-200">{item.asset?.name || "Aset Dihapus"}</div>
+                        <div className="text-xs text-zinc-500">{item.asset?.brand}</div>
+                      </td>
+                      <td className="px-6 py-4 text-zinc-300">
+                        <div className="font-medium">{item.user?.name || "User Dihapus"}</div>
+                        <div className="text-xs text-zinc-500 capitalize">{item.user?.role}</div>
+                      </td>
+                      <td className="px-6 py-4 text-zinc-400 font-mono text-xs text-center">
+                        {formatDate(item.expected_returned_date)}
+                      </td>
+                      <td className="px-6 py-4 text-emerald-400/80 font-mono text-xs text-center">
+                        {formatDate(item.actual_returned_date || item.expected_returned_date)}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        {getStatusBadge(item.status)}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  );
+}
