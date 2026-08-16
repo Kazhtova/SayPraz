@@ -46,12 +46,15 @@ const FontKillerStyles = () => (
         visibility: visible !important; 
       }
       
+      /* SKALA CETAK DIPERBESAR SECARA PRESISI */
       #print-section { 
         position: fixed !important; 
         left: 50% !important; 
         top: 50% !important; 
-        transform: translate(-50%, -50%) !important;
-        width: 320px !important; 
+        /* Skala diperbesar 1.35x lipat agar tampil dominan dan sangat jelas */
+        transform: translate(-50%, -50%) scale(1.35) !important;
+        transform-origin: center center !important;
+        width: 340px !important; 
         height: auto !important; 
         margin: 0 !important;
         padding: 24px !important;
@@ -78,12 +81,12 @@ function PrintSkeleton() {
         <div className="h-10 w-28 bg-zinc-800 rounded-xl"></div>
       </div>
 
-      <div className="relative z-10 bg-white border border-zinc-200 p-6 rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center w-[320px] animate-pulse">
+      <div className="relative z-10 bg-white border border-zinc-200 p-6 rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center w-[340px] animate-pulse">
         <div className="text-center mb-2 w-full border-b-[1.5px] border-zinc-200 pb-1.5 flex flex-col items-center gap-1.5">
           <div className="h-5 w-40 bg-zinc-200 rounded-md"></div>
           <div className="h-2 w-24 bg-zinc-200 rounded-sm"></div>
         </div>
-        <div className="bg-zinc-200 w-[164px] h-[164px] rounded-lg mb-2"></div>
+        <div className="bg-zinc-200 w-[200px] h-[200px] rounded-lg mb-2"></div>
         <div className="text-center w-full flex flex-col items-center gap-2 mt-2">
           <div className="h-4 w-48 bg-zinc-200 rounded-md"></div>
           <div className="h-2 w-32 bg-zinc-200 rounded-sm mb-1"></div>
@@ -168,7 +171,7 @@ export default function PrintQrPage() {
     <div className="min-h-screen bg-zinc-950 py-12 flex flex-col items-center relative overflow-hidden font-sans">
       <FontKillerStyles />
 
-      {/* EFEK GLOW BACKGROUND (SCREEN ONLY) */}
+      {/* EFEK GLOW BACKGROUND */}
       <div className="print:hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
 
       {/* KONTROL UI NAVIGASI & CETAK */}
@@ -181,22 +184,22 @@ export default function PrintQrPage() {
         </Button>
       </div>
 
-      {/* KOTAK STIKER QR (PRESISI DAN ISOLASI TOTAL) */}
+      {/* KOTAK STIKER QR DENGAN UKURAN LEBIH BESAR & TEGAS */}
       <div 
         id="print-section" 
-        className="relative z-10 bg-white border-2 border-black p-6 rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center w-[320px] overflow-hidden"
+        className="relative z-10 bg-white border-2 border-black p-6 rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center w-[340px] overflow-hidden"
       >
         {/* Header Stiker */}
         <div className="text-center mb-3 w-full border-b-2 border-black pb-2">
-          <h1 className="font-black text-[20px] tracking-tight text-black uppercase leading-none">INVENKORYZ</h1>
-          <p className="text-[9px] font-bold text-zinc-700 uppercase tracking-[0.2em] mt-1">Sistem Inventaris</p>
+          <h1 className="font-black text-[22px] tracking-tight text-black uppercase leading-none">INVENKORYZ</h1>
+          <p className="text-[10px] font-bold text-zinc-700 uppercase tracking-[0.2em] mt-1">Sistem Inventaris</p>
         </div>
 
-        {/* QR Code */}
+        {/* QR Code Diperbesar (size 200px) */}
         <div className="bg-white p-1 mb-3 flex items-center justify-center">
           <QRCodeSVG 
             value={asset.qr_code} 
-            size={170} 
+            size={200} 
             bgColor={"#ffffff"} 
             fgColor={"#000000"} 
             level={"M"} 
@@ -204,13 +207,13 @@ export default function PrintQrPage() {
           />
         </div>
 
-        {/* Detail Aset */}
+        {/* Detail Identitas Aset */}
         <div className="text-center w-full flex flex-col items-center">
-          <h2 className="text-[14px] font-bold text-black leading-tight max-w-[260px] truncate">{asset.name}</h2>
-          <p className="text-[10px] font-semibold text-zinc-700 mt-0.5 truncate uppercase tracking-wider">
+          <h2 className="text-[15px] font-bold text-black leading-tight max-w-[280px] truncate">{asset.name}</h2>
+          <p className="text-[11px] font-semibold text-zinc-700 mt-0.5 truncate uppercase tracking-wider">
             {asset.brand} {asset.purchase_year ? `• ${asset.purchase_year}` : ""}
           </p>
-          <span className="inline-block bg-black text-white text-[11px] font-mono font-bold px-3 py-1 rounded-md tracking-widest mt-2">
+          <span className="inline-block bg-black text-white text-[12px] font-mono font-bold px-3.5 py-1 rounded-md tracking-widest mt-2">
             {asset.qr_code}
           </span>
         </div>
