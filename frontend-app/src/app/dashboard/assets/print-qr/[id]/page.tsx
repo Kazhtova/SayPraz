@@ -4,7 +4,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
-import { Printer, ArrowLeft, AlertCircle, ScanLine } from "lucide-react";
+import { Printer, ArrowLeft, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { API_URL } from "@/lib/constants";
 
@@ -17,69 +17,57 @@ interface Asset {
   purchase_year?: number;
 }
 
-// =========================================================================
-// CSS PRINT KHUSUS (ISOLASI STIKER QR)
-// =========================================================================
 const FontKillerStyles = () => (
   <style dangerouslySetInnerHTML={{__html: `
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
     * { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important; }
     
     @media print {
-      /* 1. Paksa ukuran kertas Thermal 50x50mm */
       @page { 
-        size: 50mm 50mm; 
-        margin: 0; 
+        size: auto; 
+        margin: 0mm; 
       }
       
-      /* 2. Sembunyikan semua navbar, background, dan elemen bawaan Next.js */
       body { 
-        background-color: white !important; 
+        background: white !important; 
         -webkit-print-color-adjust: exact; 
         print-color-adjust: exact; 
       }
+
       nav, header, footer, aside { 
         display: none !important; 
       }
 
-      /* 3. Trik Isolasi: Sembunyikan SEMUA elemen di dalam body secara visual */
       body * { 
         visibility: hidden; 
       }
       
-      /* 4. Tampilkan KEMBALI hanya kotak stiker dan seluruh isinya */
       #print-section, #print-section * { 
-        visibility: visible; 
+        visibility: visible !important; 
       }
       
-      /* 5. Cabut kotak stiker dari layout dan tempel paksa di sudut kiri atas kertas */
       #print-section { 
-        position: absolute; 
-        left: 0; 
-        top: 0; 
-        width: 50mm !important; 
-        height: 50mm !important; 
+        position: fixed !important; 
+        left: 50% !important; 
+        top: 50% !important; 
+        transform: translate(-50%, -50%) !important;
+        width: 320px !important; 
+        height: auto !important; 
         margin: 0 !important;
-        padding: 4mm !important; /* Padding aman agar tidak terpotong pinggir kertas */
+        padding: 24px !important;
         background: white !important;
-        border: none !important;
+        border: 2px solid #000000 !important;
+        border-radius: 20px !important;
         box-shadow: none !important;
-        border-radius: 0 !important;
-        transform: none !important;
-        
-        /* Pusatkan konten di dalam kertas 50mm */
         display: flex !important;
         flex-direction: column !important;
-        justify-content: center !important;
         align-items: center !important;
+        justify-content: center !important;
       }
     }
   `}} />
 );
 
-// =========================================================================
-// SKELETON KHUSUS HALAMAN PRINT QR
-// =========================================================================
 function PrintSkeleton() {
   return (
     <div className="min-h-screen bg-zinc-950 py-12 flex flex-col items-center relative overflow-hidden font-sans">
@@ -101,11 +89,6 @@ function PrintSkeleton() {
           <div className="h-2 w-32 bg-zinc-200 rounded-sm mb-1"></div>
           <div className="h-5 w-32 bg-zinc-200 rounded-md mt-0.5"></div>
         </div>
-      </div>
-
-      <div className="relative z-10 mt-10 flex flex-col items-center gap-2 animate-pulse">
-        <div className="h-3 w-64 bg-zinc-800/60 rounded-sm"></div>
-        <div className="h-2 w-48 bg-zinc-800/60 rounded-sm"></div>
       </div>
     </div>
   );
@@ -185,10 +168,10 @@ export default function PrintQrPage() {
     <div className="min-h-screen bg-zinc-950 py-12 flex flex-col items-center relative overflow-hidden font-sans">
       <FontKillerStyles />
 
-      {/* EFEK GLOW BACKGROUND (HANYA DI LAYAR) */}
+      {/* EFEK GLOW BACKGROUND (SCREEN ONLY) */}
       <div className="print:hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
 
-      {/* KONTROL UI NAVIGASI & CETAK (GLASSMORPHISM) */}
+      {/* KONTROL UI NAVIGASI & CETAK */}
       <div className="print:hidden relative z-10 w-full max-w-sm mb-10 flex items-center justify-between bg-zinc-900/60 backdrop-blur-xl p-4 rounded-2xl border border-zinc-800/80 shadow-2xl">
         <Button variant="ghost" onClick={() => router.back()} className="text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl h-10 transition-colors">
           <ArrowLeft className="h-4 w-4 mr-2" /> Kembali
@@ -198,28 +181,22 @@ export default function PrintQrPage() {
         </Button>
       </div>
 
-      {/* === ID "print-section" DITAMBAHKAN DI SINI AGAR BISA DIISOLASI CSS === */}
+      {/* KOTAK STIKER QR (PRESISI DAN ISOLASI TOTAL) */}
       <div 
         id="print-section" 
-        className="relative z-10 bg-white border border-zinc-200 p-6 rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center w-[320px] overflow-hidden"
+        className="relative z-10 bg-white border-2 border-black p-6 rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center w-[320px] overflow-hidden"
       >
-        
-        {/* Watermark Logo */}
-        <div className="absolute -right-4 -top-4 opacity-[0.03] pointer-events-none">
-          <ScanLine className="w-32 h-32 text-black" />
-        </div>
-
         {/* Header Stiker */}
-        <div className="text-center mb-2 w-full border-b-[1.5px] border-zinc-200 pb-1.5 relative z-10">
-          <h1 className="font-black text-[20px] tracking-tighter text-black uppercase leading-none">INVENKORYZ</h1>
-          <p className="text-[8px] font-bold text-zinc-500 uppercase tracking-[0.2em] mt-0.5">Sistem Inventaris</p>
+        <div className="text-center mb-3 w-full border-b-2 border-black pb-2">
+          <h1 className="font-black text-[20px] tracking-tight text-black uppercase leading-none">INVENKORYZ</h1>
+          <p className="text-[9px] font-bold text-zinc-700 uppercase tracking-[0.2em] mt-1">Sistem Inventaris</p>
         </div>
 
-        {/* Gambar QR Code Utama */}
-        <div className="bg-white p-0.5 mb-2 relative z-10">
+        {/* QR Code */}
+        <div className="bg-white p-1 mb-3 flex items-center justify-center">
           <QRCodeSVG 
             value={asset.qr_code} 
-            size={164} 
+            size={170} 
             bgColor={"#ffffff"} 
             fgColor={"#000000"} 
             level={"M"} 
@@ -227,29 +204,24 @@ export default function PrintQrPage() {
           />
         </div>
 
-        {/* Identitas Aset */}
-        <div className="text-center w-full relative z-10">
-          <h2 className="text-[13px] font-extrabold text-black leading-tight truncate px-1">{asset.name}</h2>
-          <p className="text-[9px] font-medium text-zinc-600 mb-1 truncate uppercase tracking-wide">
+        {/* Detail Aset */}
+        <div className="text-center w-full flex flex-col items-center">
+          <h2 className="text-[14px] font-bold text-black leading-tight max-w-[260px] truncate">{asset.name}</h2>
+          <p className="text-[10px] font-semibold text-zinc-700 mt-0.5 truncate uppercase tracking-wider">
             {asset.brand} {asset.purchase_year ? `• ${asset.purchase_year}` : ""}
           </p>
-          <span className="inline-block bg-black text-white text-[11px] font-mono font-bold px-3 py-[2px] rounded-[4px] tracking-widest mt-0.5">
+          <span className="inline-block bg-black text-white text-[11px] font-mono font-bold px-3 py-1 rounded-md tracking-widest mt-2">
             {asset.qr_code}
           </span>
         </div>
-
       </div>
 
-      {/* PANDUAN PENGGUNA (HANYA DI LAYAR) */}
+      {/* PANDUAN PENGGUNA */}
       <div className="print:hidden relative z-10 mt-10 text-center space-y-1">
         <p className="text-xs font-medium text-zinc-500">
-          <span className="text-slate-100 font-bold">Tips:</span> Gunakan kertas stiker ukuran <span className="text-zinc-300">50mm x 50mm</span> (Printer Thermal).
-        </p>
-        <p className="text-[11px] font-medium text-zinc-600">
-          Pastikan opsi margin pada browser diatur ke None saat mencetak.
+          <span className="text-slate-100 font-bold">Tips:</span> Buka <strong className="text-zinc-300">More settings</strong> pada dialog print, lalu hapus centang <strong className="text-zinc-300">Headers and footers</strong>.
         </p>
       </div>
-
     </div>
   );
 }
