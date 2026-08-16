@@ -222,7 +222,7 @@ export default function PrintQrPage() {
       {/* PANDUAN PENGGUNA */}
       <div className="print:hidden relative z-10 mt-10 text-center space-y-1">
         <p className="text-xs font-medium text-zinc-500">
-          <span className="text-slate-100 font-bold">Tips:</span> Buka <strong className="text-zinc-300">More settings</strong> pada dialog print, lalu hapus centang <strong className="text-zinc-300">Headers and footers</strong>.
+          <span className="text-slate-100 font-bold">Note:</span> Ini Adalah Menu Untuk Melihat Dan Mencetak<strong className="text-zinc-300"> Qr Code Unique</strong> Untuk Setiap Masing Masing Barang.
         </p>
       </div>
     </div>
