@@ -355,8 +355,8 @@ export default function DashboardPage() {
                 
                 {/* Tombol PDF & Muat Ulang */}
                 <div className="flex w-full sm:w-auto gap-3 justify-end">
-                  <div className="h-10 w-full sm:w-[125px] rounded-lg bg-zinc-800/60" />
-                  <div className="h-10 w-full sm:w-[125px] rounded-lg bg-zinc-800/60" />
+                  <div className="h-10 w-full sm:w-[124px] rounded-lg bg-zinc-800/60" />
+                  <div className="h-10 w-full sm:w-[124px] rounded-lg bg-zinc-800/60" />
                 </div>
               </div>
               
