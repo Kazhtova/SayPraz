@@ -351,12 +351,12 @@ export default function DashboardPage() {
               {/* Skeleton Grup Tombol */}
               <div className="flex flex-col w-full xl:w-auto gap-3 items-end">
                 {/* Tombol Tambah Aset (warna dibuat lebih terang agar menyerupai tombol aslinya) */}
-                <div className="h-10 w-full sm:w-[260px] rounded-lg bg-zinc-700/60" />
+                <div className="h-10 w-full sm:w-[275px] rounded-lg bg-zinc-700/60" />
                 
                 {/* Tombol PDF & Muat Ulang */}
                 <div className="flex w-full sm:w-auto gap-3 justify-end">
-                  <div className="h-10 w-full sm:w-[124px] rounded-lg bg-zinc-800/60" />
-                  <div className="h-10 w-full sm:w-[124px] rounded-lg bg-zinc-800/60" />
+                  <div className="h-10 w-full sm:w-[130px] rounded-lg bg-zinc-800/60" />
+                  <div className="h-10 w-full sm:w-[130px] rounded-lg bg-zinc-800/60" />
                 </div>
               </div>
               
