@@ -331,13 +331,55 @@ export default function DashboardPage() {
             <StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton />
           </div>
           <ChartSkeleton />
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 overflow-hidden">
-            <div className="p-4 border-b border-zinc-800 flex justify-between animate-pulse"><div className="h-11 w-full rounded-lg bg-zinc-800" /></div>
-            <table className="w-full">
-              <tbody>
-                <TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton />
-              </tbody>
-            </table>
+          {/* SKELETON TABEL UTAMA & CONTROLS (SAMA PERSIS 1:1 DENGAN RENDER ASLI) */}
+          <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/30 backdrop-blur-md overflow-hidden flex flex-col shadow-sm">
+            
+            {/* AREA CONTROLS SKELETON */}
+            <div className="animate-pulse border-b border-zinc-800/70 p-5 flex flex-col xl:flex-row gap-4 items-center justify-between">
+              
+              {/* Skeleton Search */}
+              <div className="w-full xl:w-61">
+                <div className="h-10 w-full rounded-lg bg-zinc-800/60" />
+              </div>
+              
+              {/* Skeleton 2 Dropdown Filter */}
+              <div className="flex w-full xl:w-auto gap-4.5 flex-1 xl:ml-0.5">
+                <div className="w-full sm:w-54 h-10 rounded-lg bg-zinc-800/60" />
+                <div className="w-full sm:w-54 h-10 rounded-lg bg-zinc-800/60" />
+              </div>
+              
+              {/* Skeleton Grup Tombol */}
+              <div className="flex flex-col w-full xl:w-auto gap-3 items-end">
+                {/* Tombol Tambah Aset (warna dibuat lebih terang agar menyerupai tombol aslinya) */}
+                <div className="h-10 w-full sm:w-[260px] rounded-lg bg-zinc-700/60" />
+                
+                {/* Tombol PDF & Muat Ulang */}
+                <div className="flex w-full sm:w-auto gap-3 justify-end">
+                  <div className="h-10 w-full sm:w-[130px] rounded-lg bg-zinc-800/60" />
+                  <div className="h-10 w-full sm:w-[130px] rounded-lg bg-zinc-800/60" />
+                </div>
+              </div>
+              
+            </div>
+
+            {/* AREA TABEL SKELETON */}
+            <div className="overflow-x-auto min-h-[400px]">
+              <table className="w-full text-sm text-zinc-400 table-fixed">
+                <thead className="border-b border-zinc-800/80 bg-zinc-950/30 text-[11px] font-medium uppercase text-zinc-500 tracking-widest">
+                  <tr>
+                    <th className="px-6 py-4 text-center whitespace-nowrap">Nama & Merek</th>
+                    <th className="px-6 py-4 text-center whitespace-nowrap">Kategori</th>
+                    <th className="px-6 py-4 text-center whitespace-nowrap">Status</th>
+                    <th className="px-6 py-4 text-center whitespace-nowrap">Tahun</th>
+                    <th className="px-6 py-4 text-center whitespace-nowrap">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-800/60">
+                  <TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton />
+                </tbody>
+              </table>
+            </div>
+            
           </div>
         </main>
       </div>
