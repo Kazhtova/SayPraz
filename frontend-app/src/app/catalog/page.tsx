@@ -428,7 +428,7 @@ export default function CatalogPage() {
                         setSortOrder(prev => prev === "asc" ? "desc" : "asc");
                         setCurrentPage(1);
                       }}
-                      className="h-12 bg-zinc-900/40 border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white rounded-xl px-4 w-full sm:w-auto flex-1 sm:flex-none"
+                      className="h-12 bg-zinc-900/40 border border-zinc-800 hover:bg-zinc-900/40 text-zinc-200 hover:text-zinc-200 focus:outline-none focus:ring-1 focus:ring-zinc-700 cursor-pointer transition-colors hover:border-zinc-500 rounded-xl px-4 w-full sm:w-auto flex-1 sm:flex-none"
                     >
                       {sortOrder === "asc" ? <ArrowDownAZ className="h-4 w-4 mr-2 text-zinc-200" /> : <ArrowUpZA className="h-4 w-4 mr-2 text-zinc-200" />}
                       {sortOrder === "asc" ? "A - Z" : "Z - A"}

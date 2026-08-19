@@ -359,7 +359,6 @@ export default function DashboardPage() {
                   <div className="h-10 w-full sm:w-[130px] rounded-lg bg-zinc-800/60" />
                 </div>
               </div>
-              
             </div>
 
             {/* AREA TABEL SKELETON */}
