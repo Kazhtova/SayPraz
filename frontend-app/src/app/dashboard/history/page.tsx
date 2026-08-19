@@ -40,7 +40,7 @@ function ControlsSkeleton() {
   return (
     <div className="animate-pulse border-b border-zinc-800 flex flex-col sm:flex-row bg-zinc-900/20">
       <div className="w-full sm:w-[80%] p-4 sm:px-6 flex items-center">
-        <div className="h-11 w-full sm:w-96 rounded-xl bg-zinc-800" />
+        <div className="h-11 w-full sm:w-70 rounded-xl bg-zinc-800" />
       </div>
       <div className="w-full sm:w-[20%] px-4 pb-4 sm:p-0 flex items-center justify-center">
         <div className="h-10 w-full sm:w-32 rounded-lg bg-zinc-800" />
@@ -177,10 +177,10 @@ export default function HistoryTransactionsPage() {
               
               {/* BAGIAN KIRI: 80% Lebar Tabel (Sejajar dengan 4 kolom awal) */}
               <div className="w-full sm:w-[80%] p-4 sm:px-6 flex items-center">
-                <div className="relative w-full sm:w-96">
+                <div className="relative w-full sm:w-70">
                   <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                   <Input 
-                    placeholder="Cari histori berdasarkan aset atau peminjam..." 
+                    placeholder="Cari transaksi peminjaman.." 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10 bg-zinc-900/50 border-zinc-800 text-sm h-11 focus-visible:ring-zinc-500/50 w-full"
