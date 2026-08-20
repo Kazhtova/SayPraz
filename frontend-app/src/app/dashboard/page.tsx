@@ -418,7 +418,6 @@ export default function DashboardPage() {
               <Package className="h-4 w-4 text-zinc-200" /> Total Aset Terdaftar
             </div>
             <div className="mt-4 flex items-end justify-between relative z-10">
-              {/* PERBAIKAN: Angka Hero Card lebih besar (text-5xl) dan putih terang */}
               <p className="text-5xl font-bold text-white tracking-tighter drop-shadow-sm">{stats.total}</p>
               {renderGrowthBadge(stats.total_growth)}
             </div>
