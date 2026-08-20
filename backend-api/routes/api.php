@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login']);
 
 // =================================================================
-// GRUP 1: BISA DIAKSES OLEH SEMUA USER YANG LOGIN (Termasuk Siswa)
+// GRUP 1: BISA DIAKSES OLEH SEMUA USER YANG LOGIN (Siswa, Guru Dan Staff)
 // =================================================================
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
