@@ -8,4 +8,5 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
+//Check Schedule overdue Status
 Schedule::command('transactions:check-overdue')->dailyAt('00:01');
