@@ -389,7 +389,6 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans antialiased selection:bg-zinc-800">
       <FontKillerStyles />
 
-      {/* PERBAIKAN: Vertical Rhythm. Mengubah space-y-10/14 menjadi space-y-8 */}
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8 transition-all duration-500">
         
         {/* HEADER */}
