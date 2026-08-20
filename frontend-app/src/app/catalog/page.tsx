@@ -696,7 +696,7 @@ export default function CatalogPage() {
         </div>
       )}
 
-      {/* PANGGIL KOMPONEN SCANNER MODAL */}
+      {/* MEMANGGIL KOMPONEN SCANNER MODAL */}
       <QrScannerModal 
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
