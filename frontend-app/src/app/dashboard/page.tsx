@@ -410,7 +410,6 @@ export default function DashboardPage() {
         </div>
 
         {/* 4 STAT CARDS */}
-        {/* PERBAIKAN: Jarak antar card diperkecil menjadi gap-4 */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   
           {/* CARD 1: HERO METRIC (Hierarki Tertinggi) */}
