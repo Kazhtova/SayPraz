@@ -7,4 +7,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+//API Untuk Assets
 Route::apiResource('assets', AssetController::class);
