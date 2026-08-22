@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { 
-  Search, RefreshCw, RotateCcw, Clock, CheckCircle2, XCircle, History, CalendarIcon, X
+  Search, RefreshCw, RotateCcw, History, CalendarIcon, X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,9 +26,6 @@ interface Transaction {
   user?: { id: number; name: string; role: string };
 }
 
-// ==========================================
-// KOMPONEN SKELETON PROPOSIONAL & PRESISI (1:1)
-// ==========================================
 function HeaderSkeleton() {
   return (
     <div className="animate-pulse space-y-2">
@@ -89,7 +86,6 @@ export default function HistoryTransactionsPage() {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   
-  // === STATE UNTUK FILTER ===
   const [searchQuery, setSearchQuery] = useState("");
   const [filterBorrowedDate, setFilterBorrowedDate] = useState<Date | undefined>();
   const [filterExpectedDate, setFilterExpectedDate] = useState<Date | undefined>();
@@ -139,29 +135,32 @@ export default function HistoryTransactionsPage() {
     }
   };
 
-  // === FILTERING GABUNGAN KHUSUS TRANSAKSI DIKEMBALIKAN ===
+  const toLocalDateString = (dateInput: string | Date | undefined) => {
+    if (!dateInput) return "";
+    const d = new Date(dateInput);
+    if (isNaN(d.getTime())) return "";
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
   const historyTransactions = transactions.filter(t => t.status === "returned");
   
   const filteredTransactions = historyTransactions.filter(t => {
-    // 1. Filter Pencarian Text
     const matchesSearch = 
       t.asset?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       t.user?.name.toLowerCase().includes(searchQuery.toLowerCase());
       
-    // 2. Filter Tanggal Pinjam (borrowed_date)
     let matchesBorrowed = true;
     if (filterBorrowedDate) {
-      const trDate = new Date(t.borrowed_date).toLocaleDateString();
-      const filterDate = filterBorrowedDate.toLocaleDateString();
-      matchesBorrowed = trDate === filterDate;
+      matchesBorrowed = toLocalDateString(t.borrowed_date) === toLocalDateString(filterBorrowedDate);
     }
 
-    // 3. Filter Tanggal Kembali (expected_returned_date)
     let matchesExpected = true;
     if (filterExpectedDate) {
-      const exDate = new Date(t.expected_returned_date).toLocaleDateString();
-      const filterExDate = filterExpectedDate.toLocaleDateString();
-      matchesExpected = exDate === filterExDate;
+      const returnDate = t.actual_returned_date || t.expected_returned_date;
+      matchesExpected = toLocalDateString(returnDate) === toLocalDateString(filterExpectedDate);
     }
 
     return matchesSearch && matchesBorrowed && matchesExpected;
@@ -187,7 +186,7 @@ export default function HistoryTransactionsPage() {
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
         
-        {/* HEADER SECTION WITH SKELETON */}
+        {/* HEADER */}
         {isInitialLoading ? (
           <HeaderSkeleton />
         ) : (
@@ -201,15 +200,13 @@ export default function HistoryTransactionsPage() {
 
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm overflow-hidden flex flex-col shadow-lg shadow-zinc-950/50">
           
-          {/* CONTROL SEARCH, DATES & REFRESH WITH SKELETON */}
+          {/* CONTROLS */}
           {isInitialLoading ? (
             <ControlsSkeleton />
           ) : (
             <div className="border-b border-zinc-800 flex flex-col xl:flex-row bg-zinc-900/20 items-stretch">
               
-              {/* BAGIAN KIRI: 80% (Input Teks & Filter Tanggal) */}
               <div className="w-full xl:w-[80%] p-4 sm:px-6 flex flex-col md:flex-row gap-4 items-center">
-                
                 <div className="relative w-full md:w-1/3">
                   <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                   <Input 
@@ -261,7 +258,7 @@ export default function HistoryTransactionsPage() {
                     )}
                   </div>
 
-                  {/* Filter Tanggal Kembali */}
+                  {/* Filter Tanggal Dikembalikan */}
                   <div className="relative w-full flex-1">
                     <Popover>
                       <PopoverTrigger
@@ -274,7 +271,7 @@ export default function HistoryTransactionsPage() {
                         {filterExpectedDate ? (
                           format(filterExpectedDate, "PPP", { locale: id })
                         ) : (
-                          <span>Batas Kembali</span>
+                          <span>Tgl Dikembalikan</span>
                         )}
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0 bg-zinc-950 border-zinc-800" align="start">
@@ -304,7 +301,6 @@ export default function HistoryTransactionsPage() {
 
               </div>
 
-              {/* BAGIAN KANAN: 20% Lebar Tabel (Pasti lurus persis dengan kolom STATUS) */}
               <div className="w-full xl:w-[20%] px-4 py-4 sm:px-6 xl:px-4 xl:py-0 flex items-center justify-center border-t xl:border-t-0 border-zinc-800/70">
                 <Button 
                   variant="outline" 
@@ -319,7 +315,7 @@ export default function HistoryTransactionsPage() {
             </div>
           )}
 
-          {/* TABLE DATA WITH SKELETON REFRESH */}
+          {/* TABLE */}
           <div className="overflow-x-auto min-h-[350px]">
             <table className="w-full text-left text-sm text-zinc-400 table-fixed">
               
