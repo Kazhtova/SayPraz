@@ -265,64 +265,80 @@ export default function TransactionsPage() {
                   {/* Filter Tanggal Pinjam */}
                   <div className="relative w-full flex-1">
                     <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full h-11 justify-start text-left font-normal bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800 hover:text-white transition-all",
-                            !filterBorrowedDate && "text-zinc-500"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {filterBorrowedDate ? format(filterBorrowedDate, "PPP", { locale: id }) : <span>Tgl Peminjaman</span>}
-                        </Button>
+                      <PopoverTrigger
+                        className={cn(
+                          "w-full h-11 flex items-center justify-start px-3 text-left font-normal rounded-lg border bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800 hover:text-white transition-all text-sm",
+                          !filterBorrowedDate && "text-zinc-500"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                        {filterBorrowedDate ? (
+                          format(filterBorrowedDate, "PPP", { locale: id })
+                        ) : (
+                          <span>Tgl Peminjaman</span>
+                        )}
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0 bg-zinc-950 border-zinc-800" align="start">
                         <Calendar
                           mode="single"
                           selected={filterBorrowedDate}
                           onSelect={setFilterBorrowedDate}
-                          initialFocus
                           className="text-zinc-200"
                         />
                       </PopoverContent>
                     </Popover>
                     {filterBorrowedDate && (
-                      <button onClick={() => setFilterBorrowedDate(undefined)} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-rose-400">
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => setFilterBorrowedDate(undefined)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") setFilterBorrowedDate(undefined);
+                        }}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-rose-400 cursor-pointer p-1"
+                      >
                         <X className="h-4 w-4" />
-                      </button>
+                      </span>
                     )}
                   </div>
 
                   {/* Filter Tanggal Kembali */}
                   <div className="relative w-full flex-1">
                     <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full h-11 justify-start text-left font-normal bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800 hover:text-white transition-all",
-                            !filterExpectedDate && "text-zinc-500"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {filterExpectedDate ? format(filterExpectedDate, "PPP", { locale: id }) : <span>Batas Kembali</span>}
-                        </Button>
+                      <PopoverTrigger
+                        className={cn(
+                          "w-full h-11 flex items-center justify-start px-3 text-left font-normal rounded-lg border bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800 hover:text-white transition-all text-sm",
+                          !filterExpectedDate && "text-zinc-500"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                        {filterExpectedDate ? (
+                          format(filterExpectedDate, "PPP", { locale: id })
+                        ) : (
+                          <span>Batas Kembali</span>
+                        )}
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0 bg-zinc-950 border-zinc-800" align="start">
                         <Calendar
                           mode="single"
                           selected={filterExpectedDate}
                           onSelect={setFilterExpectedDate}
-                          initialFocus
                           className="text-zinc-200"
                         />
                       </PopoverContent>
                     </Popover>
                     {filterExpectedDate && (
-                      <button onClick={() => setFilterExpectedDate(undefined)} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-rose-400">
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => setFilterExpectedDate(undefined)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") setFilterExpectedDate(undefined);
+                        }}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-rose-400 cursor-pointer p-1"
+                      >
                         <X className="h-4 w-4" />
-                      </button>
+                      </span>
                     )}
                   </div>
                 </div>
