@@ -4,11 +4,16 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
 import { 
-  Search, RefreshCw, RotateCcw, Clock, CheckCircle2, XCircle, History
+  Search, RefreshCw, RotateCcw, Clock, CheckCircle2, XCircle, History, CalendarIcon, X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 import { API_URL } from "@/lib/constants";
 
 interface Transaction {
@@ -38,11 +43,15 @@ function HeaderSkeleton() {
 
 function ControlsSkeleton() {
   return (
-    <div className="animate-pulse border-b border-zinc-800 flex flex-col sm:flex-row bg-zinc-900/20">
-      <div className="w-full sm:w-[80%] p-4 sm:px-6 flex items-center">
-        <div className="h-11 w-full sm:w-70 rounded-xl bg-zinc-800" />
+    <div className="animate-pulse border-b border-zinc-800 flex flex-col xl:flex-row bg-zinc-900/20">
+      <div className="w-full xl:w-[80%] p-4 sm:px-6 flex flex-col md:flex-row gap-4 items-center">
+        <div className="h-11 w-full md:w-1/3 rounded-xl bg-zinc-800" />
+        <div className="flex gap-4 w-full md:w-2/3">
+          <div className="h-11 w-full flex-1 rounded-xl bg-zinc-800" />
+          <div className="h-11 w-full flex-1 rounded-xl bg-zinc-800" />
+        </div>
       </div>
-      <div className="w-full sm:w-[20%] px-4 pb-4 sm:p-0 flex items-center justify-center">
+      <div className="w-full xl:w-[20%] px-4 pb-4 xl:p-0 flex items-center justify-center">
         <div className="h-10 w-full sm:w-32 rounded-lg bg-zinc-800" />
       </div>
     </div>
@@ -66,12 +75,8 @@ function TableHeaderSkeleton() {
 function TableRowSkeleton() {
   return (
     <tr className="animate-pulse border-b border-zinc-800/60">
-      <td className="px-6 py-4">
-        <div className="space-y-2"><div className="h-4 w-40 rounded bg-zinc-800" /><div className="h-3 w-20 rounded bg-zinc-800/50" /></div>
-      </td>
-      <td className="px-6 py-4">
-        <div className="space-y-2"><div className="h-4 w-32 rounded bg-zinc-800" /><div className="h-3 w-16 rounded bg-zinc-800/50" /></div>
-      </td>
+      <td className="px-6 py-4"><div className="space-y-2"><div className="h-4 w-40 rounded bg-zinc-800" /><div className="h-3 w-20 rounded bg-zinc-800/50" /></div></td>
+      <td className="px-6 py-4"><div className="space-y-2"><div className="h-4 w-32 rounded bg-zinc-800" /><div className="h-3 w-16 rounded bg-zinc-800/50" /></div></td>
       <td className="px-6 py-4 text-center"><div className="mx-auto h-4 w-24 rounded bg-zinc-800" /></td>
       <td className="px-6 py-4 text-center"><div className="mx-auto h-4 w-24 rounded bg-zinc-800" /></td>
       <td className="px-6 py-4 text-center"><div className="mx-auto h-6 w-28 rounded-full bg-zinc-800" /></td>
@@ -83,7 +88,11 @@ export default function HistoryTransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  
+  // === STATE UNTUK FILTER ===
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterBorrowedDate, setFilterBorrowedDate] = useState<Date | undefined>();
+  const [filterExpectedDate, setFilterExpectedDate] = useState<Date | undefined>();
 
   const router = useRouter();
 
@@ -115,6 +124,9 @@ export default function HistoryTransactionsPage() {
 
   const handleRefreshClick = () => {
     setIsRefreshing(true);
+    setSearchQuery("");
+    setFilterBorrowedDate(undefined);
+    setFilterExpectedDate(undefined);
     loadTransactions();
   };
 
@@ -127,13 +139,33 @@ export default function HistoryTransactionsPage() {
     }
   };
 
-  // === FILTERING KHUSUS TRANSAKSI DIKEMBALIKAN ===
+  // === FILTERING GABUNGAN KHUSUS TRANSAKSI DIKEMBALIKAN ===
   const historyTransactions = transactions.filter(t => t.status === "returned");
   
-  const filteredTransactions = historyTransactions.filter(t => 
-    t.asset?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    t.user?.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredTransactions = historyTransactions.filter(t => {
+    // 1. Filter Pencarian Text
+    const matchesSearch = 
+      t.asset?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.user?.name.toLowerCase().includes(searchQuery.toLowerCase());
+      
+    // 2. Filter Tanggal Pinjam (borrowed_date)
+    let matchesBorrowed = true;
+    if (filterBorrowedDate) {
+      const trDate = new Date(t.borrowed_date).toLocaleDateString();
+      const filterDate = filterBorrowedDate.toLocaleDateString();
+      matchesBorrowed = trDate === filterDate;
+    }
+
+    // 3. Filter Tanggal Kembali (expected_returned_date)
+    let matchesExpected = true;
+    if (filterExpectedDate) {
+      const exDate = new Date(t.expected_returned_date).toLocaleDateString();
+      const filterExDate = filterExpectedDate.toLocaleDateString();
+      matchesExpected = exDate === filterExDate;
+    }
+
+    return matchesSearch && matchesBorrowed && matchesExpected;
+  });
 
   const FontKillerStyles = () => (
     <style dangerouslySetInnerHTML={{__html: `
@@ -169,27 +201,111 @@ export default function HistoryTransactionsPage() {
 
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm overflow-hidden flex flex-col shadow-lg shadow-zinc-950/50">
           
-          {/* CONTROL SEARCH & REFRESH WITH SKELETON */}
+          {/* CONTROL SEARCH, DATES & REFRESH WITH SKELETON */}
           {isInitialLoading ? (
             <ControlsSkeleton />
           ) : (
-            <div className="border-b border-zinc-800 flex flex-col sm:flex-row bg-zinc-900/20">
+            <div className="border-b border-zinc-800 flex flex-col xl:flex-row bg-zinc-900/20 items-stretch">
               
-              {/* BAGIAN KIRI: 80% Lebar Tabel (Sejajar dengan 4 kolom awal) */}
-              <div className="w-full sm:w-[80%] p-4 sm:px-6 flex items-center">
-                <div className="relative w-full sm:w-70">
+              {/* BAGIAN KIRI: 80% (Input Teks & Filter Tanggal) */}
+              <div className="w-full xl:w-[80%] p-4 sm:px-6 flex flex-col md:flex-row gap-4 items-center">
+                
+                <div className="relative w-full md:w-1/3">
                   <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                   <Input 
-                    placeholder="Cari transaksi peminjaman.." 
+                    placeholder="Cari histori berdasarkan aset..." 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10 bg-zinc-900/50 border-zinc-800 text-sm h-11 focus-visible:ring-zinc-500/50 w-full"
                   />
                 </div>
+
+                <div className="flex gap-4 w-full md:w-2/3 flex-col sm:flex-row">
+                  {/* Filter Tanggal Pinjam */}
+                  <div className="relative w-full flex-1">
+                    <Popover>
+                      <PopoverTrigger
+                        className={cn(
+                          "w-full h-11 flex items-center justify-start px-3 text-left font-normal rounded-lg border bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800 hover:text-white transition-all text-sm",
+                          !filterBorrowedDate && "text-zinc-500"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                        {filterBorrowedDate ? (
+                          format(filterBorrowedDate, "PPP", { locale: id })
+                        ) : (
+                          <span>Tgl Peminjaman</span>
+                        )}
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 bg-zinc-950 border-zinc-800" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={filterBorrowedDate}
+                          onSelect={setFilterBorrowedDate}
+                          className="text-zinc-200"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    {filterBorrowedDate && (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => setFilterBorrowedDate(undefined)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") setFilterBorrowedDate(undefined);
+                        }}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-rose-400 cursor-pointer p-1"
+                      >
+                        <X className="h-4 w-4" />
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Filter Tanggal Kembali */}
+                  <div className="relative w-full flex-1">
+                    <Popover>
+                      <PopoverTrigger
+                        className={cn(
+                          "w-full h-11 flex items-center justify-start px-3 text-left font-normal rounded-lg border bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800 hover:text-white transition-all text-sm",
+                          !filterExpectedDate && "text-zinc-500"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+                        {filterExpectedDate ? (
+                          format(filterExpectedDate, "PPP", { locale: id })
+                        ) : (
+                          <span>Batas Kembali</span>
+                        )}
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0 bg-zinc-950 border-zinc-800" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={filterExpectedDate}
+                          onSelect={setFilterExpectedDate}
+                          className="text-zinc-200"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    {filterExpectedDate && (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => setFilterExpectedDate(undefined)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") setFilterExpectedDate(undefined);
+                        }}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-rose-400 cursor-pointer p-1"
+                      >
+                        <X className="h-4 w-4" />
+                      </span>
+                    )}
+                  </div>
+                </div>
+
               </div>
 
               {/* BAGIAN KANAN: 20% Lebar Tabel (Pasti lurus persis dengan kolom STATUS) */}
-              <div className="w-full sm:w-[20%] px-4 pb-4 sm:p-0 flex items-center justify-center">
+              <div className="w-full xl:w-[20%] px-4 py-4 sm:px-6 xl:px-4 xl:py-0 flex items-center justify-center border-t xl:border-t-0 border-zinc-800/70">
                 <Button 
                   variant="outline" 
                   onClick={handleRefreshClick} 
@@ -214,7 +330,7 @@ export default function HistoryTransactionsPage() {
                   <tr>
                     <th scope="col" className="px-6 py-4 font-semibold w-[25%]">Nama Aset</th>
                     <th scope="col" className="px-6 py-4 font-semibold w-[25%]">Peminjam</th>
-                    <th scope="col" className="px-6 py-4 font-semibold text-center w-[15%]">Batas Kembali</th>
+                    <th scope="col" className="px-6 py-4 font-semibold text-center w-[15%]">Tgl Pinjam</th>
                     <th scope="col" className="px-6 py-4 font-semibold text-center w-[15%]">Tgl Dikembalikan</th>
                     <th scope="col" className="px-6 py-4 font-semibold text-center w-[20%]">Status</th>
                   </tr>
@@ -235,7 +351,7 @@ export default function HistoryTransactionsPage() {
                     <td colSpan={5} className="px-6 py-12 text-center text-zinc-500">
                       <div className="flex flex-col items-center justify-center gap-3">
                         <History className="h-10 w-10 text-zinc-700" />
-                        {searchQuery ? "Histori transaksi tidak ditemukan." : "Belum ada riwayat aset yang dikembalikan."}
+                        {(searchQuery || filterBorrowedDate || filterExpectedDate) ? "Histori transaksi tidak ditemukan berdasarkan filter tersebut." : "Belum ada riwayat aset yang dikembalikan."}
                       </div>
                     </td>
                   </tr>
@@ -251,7 +367,7 @@ export default function HistoryTransactionsPage() {
                         <div className="text-xs text-zinc-500 capitalize">{item.user?.role}</div>
                       </td>
                       <td className="px-6 py-4 text-zinc-400 font-mono text-xs text-center">
-                        {formatDate(item.expected_returned_date)}
+                        {formatDate(item.borrowed_date)}
                       </td>
                       <td className="px-6 py-4 text-emerald-400/80 font-mono text-xs text-center">
                         {formatDate(item.actual_returned_date || item.expected_returned_date)}
