@@ -18,7 +18,10 @@ import {
   ChevronDown,
   UploadCloud,
   X,
-  ImageIcon
+  ImageIcon,
+  DollarSign,
+  Clock,
+  Coins
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -82,9 +85,28 @@ function EditFormSkeleton() {
               <div className="h-3 w-24 rounded bg-zinc-800" />
               <div className="h-11 rounded-md bg-zinc-900 border border-zinc-800" />
             </div>
+
+            {/* 5. Skeleton Nilai Finansial (Depresiasi EAM) */}
+            <div className="space-y-4 pt-2 border-t border-zinc-800/60">
+              <div className="h-4 w-44 rounded bg-zinc-800" />
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <div className="h-3 w-28 rounded bg-zinc-800" />
+                  <div className="h-11 rounded-md bg-zinc-900 border border-zinc-800" />
+                </div>
+                <div className="space-y-2">
+                  <div className="h-3 w-28 rounded bg-zinc-800" />
+                  <div className="h-11 rounded-md bg-zinc-900 border border-zinc-800" />
+                </div>
+                <div className="space-y-2">
+                  <div className="h-3 w-28 rounded bg-zinc-800" />
+                  <div className="h-11 rounded-md bg-zinc-900 border border-zinc-800" />
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* 5. Skeleton QR Code Box */}
+          {/* 6. Skeleton QR Code Box */}
           <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/40 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-2">
               <div className="h-4 w-48 rounded bg-zinc-800" />
@@ -95,7 +117,7 @@ function EditFormSkeleton() {
 
           <hr className="border-zinc-800/60" />
 
-          {/* 6. Skeleton Action Buttons */}
+          {/* 7. Skeleton Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="h-11 w-full sm:w-32 rounded-md bg-zinc-900 border border-zinc-800" />
             <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -121,16 +143,22 @@ export default function EditAssetPage() {
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
   
-  // State File & Preview Gambar
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageError, setImageError] = useState(false);
 
-  // State Modal Lightbox Gambar Fullscreen
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   const [formData, setFormData] = useState({
-    name: "", brand: "", qr_code: "", category_id: "", status: "available", purchase_year: "",
+    name: "", 
+    brand: "", 
+    qr_code: "", 
+    category_id: "", 
+    status: "available", 
+    purchase_year: "",
+    purchase_price: "",
+    useful_life: "5",
+    residual_value: "0",
   });
 
   useEffect(() => {
@@ -162,6 +190,9 @@ export default function EditAssetPage() {
             category_id: asset.category_id ? asset.category_id.toString() : "",
             status: asset.status || "available",
             purchase_year: asset.purchase_year ? asset.purchase_year.toString() : "",
+            purchase_price: asset.purchase_price !== null && asset.purchase_price !== undefined ? Math.round(Number(asset.purchase_price)).toString() : "",
+            useful_life: asset.useful_life !== null && asset.useful_life !== undefined ? asset.useful_life.toString() : "5",
+            residual_value: asset.residual_value !== null && asset.residual_value !== undefined ? Math.round(Number(asset.residual_value)).toString() : "0",
           });
 
           if (asset.image_url) {
@@ -182,7 +213,6 @@ export default function EditAssetPage() {
     if (assetId) fetchInitialData();
   }, [router, assetId]);
 
-  // Handler Tutup Modal Lightbox jika tombol ESC ditekan
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setIsLightboxOpen(false);
@@ -193,7 +223,6 @@ export default function EditAssetPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isLightboxOpen]);
 
-  // Handler Pilih Gambar Baru
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -207,7 +236,6 @@ export default function EditAssetPage() {
     }
   };
 
-  // Handler Hapus Gambar yang Dipilih
   const handleRemoveImage = () => {
     setSelectedFile(null);
     if (imagePreview && imagePreview.startsWith("blob:")) {
@@ -233,6 +261,9 @@ export default function EditAssetPage() {
     payload.append("category_id", formData.category_id);
     payload.append("status", formData.status);
     payload.append("purchase_year", formData.purchase_year);
+    payload.append("purchase_price", formData.purchase_price);
+    payload.append("useful_life", formData.useful_life);
+    payload.append("residual_value", formData.residual_value || "0");
 
     if (selectedFile) {
       payload.append("image", selectedFile);
@@ -257,7 +288,7 @@ export default function EditAssetPage() {
       } else {
         alert(result.message || "Terjadi kesalahan sistem.");
       }
-    } catch (error) {
+    } catch {
       alert("Gagal menghubungi server.");
     } finally {
       setIsSubmitting(false);
@@ -281,7 +312,7 @@ export default function EditAssetPage() {
         alert("Gagal menghapus aset.");
         setIsDeleting(false);
       }
-    } catch (error) {
+    } catch {
       alert("Terjadi kesalahan jaringan.");
       setIsDeleting(false);
     }
@@ -323,7 +354,7 @@ export default function EditAssetPage() {
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
                   <ImageIcon className="h-4 w-4 text-zinc-400" />
-                  Foto Aset <span className="text-zinc-500 font-normal lowercase"></span>
+                  Foto Aset
                 </label>
 
                 {!imagePreview ? (
@@ -416,7 +447,7 @@ export default function EditAssetPage() {
                 </div>
               </div>
 
-              {/* Status Aset */}
+              {/* Baris 3: Status Aset */}
               <div className="space-y-2">
                  <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Status Aset <span className="text-red-500">*</span></label>
                  <div className="relative">
@@ -428,6 +459,78 @@ export default function EditAssetPage() {
                    <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
                  </div>
                  {formErrors.status && <p className="text-xs text-red-500">{formErrors.status[0]}</p>}
+              </div>
+
+              {/* Baris 4: Modul Finansial / Valuasi Depresiasi EAM */}
+              <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/30 p-5 space-y-4">
+                <div className="flex items-center gap-2">
+                  <Coins className="h-4 w-4 text-emerald-400" />
+                  <span className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
+                    Data Finansial & Depresiasi Aset
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {/* Harga Beli */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium text-zinc-400">
+                      Harga Perolehan (Rp) <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Input 
+                        type="number"
+                        placeholder="Contoh: 15000000"
+                        value={formData.purchase_price}
+                        onChange={(e) => setFormData({...formData, purchase_price: e.target.value})}
+                        className="peer pl-9 bg-zinc-950/60 border-zinc-800 text-zinc-100 h-11 font-mono text-sm focus-visible:ring-1 focus-visible:ring-zinc-500/50"
+                        min="0"
+                        required
+                      />
+                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400" />
+                    </div>
+                    {formErrors.purchase_price && <p className="text-xs text-red-500">{formErrors.purchase_price[0]}</p>}
+                  </div>
+
+                  {/* Masa Manfaat */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium text-zinc-400">
+                      Masa Manfaat (Thn) <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Input 
+                        type="number"
+                        placeholder="Contoh: 5"
+                        value={formData.useful_life}
+                        onChange={(e) => setFormData({...formData, useful_life: e.target.value})}
+                        className="peer pl-9 bg-zinc-950/60 border-zinc-800 text-zinc-100 h-11 font-mono text-sm focus-visible:ring-1 focus-visible:ring-zinc-500/50"
+                        min="1"
+                        max="50"
+                        required
+                      />
+                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400" />
+                    </div>
+                    {formErrors.useful_life && <p className="text-xs text-red-500">{formErrors.useful_life[0]}</p>}
+                  </div>
+
+                  {/* Nilai Residu */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium text-zinc-400">
+                      Nilai Residu / Sisa (Rp)
+                    </label>
+                    <div className="relative">
+                      <Input 
+                        type="number"
+                        placeholder="Default: 0"
+                        value={formData.residual_value}
+                        onChange={(e) => setFormData({...formData, residual_value: e.target.value})}
+                        className="peer pl-9 bg-zinc-950/60 border-zinc-800 text-zinc-100 h-11 font-mono text-sm focus-visible:ring-1 focus-visible:ring-zinc-500/50"
+                        min="0"
+                      />
+                      <Coins className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400" />
+                    </div>
+                    {formErrors.residual_value && <p className="text-xs text-red-500">{formErrors.residual_value[0]}</p>}
+                  </div>
+                </div>
               </div>
 
             </div>
@@ -482,7 +585,6 @@ export default function EditAssetPage() {
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-8 animate-in fade-in duration-200"
           onClick={() => setIsLightboxOpen(false)}
         >
-          {/* Header Action Bar Modal */}
           <div 
             className="absolute top-4 right-4 sm:top-6 sm:right-6 flex items-center gap-3 z-[101]"
             onClick={(e) => e.stopPropagation()}
@@ -508,7 +610,6 @@ export default function EditAssetPage() {
             </Button>
           </div>
 
-          {/* Container Gambar Utama */}
           <div 
             className="relative w-full max-w-4xl max-h-[85vh] h-[80vh] rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex items-center justify-center bg-zinc-950"
             onClick={(e) => e.stopPropagation()}
