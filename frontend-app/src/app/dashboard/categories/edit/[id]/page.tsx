@@ -124,7 +124,7 @@ export default function EditCategoryPage() {
         body: JSON.stringify({
           name: formData.name,
           description: formData.description
-        }), // Slug tidak dikirim karena diurus otomatis oleh Laravel
+        }), 
       });
 
       const result = await response.json();
