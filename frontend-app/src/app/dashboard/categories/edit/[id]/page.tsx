@@ -69,7 +69,7 @@ export default function EditCategoryPage() {
   
   const [formData, setFormData] = useState({
     name: "",
-    slug: "", // Ditambahkan untuk ditampilkan (read-only)
+    slug: "",
     description: "",
   });
 
