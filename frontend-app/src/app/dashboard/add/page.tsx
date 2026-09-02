@@ -19,7 +19,10 @@ import {
   UploadCloud, 
   X,          
   ImageIcon,
-  Trash2
+  Trash2,
+  DollarSign,
+  Clock,
+  Coins
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -80,9 +83,28 @@ function AddFormSkeleton() {
                 <div className="h-11 rounded-md bg-zinc-900 border border-zinc-800" />
               </div>
             </div>
+
+            {/* 4. Skeleton Nilai Finansial (Depresiasi EAM) */}
+            <div className="space-y-4 pt-2 border-t border-zinc-800/60">
+              <div className="h-4 w-44 rounded bg-zinc-800" />
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <div className="h-3 w-28 rounded bg-zinc-800" />
+                  <div className="h-11 rounded-md bg-zinc-900 border border-zinc-800" />
+                </div>
+                <div className="space-y-2">
+                  <div className="h-3 w-28 rounded bg-zinc-800" />
+                  <div className="h-11 rounded-md bg-zinc-900 border border-zinc-800" />
+                </div>
+                <div className="space-y-2">
+                  <div className="h-3 w-28 rounded bg-zinc-800" />
+                  <div className="h-11 rounded-md bg-zinc-900 border border-zinc-800" />
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* 4. Skeleton Sistem QR Otomatis Box */}
+          {/* 5. Skeleton Sistem QR Otomatis Box */}
           <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/40 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-2">
               <div className="h-4 w-40 rounded bg-zinc-800" />
@@ -93,7 +115,7 @@ function AddFormSkeleton() {
 
           <hr className="border-zinc-800/60" />
 
-          {/* 5. Skeleton Action Buttons */}
+          {/* 6. Skeleton Action Buttons */}
           <div className="flex items-center justify-end gap-3 pt-2">
             <div className="h-11 w-20 rounded-md bg-zinc-900 border border-zinc-800" />
             <div className="h-11 w-36 rounded-md bg-zinc-800" />
@@ -112,11 +134,8 @@ export default function AddAssetPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string[]>>({});
   
-  // State File & Preview Gambar
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  // State Modal Lightbox Gambar Layar Lebar
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   const generateQRCode = () => {
@@ -132,6 +151,9 @@ export default function AddAssetPage() {
     category_id: "",
     status: "available",
     purchase_year: new Date().getFullYear().toString(),
+    purchase_price: "",
+    useful_life: "5",
+    residual_value: "0",
   });
 
   useEffect(() => {
@@ -165,7 +187,6 @@ export default function AddAssetPage() {
     fetchCategories();
   }, [router]);
 
-  // Handler Tutup Modal Lightbox jika tombol ESC ditekan
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setIsLightboxOpen(false);
@@ -176,7 +197,6 @@ export default function AddAssetPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isLightboxOpen]);
 
-  // Handler Pilih Gambar & Generate URL Preview
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -189,7 +209,6 @@ export default function AddAssetPage() {
     }
   };
 
-  // Handler Hapus Gambar yang Dipilih
   const handleRemoveImage = () => {
     setSelectedFile(null);
     if (imagePreview) {
@@ -206,7 +225,6 @@ export default function AddAssetPage() {
 
     const token = localStorage.getItem("token");
 
-    // Gunakan FormData untuk mengirim file biner
     const payload = new FormData();
     payload.append("name", formData.name);
     payload.append("brand", formData.brand);
@@ -214,6 +232,9 @@ export default function AddAssetPage() {
     payload.append("category_id", formData.category_id);
     payload.append("status", formData.status);
     payload.append("purchase_year", formData.purchase_year);
+    payload.append("purchase_price", formData.purchase_price);
+    payload.append("useful_life", formData.useful_life);
+    payload.append("residual_value", formData.residual_value || "0");
 
     if (selectedFile) {
       payload.append("image", selectedFile);
@@ -238,7 +259,7 @@ export default function AddAssetPage() {
       } else {
         alert(result.message || "Terjadi kesalahan sistem.");
       }
-    } catch (error) {
+    } catch {
       alert("Gagal menghubungi server.");
     } finally {
       setIsSubmitting(false);
@@ -264,7 +285,7 @@ export default function AddAssetPage() {
         <div className="flex items-center gap-4">
           <Button 
             variant="ghost" 
-            size="icon"
+            size="icon" 
             onClick={() => router.back()}
             className="h-10 w-10 border border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800"
           >
@@ -275,7 +296,7 @@ export default function AddAssetPage() {
               <PackagePlus className="h-6 w-6 text-zinc-400" />
               Penambahan Aset Baru
             </h1>
-            <p className="text-sm text-zinc-400 mt-1">Masukkan detail spesifikasi aset ke dalam sistem inventaris.</p>
+            <p className="text-sm text-zinc-400 mt-1">Masukkan detail spesifikasi dan valuasi aset ke dalam sistem inventaris.</p>
           </div>
         </div>
 
@@ -285,11 +306,11 @@ export default function AddAssetPage() {
             
             <div className="space-y-6">
               
-              {/* INPUT GAMBAR ASET WITH FULL-SCREEN LIGHTBOX PREVIEW */}
+              {/* INPUT GAMBAR ASET */}
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
                   <ImageIcon className="h-4 w-4 text-zinc-400" />
-                  Foto Aset <span className="text-zinc-500 font-normal lowercase"></span>
+                  Foto Aset
                 </label>
 
                 {!imagePreview ? (
@@ -317,8 +338,6 @@ export default function AddAssetPage() {
                       fill 
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
-                    
-                    {/* Subtle Overlay Badge Info saat Hover */}
                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-start p-3">
                       <span className="bg-zinc-900/80 backdrop-blur-md text-xs text-zinc-200 px-3 py-1.5 rounded-lg border border-zinc-700/60 font-medium shadow-lg">
                         Klik untuk memperbesar gambar
@@ -376,7 +395,7 @@ export default function AddAssetPage() {
                     <select 
                       value={formData.category_id} 
                       onChange={(e) => setFormData({...formData, category_id: e.target.value})}
-                      className="peer appearance-none flex h-11 w-full items-center rounded-md border border-zinc-800 bg-zinc-900/50 pl-10 pr-8 py-2 text-sm text-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-200/80 cursor-pointer transition-all"
+                      className="peer appearance-none flex h-11 w-full items-center rounded-md border border-zinc-800 bg-zinc-900/50 pl-10 pr-8 py-2 text-sm text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-200/80 cursor-pointer transition-all"
                       required
                     >
                       <option value="" className="bg-zinc-900">-- Pilih Kategori --</option>
@@ -384,7 +403,7 @@ export default function AddAssetPage() {
                         <option key={cat.id} value={cat.id} className="bg-zinc-900">{cat.name}</option>
                       ))}
                     </select>
-                    <FolderOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 peer-focus:text-zinc-400 pointer-events-none transition-colors" />
+                    <FolderOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none transition-colors" />
                     <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
                   </div>
                   {formErrors.category_id && <p className="text-xs text-red-500">{formErrors.category_id[0]}</p>}
@@ -399,7 +418,7 @@ export default function AddAssetPage() {
                       type="number" 
                       value={formData.purchase_year} 
                       onChange={(e) => setFormData({...formData, purchase_year: e.target.value})}
-                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-500/50 text-zinc-400 h-11 transition-all" 
+                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-500/50 text-zinc-100 h-11 transition-all" 
                       min="1900" 
                       max={new Date().getFullYear()} 
                       required 
@@ -409,9 +428,82 @@ export default function AddAssetPage() {
                   {formErrors.purchase_year && <p className="text-xs text-red-500">{formErrors.purchase_year[0]}</p>}
                 </div>
               </div>
+
+              {/* Baris 3: Modul Finansial / Valuasi Depresiasi EAM */}
+              <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/30 p-5 space-y-4">
+                <div className="flex items-center gap-2">
+                  <Coins className="h-4 w-4 text-zinc-400" />
+                  <span className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
+                    Data Finansial & Depresiasi Aset
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {/* Harga Beli */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium text-zinc-400">
+                      Harga Perolehan (Rp) <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Input 
+                        type="number"
+                        placeholder="Contoh: 15000000"
+                        value={formData.purchase_price}
+                        onChange={(e) => setFormData({...formData, purchase_price: e.target.value})}
+                        className="peer pl-9 bg-zinc-950/60 border-zinc-800 text-zinc-100 h-11 font-mono text-sm focus-visible:ring-1 focus-visible:ring-zinc-500/50"
+                        min="0"
+                        required
+                      />
+                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400" />
+                    </div>
+                    {formErrors.purchase_price && <p className="text-xs text-red-500">{formErrors.purchase_price[0]}</p>}
+                  </div>
+
+                  {/* Masa Manfaat */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium text-zinc-400">
+                      Masa Manfaat (Thn) <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <Input 
+                        type="number"
+                        placeholder="Contoh: 5"
+                        value={formData.useful_life}
+                        onChange={(e) => setFormData({...formData, useful_life: e.target.value})}
+                        className="peer pl-9 bg-zinc-950/60 border-zinc-800 text-zinc-100 h-11 font-mono text-sm focus-visible:ring-1 focus-visible:ring-zinc-500/50"
+                        min="1"
+                        max="50"
+                        required
+                      />
+                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400" />
+                    </div>
+                    {formErrors.useful_life && <p className="text-xs text-red-500">{formErrors.useful_life[0]}</p>}
+                  </div>
+
+                  {/* Nilai Residu */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium text-zinc-400">
+                      Nilai Residu / Sisa (Rp)
+                    </label>
+                    <div className="relative">
+                      <Input 
+                        type="number"
+                        placeholder="Default: 0"
+                        value={formData.residual_value}
+                        onChange={(e) => setFormData({...formData, residual_value: e.target.value})}
+                        className="peer pl-9 bg-zinc-950/60 border-zinc-800 text-zinc-100 h-11 font-mono text-sm focus-visible:ring-1 focus-visible:ring-zinc-500/50"
+                        min="0"
+                      />
+                      <Coins className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400" />
+                    </div>
+                    {formErrors.residual_value && <p className="text-xs text-red-500">{formErrors.residual_value[0]}</p>}
+                  </div>
+                </div>
+              </div>
+
             </div>
 
-            {/* Baris 3: Tampilan QR Code (Auto-generated & Read Only) */}
+            {/* Baris 4: Tampilan QR Code (Auto-generated & Read Only) */}
             <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/40 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-2">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
@@ -462,7 +554,6 @@ export default function AddAssetPage() {
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-8 animate-in fade-in duration-200"
           onClick={() => setIsLightboxOpen(false)}
         >
-          {/* Header Action Bar Modal (Hapus Foto & Tutup Modal) */}
           <div 
             className="absolute top-4 right-4 sm:top-6 sm:right-6 flex items-center gap-3 z-[101]"
             onClick={(e) => e.stopPropagation()}
@@ -478,7 +569,6 @@ export default function AddAssetPage() {
               Hapus Foto
             </Button>
             
-            {/* 💡 TOMBOL DISESUAIKAN PRESISI DENGAN STYLE SAMA PERSIS */}
             <Button
               type="button"
               onClick={() => setIsLightboxOpen(false)}
@@ -489,7 +579,6 @@ export default function AddAssetPage() {
             </Button>
           </div>
 
-          {/* Container Gambar Utama */}
           <div 
             className="relative w-full max-w-4xl max-h-[85vh] h-[80vh] rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
