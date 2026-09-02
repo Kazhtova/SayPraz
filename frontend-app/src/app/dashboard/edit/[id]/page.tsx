@@ -464,7 +464,7 @@ export default function EditAssetPage() {
               {/* Baris 4: Modul Finansial / Valuasi Depresiasi EAM */}
               <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/30 p-5 space-y-4">
                 <div className="flex items-center gap-2">
-                  <Coins className="h-4 w-4 text-emerald-400" />
+                  <Coins className="h-4 w-4 text-zinc-400" />
                   <span className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
                     Data Finansial & Depresiasi Aset
                   </span>
