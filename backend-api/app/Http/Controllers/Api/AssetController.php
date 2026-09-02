@@ -287,4 +287,25 @@ class AssetController extends Controller
             'data'      => $logs
         ]);
     }
+
+    public function getDepreciationSummary(){
+        $assets = Asset::with('category')->get();
+
+        $totalAcquisitionCost = $assets->sum('purchase_price');
+        $totalAccumulatedDepreciation = $assets->sum('accumulated_depreciation');
+        $totalCurrentBookValue = $assets->sum('current_book_value');
+
+        return response()->json([
+           'status' => 'success',
+           'data'   => [
+                'summary'   => [
+                    'total_acquisition_cost'    => (float) $totalAcquisitionCost,
+                    'total_accumulated_depreciation'    => (float) $totalAccumulatedDepreciation,
+                    'total_current_book_value' => (float) $totalCurrentBookValue,
+                    'total_assets_count'    => $assets->count(),
+                ],
+                'assets'    => $assets
+           ] 
+        ], 200);
+    }
 }

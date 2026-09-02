@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { 
-  Boxes, LogOut, Package, FolderOpen, User, ArrowLeftRight, PackageSearch, History, Menu, X 
+  Boxes, LogOut, Package, FolderOpen, User, ArrowLeftRight, PackageSearch, History, Menu, X, TrendingDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/lib/constants";
@@ -25,12 +25,11 @@ export function Navbar() {
     
     setRole(storedRole);
     if (storedName && storedName.trim() !== "" && storedName.toLowerCase() !== "pengguna") {
-    setUserName(storedName);
+      setUserName(storedName);
     }
     setIsMounted(true);
   }, []);
 
-  // Otomatis tutup mobile menu jika halaman berpindah
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
@@ -45,8 +44,9 @@ export function Navbar() {
   const adminLinks = [
     { name: "Aset Inventaris", href: "/dashboard", icon: Package },
     { name: "Kategori", href: "/dashboard/categories", icon: FolderOpen },
-    { name: "Transaksi Peminjaman", href: "/dashboard/transactions", icon: ArrowLeftRight },
-    { name: "Riwayat Peminjaman", href: "/dashboard/history", icon: History },
+    { name: "Transaksi", href: "/dashboard/transactions", icon: ArrowLeftRight },
+    { name: "Riwayat", href: "/dashboard/history", icon: History },
+    { name: "Depresiasi", href: "/dashboard/depreciation", icon: TrendingDown }
   ];
 
   const userLinks = [
@@ -66,24 +66,26 @@ export function Navbar() {
   const roleName = role ? (roleDisplayNames[role] || "Pengguna") : "Pengguna";
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-zinc-800/80 bg-zinc-950/70 backdrop-blur-xl transition-all">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+    <nav className="sticky top-0 z-50 w-full border-b border-zinc-800/80 bg-zinc-950/85 backdrop-blur-2xl transition-all">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+        <div className="relative flex h-20 items-center justify-between">
           
-          {/* LOGO & BRANDING */}
-          <div className="flex items-center gap-8">
+          {/* 1. LOGO & BRANDING (KIRI) */}
+          <div className="flex items-center shrink-0">
             <Link 
               href={isAdminOrStaff ? "/dashboard" : "/catalog"} 
-              className="flex items-center gap-3 transition-opacity hover:opacity-80 outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 rounded-lg"
+              className="flex items-center gap-3 transition-transform hover:scale-[1.02] active:scale-[0.98] outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 rounded-xl"
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-zinc-500 to-zinc-600 text-white shadow-lg shadow-zinc-500/20 border border-zinc-400/20">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-zinc-500 via-zinc-600 to-zinc-700 text-white shadow-lg shadow-zinc-500/20 border border-zinc-400/20">
                 <Boxes className="h-5 w-5 drop-shadow-md" />
               </div>
-              <span className="text-lg font-bold tracking-tight text-zinc-100">{APP_NAME}</span>
+              <span className="text-xl font-bold tracking-tight text-zinc-100">{APP_NAME}</span>
             </Link>
+          </div>
 
-            {/* NAVIGASI DESKTOP (SEGMENTED CONTROL STYLE) */}
-            <div className="hidden md:flex items-center gap-1.5 p-1.5 rounded-xl bg-zinc-900/40 border border-zinc-800/50 shadow-inner">
+          {/* 2. NAVIGASI DESKTOP: ABSOLUTE CENTER (LEBIH BESAR, LEGA, & MODERN) */}
+          <div className="hidden xl:flex absolute left-1/2 -translate-x-1/2 items-center pointer-events-auto">
+            <div className="flex items-center gap-2 p-2 rounded-2xl bg-zinc-900/80 border border-zinc-800 shadow-xl shadow-black/40 backdrop-blur-xl">
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 
@@ -92,14 +94,14 @@ export function Navbar() {
                 const isActive = isExactMatch || isSubMatch;
                 
                 return (
-                  <Link key={link.href} href={link.href} className="outline-none">
-                    <div className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                  <Link key={link.href} href={link.href} className="outline-none shrink-0">
+                    <div className={`flex items-center gap-3 px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
                       isActive 
-                        ? "bg-zinc-800 text-zinc-100 shadow-sm border border-zinc-700/50 ring-1 ring-black/20" 
-                        : "text-zinc-400 hover:bg-zinc-800/40 hover:text-zinc-200 border border-transparent" 
+                        ? "bg-zinc-800 text-zinc-100 shadow-md border border-zinc-700/80 ring-1 ring-white/10" 
+                        : "text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200 border border-transparent" 
                     }`}>
-                      <Icon className={`h-4 w-4 transition-colors duration-300 ${isActive ? "text-zinc-400" : "text-zinc-500"}`} />
-                      {link.name}
+                      <Icon className={`h-[18px] w-[18px] shrink-0 transition-colors ${isActive ? "text-zinc-200" : "text-zinc-500"}`} />
+                      <span>{link.name}</span>
                     </div>
                   </Link>
                 );
@@ -107,16 +109,15 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* USER PROFILE & LOGOUT (DESKTOP) */}
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-3 pr-5 border-r border-zinc-800/60">
+          {/* 3. USER PROFILE & LOGOUT (KANAN) */}
+          <div className="flex items-center gap-4 shrink-0">
+            <div className="hidden sm:flex items-center gap-3.5 pr-4 border-r border-zinc-800/80">
               <div className="flex flex-col items-end">
-                <span className="text-sm font-semibold text-zinc-200 leading-none">{userName}</span>
-                <span className="text-[10px] text-zinc-400 mt-1 uppercase tracking-widest font-medium">{roleName}</span>
+                <span className="text-sm font-semibold text-zinc-100 leading-none">{userName}</span>
+                <span className="text-[11px] text-zinc-400 mt-1 uppercase tracking-wider font-medium">{roleName}</span>
               </div>
-              <div className="h-9 w-9 rounded-full bg-gradient-to-tr from-zinc-800 to-zinc-700 border border-zinc-600 shadow-sm flex items-center justify-center relative overflow-hidden">
-                <User className="h-4 w-4 text-zinc-300" />
-                <div className="absolute inset-0 bg-white/5 opacity-0 hover:opacity-100 transition-opacity"></div>
+              <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-zinc-800 to-zinc-700 border border-zinc-600 shadow-sm flex items-center justify-center shrink-0">
+                <User className="h-5 w-5 text-zinc-300" />
               </div>
             </div>
 
@@ -124,18 +125,18 @@ export function Navbar() {
               variant="ghost" 
               size="sm"
               onClick={handleLogout}
-              className="hidden sm:flex text-zinc-400 hover:text-red-400 hover:bg-red-950/30 hover:border-red-900/50 border border-transparent gap-2 h-9 rounded-lg transition-all duration-300"
+              className="hidden sm:flex text-zinc-400 hover:text-red-400 hover:bg-red-950/30 hover:border-red-900/50 border border-transparent gap-2 h-10 px-4 rounded-xl text-sm transition-all duration-200"
             >
               <LogOut className="h-4 w-4" />
               <span className="font-medium">Keluar</span>
             </Button>
 
-            {/*  Tombol Hamburger untuk Layar HP */}
+            {/* Tombol Hamburger Mobile / Tablet */}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60 rounded-lg h-9 w-9"
+              className="xl:hidden text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60 rounded-xl h-10 w-10"
               aria-label="Toggle Menu"
             >
               {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -145,30 +146,28 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* TAMBAHAN: PANEL MENU MOBILE (DROPDOWN MODAL) */}
+      {/* 4. PANEL MENU MOBILE & TABLET */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-b border-zinc-800 bg-zinc-950/95 backdrop-blur-2xl px-4 pt-3 pb-6 space-y-4 animate-in slide-in-from-top-2 duration-200">
+        <div className="xl:hidden border-b border-zinc-800 bg-zinc-950/95 backdrop-blur-2xl px-5 pt-4 pb-6 space-y-4 animate-in slide-in-from-top-2 duration-200">
           
-          {/* User Info Mobile */}
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+          <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
             <div className="h-10 w-10 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center">
               <User className="h-5 w-5 text-zinc-300" />
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold text-zinc-100">{userName}</span>
-              <span className="text-[10px] text-zinc-400 uppercase tracking-widest">{roleName}</span>
+              <span className="text-[11px] text-zinc-400 uppercase tracking-widest">{roleName}</span>
             </div>
           </div>
 
-          {/* Links Navigasi Mobile */}
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             {navLinks.map((link) => {
               const Icon = link.icon;
               const isActive = pathname === link.href || (link.href !== "/dashboard" && link.href !== "/catalog" && pathname.startsWith(link.href));
               
               return (
                 <Link key={link.href} href={link.href}>
-                  <div className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  <div className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
                     isActive 
                       ? "bg-zinc-800 text-zinc-100 border border-zinc-700/60" 
                       : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
@@ -181,14 +180,13 @@ export function Navbar() {
             })}
           </div>
 
-          {/* Tombol Logout Mobile */}
           <Button 
             variant="outline" 
             onClick={handleLogout}
-            className="w-full justify-start text-red-400 border-red-900/40 bg-red-950/20 hover:bg-red-900/40 hover:text-red-300 gap-3 h-10 rounded-lg mt-2"
+            className="w-full justify-start text-red-400 border-red-900/40 bg-red-950/20 hover:bg-red-900/40 hover:text-red-300 gap-3 h-11 rounded-xl mt-2 text-sm font-medium"
           >
             <LogOut className="h-4 w-4" />
-            <span className="font-medium text-sm">Keluar dari Akun</span>
+            <span>Keluar dari Akun</span>
           </Button>
 
         </div>

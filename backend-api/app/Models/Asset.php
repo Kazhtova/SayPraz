@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute; 
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class Asset extends Model
 {
@@ -15,7 +16,7 @@ class Asset extends Model
 
     protected $fillable = ['category_id', 'name', 'brand', 'qr_code', 'status', 'purchase_year', 'image'];
 
-    protected $appends = ['image_url'];
+    protected $appends = ['image_url', 'annual_depreciation', 'accumulated_depreciation', 'current_book_value', 'depreciation_percentage', 'is_fully_depreciated'];
 
     protected function imageUrl(): Attribute
 {
@@ -60,5 +61,31 @@ class Asset extends Model
     public function logs(): HasMany
     {
         return $this->hasMany(AssetLog::class);
+    }
+
+    public function getCurrentBookValueAttribute(): float
+    {
+        $purchasePrice = (float) ($this->purchase_price ?? 0);
+        $residualValue = (float) ($this->residual_value ?? 0);
+
+        $calculatedValue = $purchasePrice - $this->accumulated_depreciation;
+        return max($residualValue, round($calculatedValue, 2));
+    }
+
+    public function getDepreciationPercentageAttribute(): float
+    {
+        $purchasePrice = (float) ($this->purchase_price ?? 0);
+        if ($purchasePrice <= 0) return 0.0;
+
+        return round(($this->accumulated_depreciation / $purchasePrice) * 100, 1);
+    }
+
+    public function getIsFullyDepreciatedAttribute(): bool
+    {
+        $currentYear = (int) Carbon::now()->year;
+        $purchaseYear = (int) ($this->purchase_year ?: $currentYear);
+        $usefulLife = (int) ($this->useful_life ?? 5);
+
+        return ($currentYear - $purchaseYear) >= $usefulLife;
     }
 }

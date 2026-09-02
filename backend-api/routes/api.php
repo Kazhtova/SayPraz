@@ -17,6 +17,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+
+    Route::get('/assets/depreciation-summary', [AssetController::class, 'getDepreciationSummary']);
+
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::apiResource('assets', AssetController::class)->only(['index', 'show']);
