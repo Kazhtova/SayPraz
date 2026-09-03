@@ -58,8 +58,9 @@ graph TD
     Frontend -->|"HTTPS / JSON API (Bearer Token)"| Backend
     Backend -->|"AWS S3 SDK (Flysystem Driver)"| ObjectStorage
     Backend -->|"PDO / Eloquent Queries"| RelationalDB
+```
 
-
+```
 [ Pengadaan Aset ]
        │
        ▼
@@ -76,3 +77,4 @@ graph TD
        │
        ▼
 [ 100% Tersusut ] ─────────────► [ Rekomendasi Disposed / Afkir Barang ]
+```
