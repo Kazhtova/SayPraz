@@ -138,6 +138,7 @@ categories (1) ────< (N) assets (1) ────< (N) asset_logs (N) >�
 
 Panduan Instalasi
 1. Kebutuhan Sistem
+```
 PHP 8.2 atau 8.3 dengan ekstensi PDO, OpenSSL, BCMath, cURL
 
 Node.js 20+ & npm / pnpm
@@ -145,6 +146,7 @@ Node.js 20+ & npm / pnpm
 MySQL 8.0+
 
 Composer 2+
+```
 
 2. Konfigurasi Backend (Laravel 13)
 Bash
