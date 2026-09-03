@@ -58,3 +58,23 @@ graph TD
     Frontend -->|"HTTPS / JSON API (Bearer Token)"| Backend
     Backend -->|"AWS S3 SDK (Flysystem Driver)"| ObjectStorage
     Backend -->|"PDO / Eloquent Queries"| RelationalDB
+
+```
+
+
+[ Pengadaan Aset ]
+       │
+       ▼
+[ Registrasi & Valuasi ] ──────► [ Auto-Generate QR Code ] ───► [ Sinkronisasi S3 Media ]
+       │
+       ▼
+[ Operasional Inventaris ] ◄────► [ Mutasi Status & Immutable Audit Trail (AssetLog) ]
+   ├─ Tersedia (Available)
+   ├─ Dipinjam (Borrowed)
+   └─ Perbaikan (In Repair)
+       │
+       ▼
+[ Depresiasi Berkala ] ────────► [ Valuasi Nilai Buku Riil Tiap Tahun Buku ]
+       │
+       ▼
+[ 100% Tersusut ] ─────────────► [ Rekomendasi Disposed / Afkir Barang ]
