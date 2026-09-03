@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📦 SayPraz
+# SayPraz
 ### Enterprise Asset Management (EAM) & Stock Circulation Platform
 
 [![Laravel 13](https://img.shields.io/badge/Laravel%2013-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
