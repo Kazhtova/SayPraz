@@ -102,7 +102,7 @@ SayPraz mengimplementasikan standar akuntansi **Metode Garis Lurus (*Straight-Li
 * **Akumulasi Penyusutan ($AD$):**
   $$AD = D \times \min\Big(\max(0, \text{Tahun Berjalan} - \text{Tahun Pembelian}), \text{Masa Manfaat}\Big)$$
 
-* **Nilai Buku Bersih Terkini ($NBV$):**
+* **Nilai Asset Bersih Terkini ($NBV$):**
   $$NBV = \max(\text{Nilai Residu}, \text{Harga Perolehan} - AD)$$
 
 * **Persentase Tersusut:**
