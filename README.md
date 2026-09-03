@@ -148,6 +148,7 @@ Composer 2+
 
 2. Konfigurasi Backend (Laravel 13)
 Bash
+~~~
 # Clone repository
 git clone [https://github.com/your-username/saypraz-backend.git](https://github.com/your-username/saypraz-backend.git)
 cd saypraz-backend
@@ -191,3 +192,4 @@ cp .env.example .env.local
 # Jalankan server Next.js
 npm run dev
 Aplikasi dapat diakses melalui browser pada http://localhost:3000.
+~~~
