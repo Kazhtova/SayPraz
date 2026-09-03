@@ -29,18 +29,19 @@
 
 ## 📌 Gambaran Proyek
 
-**SayPraz** dirancang untuk mentransformasi tata kelola logistik sekolah dan institusi dari inventarisasi manual menjadi ekosistem digital enterprise[cite: 1, 4]. Sistem ini mengatasi tiga masalah krusial:
+**SayPraz** dirancang untuk mentransformasi tata kelola logistik sekolah dan institusi dari inventarisasi manual menjadi ekosistem digital enterprise. Sistem ini mengatasi tiga masalah krusial:
+
 1. **Discrepancy Fisik & Administratif:** Hilangnya jejak peminjaman (*asset misplacement*) dan peminjaman liar tanpa persetujuan bertingkat.
-2. **Ketiadaan Valuasi Riil:** Nilai aset yang tercatat sering kali statis pada harga beli awal, mengabaikan degradasi nilai barang seiring berjalannya tahun pemakaian[cite: 1, 4].
+2. **Ketiadaan Valuasi Riil:** Nilai aset yang tercatat sering kali statis pada harga beli awal, mengabaikan degradasi nilai barang seiring berjalannya tahun pemakaian.
 3. **Dokumentasi Kerusakan Minim:** Peralatan fisik mengalami penurunan mutu tanpa adanya catatan rekam jejak perbaikan (*maintenance logs*) yang terpusat.
 
-Dengan menggabungkan konsep **Enterprise Asset Management (EAM)** dan **Sirkulasi Peminjaman Bertingkat**, SayPraz mengawasi aset mulai dari pengadaan (*procurement*), pemanfaatan operasional (*active deployment*), siklus servis (*maintenance*), evaluasi nilai buku berkala, hingga penghapusan unit (*disposal*)[cite: 1, 4].
+Dengan menggabungkan konsep **Enterprise Asset Management (EAM)** dan **Sirkulasi Peminjaman Bertingkat**, SayPraz mengawasi aset mulai dari pengadaan (*procurement*), pemanfaatan operasional (*active deployment*), siklus servis (*maintenance*), evaluasi nilai buku berkala, hingga penghapusan unit (*disposal*).
 
 ---
 
-## 🏛️ Arsitektur Sistem
+## Arsitektur Sistem
 
-Platform mengadopsi arsitektur decoupled berkinerja tinggi yang memisahkan client presentasi dengan backend komputasi transaksional:
+Platform mengadopsi arsitektur *decoupled* berkinerja tinggi yang memisahkan *client presentation* dengan backend komputasi transaksional:
 
 ```mermaid
 graph TD
@@ -55,65 +56,5 @@ graph TD
     RelationalDB[("<b>Relational Database (MySQL 8)</b><br/>• Strict Constraints & Foreign Keys<br/>• Transactional Acid Processing")]:::db
 
     Frontend -->|"HTTPS / JSON API (Bearer Token)"| Backend
-    Backend -->|"AWS S3 SDK (Flysystem Driver)"| ObjectStorage[cite: 2, 3]
+    Backend -->|"AWS S3 SDK (Flysystem Driver)"| ObjectStorage
     Backend -->|"PDO / Eloquent Queries"| RelationalDB
-🔄 Alur Bisnis & Siklus AsetAlur sirkulasi barang terhubung secara langsung dengan status operasional fisik dan pencatatan audit log:  [ Pengadaan Aset ]
-       │
-       ▼
-[ Registrasi & Valuasi ] ──────► [ Auto-Generate QR Code ] ───► [ Sinkronisasi S3 Media ]
-       │
-       ▼
-[ Operasional Inventaris ] ◄────► [ Mutasi Status & Immutable Audit Trail (AssetLog) ]
-   ├─ Tersedia (Available)
-   ├─ Dipinjam (Borrowed)
-   └─ Perbaikan (In Repair)
-       │
-       ▼
-[ Depresiasi Berkala ] ────────► [ Valuasi Nilai Buku Riil Tiap Tahun Buku ]
-       │
-       ▼
-[ 100% Tersusut ] ─────────────► [ Rekomendasi Disposed / Afkir Barang ]
-Penjelasan TahapanRegistrasi & Kodifikasi: Aset baru didaftarkan ke sistem dengan membangkitkan kode unik berformat AST-{timestamp}-{random}. Foto aset diunggah ke bucket Supabase S3 dengan header tipe MIME yang presisi.  Sirkulasi Operasional:available: Unit berada di ruang penyimpanan dan siap diajukan untuk peminjaman.  borrowed: Unit sedang aktif digunakan; status ini mengunci aset agar tidak dapat dipinjam ganda.  in_repair: Unit mengalami kerusakan teknis dan dialihkan ke dalam antrean pemeliharaan.  disposed: Unit telah dihapus dari inventaris aktif karena rusak total atau dilelang.  Audit Trail Otomatis: Setiap mutasi status dieksekusi dalam DB::transaction dan otomatis mencatat riwayat ke tabel asset_logs beserta catatan inspeksi dan identitas admin.  📈 Mesin Perhitungan Finansial (EAM)SayPraz mengimplementasikan standar akuntansi Metode Garis Lurus (Straight-Line Depreciation Method) secara dinamis menggunakan accessor model Eloquent di backend.  Formula MatematikaBeban Penyusutan Tahunan ($D$):$$D = \frac{\text{purchase\_price} - \text{residual\_value}}{\text{useful\_life}}$$Akumulasi Penyusutan ($AD$):$$AD = D \times \min\Big(\max(0, \text{current\_year} - \text{purchase\_year}), \text{useful\_life}\Big)$$Nilai Buku Bersih Terkini ($NBV$):$$NBV = \max(\text{residual\_value}, \text{purchase\_price} - AD)$$Persentase Tersusut:$$\% \text{ Tersusut} = \left(\frac{AD}{\text{purchase\_price}}\right) \times 100\%$$👥 Matriks Hak Akses (RBAC)Pemisahan tanggung jawab diatur secara terstruktur melalui sistem peran:Fitur / KemampuanAdministratorStaf SarprasSiswa / GuruRegistrasi & Edit Master AsetYa  Ya  TidakKonfigurasi Parameter Finansial (Harga, Manfaat, Residu)Ya  TidakTidakMonitoring Valuasi & Laporan DepresiasiYa  Ya  TidakPersetujuan & Mutasi Peminjaman FisikYa  Ya  TidakPencetakan Label QR Code UnitYa  Ya  TidakInspeksi Rekam Jejak Audit (Asset Logs)Ya[cite: 3]Ya[cite: 3]TidakAkses E-Catalog & Pengajuan PinjamTidakTidakYa🗄️ Struktur Basis DataSkema database dirancang menggunakan relasi integritas referensial penuh:categories (1) ────< (N) assets (1) ────< (N) asset_logs (N) >──── (1) users
-                            │
-                            └────< (N) transactions (N) >──── (1) users
-Snapshot Skema Tabel assetsKolomTipe DataDeskripsiidBIGINT UNSIGNED (PK)Identifier unik auto-increment  category_idBIGINT UNSIGNED (FK)Relasi ke tabel categories  nameVARCHAR(255)Nama unit/peralatan sarpras  brandVARCHAR(255)Merek/pabrikan aset  qr_codeVARCHAR(255) (UNIQUE)Kode identitas fisik terenkapsulasi  statusENUMavailable, borrowed, in_repair, disposed  purchase_yearYEARTahun pengadaan/pembelian unit  purchase_priceDECIMAL(15,2)Nilai modal perolehan aset  useful_lifeINT UNSIGNEDEstimasi masa manfaat operasional (tahun)  residual_valueDECIMAL(15,2)Estimasi nilai sisa afkir  imageVARCHAR(255)Path file media di bucket Supabase S3  🛠️ Panduan Instalasi1. Kebutuhan SistemPHP 8.2 atau 8.3 dengan ekstensi PDO, OpenSSL, BCMath, cURL  Node.js 20+ & npm / pnpmMySQL 8.0+Composer 2+2. Konfigurasi Backend (Laravel 13)Bash# Clone repository
-git clone [https://github.com/your-username/saypraz-backend.git](https://github.com/your-username/saypraz-backend.git)
-cd saypraz-backend
-
-# Install dependensi PHP
-composer install
-
-# Siapkan environment file
-cp .env.example .env
-
-# Generate APP_KEY
-php artisan key:generate
-
-# Konfigurasikan file .env (Database & Supabase S3 Credentials)
-# DB_DATABASE=peminjaman
-# AWS_ACCESS_KEY_ID=your_supabase_key
-# AWS_SECRET_ACCESS_KEY=your_supabase_secret
-# AWS_DEFAULT_REGION=us-east-1
-# AWS_BUCKET=assets
-# AWS_ENDPOINT=[https://your-project.supabase.co/storage/v1/s3](https://your-project.supabase.co/storage/v1/s3)
-
-# Jalankan migrasi dan seeder
-php artisan migrate --seed
-
-# Jalankan development server
-php artisan serve
-3. Konfigurasi Frontend (Next.js 16)Bash# Pindah ke direktori frontend
-cd ../saypraz-frontend
-
-# Install paket JavaScript
-npm install
-
-# Siapkan environment client
-cp .env.example .env.local
-
-# Sesuaikan endpoint API pada .env.local
-# NEXT_PUBLIC_API_URL=http://localhost:8000
-
-# Jalankan server Next.js
-npm run dev
-Aplikasi dapat diakses melalui browser pada http://localhost:3000.  📄 LisensiProyek ini didistribusikan di bawah lisensi open-source MIT License. Silakan baca file LICENSE untuk informasi lebih lanjut.
