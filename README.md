@@ -135,3 +135,59 @@ categories (1) ────< (N) assets (1) ────< (N) asset_logs (N) >�
                             │
                             └────< (N) transactions (N) >──── (1) users
 ```
+
+Panduan Instalasi
+1. Kebutuhan Sistem
+PHP 8.2 atau 8.3 dengan ekstensi PDO, OpenSSL, BCMath, cURL
+
+Node.js 20+ & npm / pnpm
+
+MySQL 8.0+
+
+Composer 2+
+
+2. Konfigurasi Backend (Laravel 13)
+Bash
+# Clone repository
+git clone [https://github.com/your-username/saypraz-backend.git](https://github.com/your-username/saypraz-backend.git)
+cd saypraz-backend
+
+# Install dependensi PHP
+composer install
+
+# Siapkan environment file
+cp .env.example .env
+
+# Generate APP_KEY
+php artisan key:generate
+
+# Konfigurasikan file .env (Database & Supabase S3 Credentials)
+# DB_DATABASE=peminjaman
+# AWS_ACCESS_KEY_ID=your_supabase_key
+# AWS_SECRET_ACCESS_KEY=your_supabase_secret
+# AWS_DEFAULT_REGION=us-east-1
+# AWS_BUCKET=assets
+# AWS_ENDPOINT=[https://your-project.supabase.co/storage/v1/s3](https://your-project.supabase.co/storage/v1/s3)
+
+# Jalankan migrasi dan seeder
+php artisan migrate --seed
+
+# Jalankan development server
+php artisan serve
+3. Konfigurasi Frontend (Next.js 16)
+Bash
+# Pindah ke direktori frontend
+cd ../saypraz-frontend
+
+# Install paket JavaScript
+npm install
+
+# Siapkan environment client
+cp .env.example .env.local
+
+# Sesuaikan endpoint API pada .env.local
+# NEXT_PUBLIC_API_URL=http://localhost:8000
+
+# Jalankan server Next.js
+npm run dev
+Aplikasi dapat diakses melalui browser pada http://localhost:3000.
