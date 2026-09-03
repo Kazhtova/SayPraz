@@ -105,13 +105,16 @@ class AssetController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'category_id'   => 'nullable|exists:categories,id',
-            'name'          => 'required|string|max:255',
-            'brand'         => 'required|string|max:255',
-            'qr_code'       => 'required|string|unique:assets,qr_code',
-            'status'        => 'required|in:available,borrowed,in_repair',
-            'purchase_year' => 'required|integer|min:1900|max:' . date('Y'),
-            'image'         => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120'
+            'category_id'       => 'nullable|exists:categories,id',
+            'name'              => 'required|string|max:255',
+            'brand'             => 'required|string|max:255',
+            'qr_code'           => 'required|string|unique:assets,qr_code',
+            'status'            => 'required|in:available,borrowed,in_repair',
+            'purchase_year'     => 'required|integer|min:1900|max:' . date('Y'),
+            'image'             => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'purchase_price'    => 'required|numeric|min:0',
+            'useful_life'       => 'required|integer|min:1|max:50',
+            'residual_value'    => 'nullable|numeric|min:0',
         ]);
 
         if($validator->fails()) {
@@ -123,6 +126,8 @@ class AssetController extends Controller
         }
 
         $data = $validator->validated();
+
+        $data['residual_value'] = $request->filled('residual_value') ? (float) $request->residual_value : 0;
 
         if($request->hasFile('image')){
             $file = $request->file('image');
@@ -179,13 +184,16 @@ class AssetController extends Controller
     public function update(Request $request, Asset $asset)
     {
         $validator = Validator::make($request->all(), [
-            'category_id'   => 'sometimes|required|exists:categories,id',
-            'name'          => 'sometimes|required|string|max:255',
-            'brand'         => 'sometimes|required|string|max:255',
-            'qr_code'       => 'sometimes|required|string|unique:assets,qr_code,' . $asset->id,
-            'status'        => 'sometimes|required|in:available,borrowed,in_repair',
-            'purchase_year' => 'sometimes|required|integer|min:1900|max:' . date('Y'),
-            'image'         => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'category_id'       => 'sometimes|nullable|exists:categories,id',
+            'name'              => 'sometimes|required|string|max:255',
+            'brand'             => 'sometimes|required|string|max:255',
+            'qr_code'           => 'sometimes|required|string|unique:assets,qr_code,' . $asset->id,
+            'status'            => 'sometimes|required|in:available,borrowed,in_repair',
+            'purchase_year'     => 'sometimes|required|integer|min:1900|max:' . date('Y'),
+            'image'             => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'purchase_price'    => 'sometimes|required|numeric|min:0',
+            'useful_life'       => 'sometimes|required|integer|min:1|max:50',
+            'residual_value'    => 'nullable|numeric|min:0',
         ]);
 
         if($validator->fails()) {
@@ -196,6 +204,10 @@ class AssetController extends Controller
         }
 
         $data = $validator->validated();
+
+        if($request->has('residual_value')){
+            $data['residual_value'] = $request->filled('residual_value') ? (float) $request->residual_value : 0;
+        }
 
         if($request->hasFile('image')){
             // Hapus foto lama di Supabase jika ada

@@ -14,7 +14,7 @@ class Asset extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['category_id', 'name', 'brand', 'qr_code', 'status', 'purchase_year', 'image'];
+    protected $fillable = ['category_id', 'name', 'brand', 'qr_code', 'status', 'purchase_year', 'image', 'purchase_price', 'useful_life', 'residual_value',];
 
     protected $appends = ['image_url', 'annual_depreciation', 'accumulated_depreciation', 'current_book_value', 'depreciation_percentage', 'is_fully_depreciated'];
 
@@ -61,6 +61,30 @@ class Asset extends Model
     public function logs(): HasMany
     {
         return $this->hasMany(AssetLog::class);
+    }
+
+    public function getAnnualDepreciationAttribute(): float
+    {
+        $usefulLife = (int) ($this->useful_life ?? 5);
+        if ($usefulLife <=0) return 0.0;
+        
+        $purchusePrice = (float) ($this->purchase_price ?? 0);
+        $residualValue = (float) ($this->residual_value ?? 0);
+
+        $depreciableBase = max(0, $purchusePrice - $residualValue);
+        return round($depreciableBase / $usefulLife, 2);
+    }
+
+    public function getAccumulatedDepreciationAttribute(): float
+    {
+        $currentYear = (int) Carbon::now()->year;
+        $purchaseYear = (int) ($this->purchase_year ?: $currentYear);
+        $usefulLife = (int) ($this->useful_life ?? 5);
+
+        $yearInUse = max(0, $currentYear - $purchaseYear);
+        $effectiveYear = min($yearInUse, $usefulLife);
+
+        return round($this->annual_depreciation * $effectiveYear, 2);
     }
 
     public function getCurrentBookValueAttribute(): float
