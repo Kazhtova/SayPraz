@@ -61,6 +61,24 @@ Menggabungkan konsep **Enterprise Asset Management (EAM)** dengan sistem **Sirku
 
 ---
 
-## 🏛️ Arsitektur Sistem
+## Arsitektur Sistem
 
-Proyek ini memisahkan lapisan presentasi dan antarmuka bisnis secara menyeluruh (*Headless Architecture*):
+```mermaid
+graph TD
+    %% Styling Definisi
+    classDef client fill:#000000,stroke:#333333,stroke-width:2px,color:#ffffff;
+    classDef backend fill:#FF2D20,stroke:#b81409,stroke-width:2px,color:#ffffff;
+    classDef storage fill:#3ECF8E,stroke:#249d66,stroke-width:2px,color:#ffffff;
+    classDef db fill:#4479A1,stroke:#2b5879,stroke-width:2px,color:#ffffff;
+
+    %% Nodes
+    Frontend["<b>Frontend Client</b><br/>Next.js 16 (App Router • React Server Components)"]:::client
+    Backend["<b>Backend API Engine</b><br/>Laravel 13 API Core (PHP 8.2+ / 8.3)"]:::backend
+    ObjectStorage[("<b>Object Storage</b><br/>Supabase S3 Storage<br/><i>(Bukti Fisik, Foto Kondisi)</i>")]:::storage
+    RelationalDB[("<b>Relational Database</b><br/>MySQL 8.0+<br/><i>(Transaksional & Data Aset)</i>")]:::db
+
+    %% Connections
+    Frontend -->|"HTTPS / JSON REST API<br/>(Laravel Sanctum Auth)"| Backend
+    Backend -->|"Flysystem S3 Driver"| ObjectStorage
+    Backend -->|"PDO / Eloquent ORM"| RelationalDB
+```
