@@ -59,8 +59,6 @@ graph TD
     Backend -->|"AWS S3 SDK (Flysystem Driver)"| ObjectStorage
     Backend -->|"PDO / Eloquent Queries"| RelationalDB
 
-```
-
 
 [ Pengadaan Aset ]
        │
