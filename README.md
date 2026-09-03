@@ -7,21 +7,21 @@
 [![Next.js 16](https://img.shields.io/badge/Next.js%2016-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
 [![Supabase S3](https://img.shields.io/badge/Supabase%20S3-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_v4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![MySQL 8](https://img.shields.io/badge/MySQL%208-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 <p align="center">
-  Platform EAM modern berbasis arsitektur <i>Decoupled</i> untuk mengelola siklus hidup aset, mengontrol perputaran stok peminjaman bertingkat, menginspeksi degradasi fisik, serta menyimpan bukti serah-terima terdesentralisasi via Supabase Storage.
+  Platform EAM modern berbasis arsitektur <i>Decoupled</i> (Headless API) untuk mengotomatisasi siklus hidup sarana-prasarana, perhitungan depresiasi finansial aset riil (Metode Garis Lurus), pelacakan sirkulasi berbasis QR Code, dan rekam jejak audit nir-ubah (<i>Immutable Audit Trail</i>).
 </p>
 
 [Gambaran Proyek](#-gambaran-proyek) •
-[Fitur Utama](#-fitur-utama) •
 [Arsitektur Sistem](#-arsitektur-sistem) •
-[Alur Sirkulasi Bisnis](#-alur-sirkulasi-bisnis-business-flow) •
-[Struktur Basis Data](#-struktur-basis-data--relasi-entitas) •
-[Panduan Instalasi](#-panduan-instalasi) •
-[Standar Keamanan](#-standar-keamanan--integritas-data) •
-[Lisensi](#-lisensi)
+[Alur Bisnis & Siklus Aset](#-alur-bisnis--siklus-aset) •
+[Mesin Perhitungan Finansial](#-mesin-perhitungan-finansial-eam) •
+[Matriks Hak Akses](#-matriks-hak-akses-rbac) •
+[Struktur Basis Data](#-struktur-basis-data) •
+[Panduan Instalasi](#-panduan-instalasi)
 
 </div>
 
@@ -29,56 +29,91 @@
 
 ## 📌 Gambaran Proyek
 
-**SayPraz** dibangun untuk mengatasi tantangan tata kelola logistik dan inventaris korporat: hilangnya jejak peminjaman (*asset misplacement*), degradasi fisik tanpa dokumentasi inspeksi berkala, serta ketidaksinkronan stok fisik dengan data administratif. 
+**SayPraz** dirancang untuk mentransformasi tata kelola logistik sekolah dan institusi dari inventarisasi manual menjadi ekosistem digital enterprise[cite: 1, 4]. Sistem ini mengatasi tiga masalah krusial:
+1. **Discrepancy Fisik & Administratif:** Hilangnya jejak peminjaman (*asset misplacement*) dan peminjaman liar tanpa persetujuan bertingkat.
+2. **Ketiadaan Valuasi Riil:** Nilai aset yang tercatat sering kali statis pada harga beli awal, mengabaikan degradasi nilai barang seiring berjalannya tahun pemakaian[cite: 1, 4].
+3. **Dokumentasi Kerusakan Minim:** Peralatan fisik mengalami penurunan mutu tanpa adanya catatan rekam jejak perbaikan (*maintenance logs*) yang terpusat.
 
-Menggabungkan konsep **Enterprise Asset Management (EAM)** dengan sistem **Sirkulasi Peminjaman Stok**, SayPraz mengawasi seluruh tahapan aset sejak pengadaan (*procurement*), pemanfaatan operasional (*active deployment*), siklus servis (*maintenance*), hingga penghapusan unit (*disposal*).
-
----
-
-## 🚀 Fitur Utama
-
-### 1. Manajemen Siklus Hidup Aset (EAM Core)
-- **Registrasi Identitas Unik**: Kodefikasi berbasis SKU, serial number, atau *asset barcode/QR tag*.
-- **Hierarki Multi-Level**: Klasifikasi barang berdasarkan kategori, gedung, ruangan, rak, dan departemen penanggung jawab.
-- **State Machine Kondisi Aset**: Pelacakan status unit secara presisi (`Tersedia`, `Dipinjam`, `Dalam Perbaikan`, `Rusak`, `Dihapus`).
-- **Log Pemeliharaan**: Riwayat servis berkala, pencatatan biaya perbaikan (*maintenance cost*), dan teknisi penanggung jawab.
-
-### 2. Sirkulasi & Peminjaman Stok Barang
-- **Loan Request Mandiri**: Pengajuan permohonan pinjam oleh pengguna internal dengan batas waktu (*due date*) dan tujuan pemakaian.
-- **Multi-Level Approval**: Alur verifikasi dan otorisasi oleh manajer divisi sebelum barang fisik dikeluarkan dari gudang.
-- **Handover & Return Inspection**: Verifikasi kondisi barang saat serah-terima versus kondisi pasca-pakai guna mendeteksi kerusakan.
-- **Overdue Alert**: Indikator otomatis untuk mendeteksi barang yang melewati tenggat waktu pengembalian.
-
-### 3. Media & Storage Engine (Supabase S3)
-- **Asset Media Storage**: Penyimpanan foto katalog dan bukti fisik serah-terima langsung ke bucket Supabase via AWS S3 Client SDK Laravel.
-- **Time-Limited Signed URLs**: Pengamanan berkas sensitif (seperti bukti ganti rugi aset atau Berita Acara BAST) menggunakan tautan berbatas waktu.
-
-### 4. Pelaporan & Hak Akses Berjenjang (RBAC)
-- **Superadmin / Asset Manager**: Akses penuh audit trail, mutasi master data, dan analitik inventaris.
-- **Operator Gudang**: Eksekusi serah-terima fisik, verifikasi kondisi barang, dan penerbitan tiket servis.
-- **Borrower / Employee**: Mengajukan pinjaman, memantau status persetujuan, dan melihat riwayat peminjaman mandiri.
-- **Ekspor Dokumen**: Cetak Berita Acara Serah Terima (BAST) format PDF serta rekap spreadsheet untuk keperluan *stock opname*.
+Dengan menggabungkan konsep **Enterprise Asset Management (EAM)** dan **Sirkulasi Peminjaman Bertingkat**, SayPraz mengawasi aset mulai dari pengadaan (*procurement*), pemanfaatan operasional (*active deployment*), siklus servis (*maintenance*), evaluasi nilai buku berkala, hingga penghapusan unit (*disposal*)[cite: 1, 4].
 
 ---
 
 ## 🏛️ Arsitektur Sistem
 
+Platform mengadopsi arsitektur decoupled berkinerja tinggi yang memisahkan client presentasi dengan backend komputasi transaksional:
+
 ```mermaid
 graph TD
-    %% Styling Definisi
-    classDef client fill:#000000,stroke:#333333,stroke-width:2px,color:#ffffff;
-    classDef backend fill:#FF2D20,stroke:#b81409,stroke-width:2px,color:#ffffff;
-    classDef storage fill:#3ECF8E,stroke:#249d66,stroke-width:2px,color:#ffffff;
-    classDef db fill:#4479A1,stroke:#2b5879,stroke-width:2px,color:#ffffff;
+    classDef client fill:#09090b,stroke:#27272a,stroke-width:2px,color:#f4f4f5;
+    classDef backend fill:#18181b,stroke:#dc2626,stroke-width:2px,color:#f4f4f5;
+    classDef storage fill:#18181b,stroke:#059669,stroke-width:2px,color:#f4f4f5;
+    classDef db fill:#18181b,stroke:#2563eb,stroke-width:2px,color:#f4f4f5;
 
-    %% Nodes
-    Frontend["<b>Frontend Client</b><br/>Next.js 16 (App Router • React Server Components)"]:::client
-    Backend["<b>Backend API Engine</b><br/>Laravel 13 API Core (PHP 8.2+ / 8.3)"]:::backend
-    ObjectStorage[("<b>Object Storage</b><br/>Supabase S3 Storage<br/><i>(Bukti Fisik, Foto Kondisi)</i>")]:::storage
-    RelationalDB[("<b>Relational Database</b><br/>MySQL 8.0+<br/><i>(Transaksional & Data Aset)</i>")]:::db
+    Frontend["<b>Frontend Client (Next.js 16)</b><br/>• React Server Components (RSC)<br/>• Tailwind CSS Dark-Mode Theme<br/>• Recharts Analytics Engine"]:::client
+    Backend["<b>Backend Core API (Laravel 13)</b><br/>• RESTful API Architecture<br/>• Laravel Sanctum Auth<br/>• Eloquent Dynamic Accessors"]:::backend
+    ObjectStorage[("<b>Object Storage (Supabase S3)</b><br/>• Direct Asset Images<br/>• Public Bucket Distribution")]:::storage
+    RelationalDB[("<b>Relational Database (MySQL 8)</b><br/>• Strict Constraints & Foreign Keys<br/>• Transactional Acid Processing")]:::db
 
-    %% Connections
-    Frontend -->|"HTTPS / JSON REST API<br/>(Laravel Sanctum Auth)"| Backend
-    Backend -->|"Flysystem S3 Driver"| ObjectStorage
-    Backend -->|"PDO / Eloquent ORM"| RelationalDB
-```
+    Frontend -->|"HTTPS / JSON API (Bearer Token)"| Backend
+    Backend -->|"AWS S3 SDK (Flysystem Driver)"| ObjectStorage[cite: 2, 3]
+    Backend -->|"PDO / Eloquent Queries"| RelationalDB
+🔄 Alur Bisnis & Siklus AsetAlur sirkulasi barang terhubung secara langsung dengan status operasional fisik dan pencatatan audit log:  [ Pengadaan Aset ]
+       │
+       ▼
+[ Registrasi & Valuasi ] ──────► [ Auto-Generate QR Code ] ───► [ Sinkronisasi S3 Media ]
+       │
+       ▼
+[ Operasional Inventaris ] ◄────► [ Mutasi Status & Immutable Audit Trail (AssetLog) ]
+   ├─ Tersedia (Available)
+   ├─ Dipinjam (Borrowed)
+   └─ Perbaikan (In Repair)
+       │
+       ▼
+[ Depresiasi Berkala ] ────────► [ Valuasi Nilai Buku Riil Tiap Tahun Buku ]
+       │
+       ▼
+[ 100% Tersusut ] ─────────────► [ Rekomendasi Disposed / Afkir Barang ]
+Penjelasan TahapanRegistrasi & Kodifikasi: Aset baru didaftarkan ke sistem dengan membangkitkan kode unik berformat AST-{timestamp}-{random}. Foto aset diunggah ke bucket Supabase S3 dengan header tipe MIME yang presisi.  Sirkulasi Operasional:available: Unit berada di ruang penyimpanan dan siap diajukan untuk peminjaman.  borrowed: Unit sedang aktif digunakan; status ini mengunci aset agar tidak dapat dipinjam ganda.  in_repair: Unit mengalami kerusakan teknis dan dialihkan ke dalam antrean pemeliharaan.  disposed: Unit telah dihapus dari inventaris aktif karena rusak total atau dilelang.  Audit Trail Otomatis: Setiap mutasi status dieksekusi dalam DB::transaction dan otomatis mencatat riwayat ke tabel asset_logs beserta catatan inspeksi dan identitas admin.  📈 Mesin Perhitungan Finansial (EAM)SayPraz mengimplementasikan standar akuntansi Metode Garis Lurus (Straight-Line Depreciation Method) secara dinamis menggunakan accessor model Eloquent di backend.  Formula MatematikaBeban Penyusutan Tahunan ($D$):$$D = \frac{\text{purchase\_price} - \text{residual\_value}}{\text{useful\_life}}$$Akumulasi Penyusutan ($AD$):$$AD = D \times \min\Big(\max(0, \text{current\_year} - \text{purchase\_year}), \text{useful\_life}\Big)$$Nilai Buku Bersih Terkini ($NBV$):$$NBV = \max(\text{residual\_value}, \text{purchase\_price} - AD)$$Persentase Tersusut:$$\% \text{ Tersusut} = \left(\frac{AD}{\text{purchase\_price}}\right) \times 100\%$$👥 Matriks Hak Akses (RBAC)Pemisahan tanggung jawab diatur secara terstruktur melalui sistem peran:Fitur / KemampuanAdministratorStaf SarprasSiswa / GuruRegistrasi & Edit Master AsetYa  Ya  TidakKonfigurasi Parameter Finansial (Harga, Manfaat, Residu)Ya  TidakTidakMonitoring Valuasi & Laporan DepresiasiYa  Ya  TidakPersetujuan & Mutasi Peminjaman FisikYa  Ya  TidakPencetakan Label QR Code UnitYa  Ya  TidakInspeksi Rekam Jejak Audit (Asset Logs)Ya[cite: 3]Ya[cite: 3]TidakAkses E-Catalog & Pengajuan PinjamTidakTidakYa🗄️ Struktur Basis DataSkema database dirancang menggunakan relasi integritas referensial penuh:categories (1) ────< (N) assets (1) ────< (N) asset_logs (N) >──── (1) users
+                            │
+                            └────< (N) transactions (N) >──── (1) users
+Snapshot Skema Tabel assetsKolomTipe DataDeskripsiidBIGINT UNSIGNED (PK)Identifier unik auto-increment  category_idBIGINT UNSIGNED (FK)Relasi ke tabel categories  nameVARCHAR(255)Nama unit/peralatan sarpras  brandVARCHAR(255)Merek/pabrikan aset  qr_codeVARCHAR(255) (UNIQUE)Kode identitas fisik terenkapsulasi  statusENUMavailable, borrowed, in_repair, disposed  purchase_yearYEARTahun pengadaan/pembelian unit  purchase_priceDECIMAL(15,2)Nilai modal perolehan aset  useful_lifeINT UNSIGNEDEstimasi masa manfaat operasional (tahun)  residual_valueDECIMAL(15,2)Estimasi nilai sisa afkir  imageVARCHAR(255)Path file media di bucket Supabase S3  🛠️ Panduan Instalasi1. Kebutuhan SistemPHP 8.2 atau 8.3 dengan ekstensi PDO, OpenSSL, BCMath, cURL  Node.js 20+ & npm / pnpmMySQL 8.0+Composer 2+2. Konfigurasi Backend (Laravel 13)Bash# Clone repository
+git clone [https://github.com/your-username/saypraz-backend.git](https://github.com/your-username/saypraz-backend.git)
+cd saypraz-backend
+
+# Install dependensi PHP
+composer install
+
+# Siapkan environment file
+cp .env.example .env
+
+# Generate APP_KEY
+php artisan key:generate
+
+# Konfigurasikan file .env (Database & Supabase S3 Credentials)
+# DB_DATABASE=peminjaman
+# AWS_ACCESS_KEY_ID=your_supabase_key
+# AWS_SECRET_ACCESS_KEY=your_supabase_secret
+# AWS_DEFAULT_REGION=us-east-1
+# AWS_BUCKET=assets
+# AWS_ENDPOINT=[https://your-project.supabase.co/storage/v1/s3](https://your-project.supabase.co/storage/v1/s3)
+
+# Jalankan migrasi dan seeder
+php artisan migrate --seed
+
+# Jalankan development server
+php artisan serve
+3. Konfigurasi Frontend (Next.js 16)Bash# Pindah ke direktori frontend
+cd ../saypraz-frontend
+
+# Install paket JavaScript
+npm install
+
+# Siapkan environment client
+cp .env.example .env.local
+
+# Sesuaikan endpoint API pada .env.local
+# NEXT_PUBLIC_API_URL=http://localhost:8000
+
+# Jalankan server Next.js
+npm run dev
+Aplikasi dapat diakses melalui browser pada http://localhost:3000.  📄 LisensiProyek ini didistribusikan di bawah lisensi open-source MIT License. Silakan baca file LICENSE untuk informasi lebih lanjut.
