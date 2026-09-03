@@ -92,21 +92,21 @@ graph TD
 
 ## 📈 Mesin Perhitungan Finansial (EAM)
 
-SayPraz mengimplementasikan standar akuntansi **Metode Garis Lurus (Straight-Line Depreciation Method)** secara dinamis menggunakan accessor model Eloquent di backend.
+SayPraz mengimplementasikan standar akuntansi **Metode Garis Lurus (*Straight-Line Depreciation Method*)** secara dinamis menggunakan accessor model Eloquent di backend.
 
 ### Formula Matematika
 
 * **Beban Penyusutan Tahunan ($D$):**
-  $$D = \frac{\text{purchase\_price} - \text{residual\_value}}{\text{useful\_life}}$$
+  $$D = \frac{\text{Harga Perolehan} - \text{Nilai Residu}}{\text{Masa Manfaat}}$$
 
 * **Akumulasi Penyusutan ($AD$):**
-  $$AD = D \times \min\Big(\max(0, \text{current\_year} - \text{purchase\_year}), \text{useful\_life}\Big)$$
+  $$AD = D \times \min\Big(\max(0, \text{Tahun Berjalan} - \text{Tahun Pembelian}), \text{Masa Manfaat}\Big)$$
 
 * **Nilai Buku Bersih Terkini ($NBV$):**
-  $$NBV = \max(\text{residual\_value}, \text{purchase\_price} - AD)$$
+  $$NBV = \max(\text{Nilai Residu}, \text{Harga Perolehan} - AD)$$
 
 * **Persentase Tersusut:**
-  $$\% \text{ Tersusut} = \left(\frac{AD}{\text{purchase\_price}}\right) \times 100\%$$
+  $$\% \text{ Tersusut} = \left(\frac{AD}{\text{Harga Perolehan}}\right) \times 100\%$$
 
 ---
 
