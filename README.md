@@ -78,3 +78,60 @@ graph TD
        ▼
 [ 100% Tersusut ] ─────────────► [ Rekomendasi Disposed / Afkir Barang ]
 ```
+
+### Penjelasan Tahapan
+* **Registrasi & Kodifikasi:** Aset baru didaftarkan ke sistem dengan membangkitkan kode unik berformat `AST-{timestamp}-{random}`. Foto aset diunggah ke bucket Supabase S3 dengan header tipe MIME yang presisi.
+* **Sirkulasi Operasional:**
+  * `available`: Unit berada di ruang penyimpanan dan siap diajukan untuk peminjaman.
+  * `borrowed`: Unit sedang aktif digunakan; status ini mengunci aset agar tidak dapat dipinjam ganda.
+  * `in_repair`: Unit mengalami kerusakan teknis dan dialihkan ke dalam antrean pemeliharaan.
+  * `disposed`: Unit telah dihapus dari inventaris aktif karena rusak total atau dilelang.
+* **Audit Trail Otomatis:** Setiap mutasi status dieksekusi dalam `DB::transaction` dan otomatis mencatat riwayat ke tabel `asset_logs` beserta catatan inspeksi dan identitas admin.
+
+---
+
+## 📈 Mesin Perhitungan Finansial (EAM)
+
+SayPraz mengimplementasikan standar akuntansi **Metode Garis Lurus (Straight-Line Depreciation Method)** secara dinamis menggunakan accessor model Eloquent di backend.
+
+### Formula Matematika
+
+* **Beban Penyusutan Tahunan ($D$):**
+  $$D = \frac{\text{purchase\_price} - \text{residual\_value}}{\text{useful\_life}}$$
+
+* **Akumulasi Penyusutan ($AD$):**
+  $$AD = D \times \min\Big(\max(0, \text{current\_year} - \text{purchase\_year}), \text{useful\_life}\Big)$$
+
+* **Nilai Buku Bersih Terkini ($NBV$):**
+  $$NBV = \max(\text{residual\_value}, \text{purchase\_price} - AD)$$
+
+* **Persentase Tersusut:**
+  $$\% \text{ Tersusut} = \left(\frac{AD}{\text{purchase\_price}}\right) \times 100\%$$
+
+---
+
+## 👥 Matriks Hak Akses (RBAC)
+
+Pemisahan tanggung jawab diatur secara terstruktur melalui sistem peran:
+
+| Fitur / Kemampuan | Administrator | Staf Sarpras | Siswa / Guru |
+| :--- | :---: | :---: | :---: |
+| **Registrasi & Edit Master Aset** | ✅ Ya | ✅ Ya | ❌ Tidak |
+| **Konfigurasi Parameter Finansial** | ✅ Ya | ❌ Tidak | ❌ Tidak |
+| **Monitoring Valuasi & Laporan Depresiasi** | ✅ Ya | ✅ Ya | ❌ Tidak |
+| **Persetujuan & Mutasi Peminjaman Fisik** | ✅ Ya | ✅ Ya | ❌ Tidak |
+| **Pencetakan Label QR Code Unit** | ✅ Ya | ✅ Ya | ❌ Tidak |
+| **Inspeksi Rekam Jejak Audit (Logs)** | ✅ Ya | ✅ Ya | ❌ Tidak |
+| **Akses E-Catalog & Pengajuan Pinjam** | ❌ Tidak | ❌ Tidak | ✅ Ya |
+
+---
+
+## 🗄️ Struktur Basis Data
+
+Skema database dirancang menggunakan relasi integritas referensial penuh:
+
+```text
+categories (1) ────< (N) assets (1) ────< (N) asset_logs (N) >──── (1) users
+                            │
+                            └────< (N) transactions (N) >──── (1) users
+```
