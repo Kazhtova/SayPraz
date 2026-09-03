@@ -175,8 +175,9 @@ php artisan migrate --seed
 
 # Jalankan development server
 php artisan serve
+~~~
 3. Konfigurasi Frontend (Next.js 16)
-Bash
+~~~
 # Pindah ke direktori frontend
 cd ../saypraz-frontend
 
@@ -191,5 +192,5 @@ cp .env.example .env.local
 
 # Jalankan server Next.js
 npm run dev
-Aplikasi dapat diakses melalui browser pada http://localhost:3000.
 ~~~
+Aplikasi dapat diakses melalui browser pada http://localhost:3000.
