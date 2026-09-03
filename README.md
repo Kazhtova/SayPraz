@@ -27,7 +27,7 @@
 
 ---
 
-## 📌 Gambaran Proyek
+## Gambaran Proyek
 
 **SayPraz** dirancang untuk mentransformasi tata kelola logistik sekolah dan institusi dari inventarisasi manual menjadi ekosistem digital enterprise. Sistem ini mengatasi tiga masalah krusial:
 
@@ -90,7 +90,7 @@ graph TD
 
 ---
 
-## 📈 Mesin Perhitungan Finansial (EAM)
+## Mesin Perhitungan Finansial (EAM)
 
 SayPraz mengimplementasikan standar akuntansi **Metode Garis Lurus (*Straight-Line Depreciation Method*)** secara dinamis menggunakan accessor model Eloquent di backend.
 
@@ -110,7 +110,7 @@ SayPraz mengimplementasikan standar akuntansi **Metode Garis Lurus (*Straight-Li
 
 ---
 
-## 👥 Matriks Hak Akses (RBAC)
+## Matriks Hak Akses (RBAC)
 
 Pemisahan tanggung jawab diatur secara terstruktur melalui sistem peran:
 
@@ -126,7 +126,7 @@ Pemisahan tanggung jawab diatur secara terstruktur melalui sistem peran:
 
 ---
 
-## 🗄️ Struktur Basis Data
+## Struktur Basis Data
 
 Skema database dirancang menggunakan relasi integritas referensial penuh:
 
@@ -193,4 +193,7 @@ cp .env.example .env.local
 # Jalankan server Next.js
 npm run dev
 ~~~
+
+~~~
 Aplikasi dapat diakses melalui browser pada http://localhost:3000.
+~~~
