@@ -61,7 +61,7 @@ Menggabungkan konsep **Enterprise Asset Management (EAM)** dengan sistem **Sirku
 
 ---
 
-## Arsitektur Sistem
+## 🏛️ Arsitektur Sistem
 
 ```mermaid
 graph TD
