@@ -120,7 +120,7 @@ Pemisahan tanggung jawab diatur secara terstruktur melalui sistem peran:
 | **Konfigurasi Parameter Finansial** | ✅ Ya | ❌ Tidak | ❌ Tidak |
 | **Monitoring Valuasi & Laporan Depresiasi** | ✅ Ya | ❌ Tidak | ❌ Tidak |
 | **Persetujuan & Mutasi Peminjaman Fisik** | ✅ Ya | ❌ Tidak | ❌ Tidak |
-| **Pencetakan Label QR Code Unit** | ✅ Ya | ✅ Ya | ❌ Tidak |
+| **Pencetakan Label QR Code Unit** | ✅ Ya | ❌ Tidak | ❌ Tidak |
 | **Inspeksi Rekam Jejak Audit (Logs)** | ✅ Ya | ❌ Tidak | ❌ Tidak |
 | **Akses E-Catalog & Pengajuan Pinjam** | ❌ Tidak | ✅ Ya | ✅ Ya |
 
