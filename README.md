@@ -114,15 +114,15 @@ SayPraz mengimplementasikan standar akuntansi **Metode Garis Lurus (*Straight-Li
 
 Pemisahan tanggung jawab diatur secara terstruktur melalui sistem peran:
 
-| Fitur / Kemampuan | Administrator | Staf Sarpras | Siswa / Guru |
+| Fitur / Akses | Administrator | Staf Sarpras | Siswa / Guru |
 | :--- | :---: | :---: | :---: |
-| **Registrasi & Edit Master Aset** | ✅ Ya | ✅ Ya | ❌ Tidak |
+| **Registrasi & Edit Master Aset** | ✅ Ya | ❌ Tidak | ❌ Tidak |
 | **Konfigurasi Parameter Finansial** | ✅ Ya | ❌ Tidak | ❌ Tidak |
-| **Monitoring Valuasi & Laporan Depresiasi** | ✅ Ya | ✅ Ya | ❌ Tidak |
-| **Persetujuan & Mutasi Peminjaman Fisik** | ✅ Ya | ✅ Ya | ❌ Tidak |
+| **Monitoring Valuasi & Laporan Depresiasi** | ✅ Ya | ❌ Tidak | ❌ Tidak |
+| **Persetujuan & Mutasi Peminjaman Fisik** | ✅ Ya | ❌ Tidak | ❌ Tidak |
 | **Pencetakan Label QR Code Unit** | ✅ Ya | ✅ Ya | ❌ Tidak |
-| **Inspeksi Rekam Jejak Audit (Logs)** | ✅ Ya | ✅ Ya | ❌ Tidak |
-| **Akses E-Catalog & Pengajuan Pinjam** | ❌ Tidak | ❌ Tidak | ✅ Ya |
+| **Inspeksi Rekam Jejak Audit (Logs)** | ✅ Ya | ❌ Tidak | ❌ Tidak |
+| **Akses E-Catalog & Pengajuan Pinjam** | ❌ Tidak | ✅ Ya | ✅ Ya |
 
 ---
 
