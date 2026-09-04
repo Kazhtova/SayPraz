@@ -282,7 +282,7 @@ export default function DepreciationPage() {
             </div>
           )}
 
-          {/* TABLE DATA WITH SKELETON REFRESH */}
+          {/* TABLE DATA'S WITH SKELETON REFRESH */}
           <div className="overflow-x-auto min-h-[350px]">
             <table className="w-full text-left text-sm text-zinc-400 table-fixed">
               
