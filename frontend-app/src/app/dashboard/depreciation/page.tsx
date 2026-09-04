@@ -231,7 +231,7 @@ export default function DepreciationPage() {
                 <p className="text-[10px] text-zinc-500 mt-2 font-mono uppercase">TOTAL NILAI YANG TELAH MENYUSUT</p>
               </div>
 
-              {/* Nilai Buku Terkini */}
+              {/* Nilai Asset Terkini */}
               <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/10 p-5 backdrop-blur-sm relative overflow-hidden">
                 <div className="flex items-center gap-2 text-emerald-400 text-sm font-semibold">
                   <DollarSign className="h-4 w-4 text-emerald-400" /> Nilai Asset Terkini (Current Valuation)
