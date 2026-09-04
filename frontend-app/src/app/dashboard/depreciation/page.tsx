@@ -194,7 +194,7 @@ export default function DepreciationPage() {
               <TrendingDown className="h-7 w-7 text-zinc-300" /> Depresiasi & Nilai Aset
             </h1>
             <p className="text-zinc-400 text-sm mt-1">
-              Kalkulasi penurunan nilai aset secara otomatis menggunakan Metode Garis Lurus (Straight-Line Depreciation).
+              Perhitungan otomatis penyusutan nilai aset secara bertahap dan merata (Straight-Line Depreciation).
             </p>
           </div>
         )}
