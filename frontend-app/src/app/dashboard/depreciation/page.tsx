@@ -292,10 +292,10 @@ export default function DepreciationPage() {
                 <thead className="border-b border-zinc-800 bg-zinc-900/60 text-xs uppercase text-zinc-400 tracking-wider">
                   <tr>
                     <th scope="col" className="px-6 py-4 font-semibold w-[24%]">Nama Aset & QR</th>
-                    <th scope="col" className="px-6 py-4 font-semibold text-right w-[16%]">Harga Awal</th>
+                    <th scope="col" className="px-6 py-4 font-semibold text-center w-[16%]">Harga Awal</th>
                     <th scope="col" className="px-6 py-4 font-semibold text-center w-[14%]">Masa Manfaat</th>
                     <th scope="col" className="px-6 py-4 font-semibold text-right w-[16%]">Penyusutan / Thn</th>
-                    <th scope="col" className="px-6 py-4 font-semibold text-right w-[16%]">Nilai Asset Saat Ini</th>
+                    <th scope="col" className="px-6 py-4 font-semibold text-center w-[16%]">Nilai Asset Saat Ini</th>
                     <th scope="col" className="px-6 py-4 font-semibold text-center w-[14%]">Status Manfaat</th>
                   </tr>
                 </thead>
@@ -329,7 +329,7 @@ export default function DepreciationPage() {
                         </div>
                       </td>
 
-                      <td className="px-6 py-4 text-right font-mono text-zinc-300">
+                      <td className="px-6 py-4 text-center font-mono text-zinc-300">
                         {formatRupiah(Number(item.purchase_price))}
                       </td>
 
