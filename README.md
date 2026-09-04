@@ -149,7 +149,6 @@ Composer 2+
 ```
 
 2. Konfigurasi Backend (Laravel 13)
-Bash
 ~~~
 # Clone repository
 git clone [https://github.com/your-username/saypraz-backend.git](https://github.com/your-username/saypraz-backend.git)
