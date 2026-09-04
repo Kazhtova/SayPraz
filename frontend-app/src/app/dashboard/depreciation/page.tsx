@@ -342,7 +342,7 @@ export default function DepreciationPage() {
                         - {formatRupiah(item.annual_depreciation)}
                       </td>
 
-                      <td className="px-6 py-4 text-right font-mono font-semibold text-emerald-400">
+                      <td className="px-6 py-4 text-center font-mono font-semibold text-emerald-400">
                         {formatRupiah(item.current_book_value)}
                       </td>
 
