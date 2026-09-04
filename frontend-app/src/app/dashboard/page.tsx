@@ -421,7 +421,7 @@ export default function DashboardPage() {
               <p className="text-5xl font-bold text-white tracking-tighter drop-shadow-sm">{stats.total}</p>
               {renderGrowthBadge(stats.total_growth)}
             </div>
-            <p className="text-[10px] text-zinc-400 mt-3 font-semibold relative z-10 tracking-wider">DIBANDING BULAN LALU</p>
+            <p className="text-[10px] text-zinc-400 mt-3 font-semibold relative z-10 tracking-wider">YANG TERHITUNG SAAT INI</p>
             {/* Glow effect yang lebih kuat untuk membedakan dari card lain */}
             <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-white/[0.04] blur-3xl z-0 pointer-events-none"></div>
           </div>
@@ -437,7 +437,7 @@ export default function DashboardPage() {
                 <ArrowUpRight className="h-3 w-3 mr-0.5" /> Ready
               </div>
             </div>
-            <p className="text-[10px] text-zinc-500 mt-2 font-medium relative z-10">KETERSEDIAAN SAAT INI</p>
+            <p className="text-[10px] text-zinc-500 mt-2 font-medium relative z-10">TERSEDIA UNTUK DIPINJAM</p>
             <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-white/[0.02] blur-3xl group-hover:bg-white/[0.04] transition-colors z-0"></div>
           </div>
 
@@ -450,7 +450,7 @@ export default function DashboardPage() {
               <p className="text-4xl font-bold text-zinc-100 tracking-tighter">{stats.borrowed}</p>
               {renderGrowthBadge(stats.borrow_growth)}
             </div>
-            <p className="text-[10px] text-zinc-500 mt-2 font-medium relative z-10">DIBANDING BULAN LALU</p>
+            <p className="text-[10px] text-zinc-500 mt-2 font-medium relative z-10"></p>
             <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-white/[0.02] blur-3xl group-hover:bg-white/[0.04] transition-colors z-0"></div>
           </div>
 
