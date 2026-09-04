@@ -338,7 +338,7 @@ export default function DepreciationPage() {
                         <div className="text-[10px] text-zinc-500 font-mono">Beli: {item.purchase_year}</div>
                       </td>
 
-                      <td className="px-6 py-4 text-right font-mono text-rose-400/90 text-xs">
+                      <td className="px-6 py-4 text-center font-mono text-rose-400/90 text-xs">
                         - {formatRupiah(item.annual_depreciation)}
                       </td>
 
