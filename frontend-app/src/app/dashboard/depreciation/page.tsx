@@ -234,7 +234,7 @@ export default function DepreciationPage() {
               {/* Nilai Buku Terkini */}
               <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/10 p-5 backdrop-blur-sm relative overflow-hidden">
                 <div className="flex items-center gap-2 text-emerald-400 text-sm font-semibold">
-                  <DollarSign className="h-4 w-4 text-emerald-400" /> Nilai Buku Terkini (Current Valuation)
+                  <DollarSign className="h-4 w-4 text-emerald-400" /> Nilai Asset Terkini (Current Valuation)
                 </div>
                 <p className="text-3xl font-bold text-emerald-300 mt-4 font-mono tracking-tight">
                   {formatRupiah(summary.total_current_book_value)}
@@ -295,7 +295,7 @@ export default function DepreciationPage() {
                     <th scope="col" className="px-6 py-4 font-semibold text-right w-[16%]">Harga Awal</th>
                     <th scope="col" className="px-6 py-4 font-semibold text-center w-[14%]">Masa Manfaat</th>
                     <th scope="col" className="px-6 py-4 font-semibold text-right w-[16%]">Penyusutan / Thn</th>
-                    <th scope="col" className="px-6 py-4 font-semibold text-right w-[16%]">Nilai Buku Saat Ini</th>
+                    <th scope="col" className="px-6 py-4 font-semibold text-right w-[16%]">Nilai Asset Saat Ini</th>
                     <th scope="col" className="px-6 py-4 font-semibold text-center w-[14%]">Status Manfaat</th>
                   </tr>
                 </thead>
