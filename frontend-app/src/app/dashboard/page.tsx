@@ -450,7 +450,7 @@ export default function DashboardPage() {
               <p className="text-4xl font-bold text-zinc-100 tracking-tighter">{stats.borrowed}</p>
               {renderGrowthBadge(stats.borrow_growth)}
             </div>
-            <p className="text-[10px] text-zinc-500 mt-2 font-medium relative z-10"></p>
+            <p className="text-[10px] text-zinc-500 mt-2 font-medium relative z-10">DIPINJAM SAAT INI</p>
             <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-white/[0.02] blur-3xl group-hover:bg-white/[0.04] transition-colors z-0"></div>
           </div>
 
