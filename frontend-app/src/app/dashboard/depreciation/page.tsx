@@ -191,7 +191,7 @@ export default function DepreciationPage() {
         ) : (
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-zinc-100 flex items-center gap-3">
-              <TrendingDown className="h-7 w-7 text-zinc-300" /> Depresiasi & Nilai Buku Aset
+              <TrendingDown className="h-7 w-7 text-zinc-300" /> Depresiasi & Nilai Aset
             </h1>
             <p className="text-zinc-400 text-sm mt-1">
               Kalkulasi penurunan nilai aset secara otomatis menggunakan Metode Garis Lurus (Straight-Line Depreciation).
