@@ -5,7 +5,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { 
-  TrendingDown, DollarSign, Wallet, RefreshCw, Search, Calculator, Package
+  TrendingDown, DollarSign, Wallet, RefreshCw, Search, Calculator, Package, Printer, Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -72,11 +72,12 @@ function StatCardSkeleton() {
 function ControlsSkeleton() {
   return (
     <div className="animate-pulse border-b border-zinc-800 flex flex-col sm:flex-row bg-zinc-900/20">
-      <div className="w-full sm:w-[80%] p-4 sm:px-6 flex items-center">
+      <div className="w-full sm:w-[70%] p-4 sm:px-6 flex items-center">
         <div className="h-11 w-full sm:w-70 rounded-xl bg-zinc-800" />
       </div>
-      <div className="w-full sm:w-[20%] px-4 pb-4 sm:p-0 flex items-center justify-center">
-        <div className="h-10 w-full sm:w-32 rounded-lg bg-zinc-800" />
+      <div className="w-full sm:w-[30%] px-4 pb-4 sm:p-0 flex items-center justify-end gap-3 pr-6">
+        <div className="h-10 w-32 rounded-lg bg-zinc-800" />
+        <div className="h-10 w-40 rounded-lg bg-zinc-800" />
       </div>
     </div>
   );
@@ -87,10 +88,10 @@ function TableHeaderSkeleton() {
     <thead className="border-b border-zinc-800 bg-zinc-900/60 text-xs uppercase text-zinc-400 tracking-wider">
       <tr className="animate-pulse">
         <th scope="col" className="px-6 py-4 w-[24%]"><div className="h-3.5 w-24 rounded bg-zinc-800" /></th>
-        <th scope="col" className="px-6 py-4 w-[16%] text-right"><div className="h-3.5 w-20 rounded bg-zinc-800 ml-auto" /></th>
+        <th scope="col" className="px-6 py-4 w-[16%] text-center"><div className="h-3.5 w-20 rounded bg-zinc-800 mx-auto" /></th>
         <th scope="col" className="px-6 py-4 w-[14%] text-center"><div className="mx-auto h-3.5 w-16 rounded bg-zinc-800" /></th>
-        <th scope="col" className="px-6 py-4 w-[16%] text-right"><div className="h-3.5 w-20 rounded bg-zinc-800 ml-auto" /></th>
-        <th scope="col" className="px-6 py-4 w-[16%] text-right"><div className="h-3.5 w-20 rounded bg-zinc-800 ml-auto" /></th>
+        <th scope="col" className="px-6 py-4 w-[16%] text-center"><div className="h-3.5 w-20 rounded bg-zinc-800 mx-auto" /></th>
+        <th scope="col" className="px-6 py-4 w-[16%] text-center"><div className="h-3.5 w-20 rounded bg-zinc-800 mx-auto" /></th>
         <th scope="col" className="px-6 py-4 w-[14%] text-center"><div className="mx-auto h-3.5 w-16 rounded bg-zinc-800" /></th>
       </tr>
     </thead>
@@ -101,10 +102,10 @@ function TableRowSkeleton() {
   return (
     <tr className="animate-pulse border-b border-zinc-800/60">
       <td className="px-6 py-4"><div className="space-y-2"><div className="h-4 w-36 rounded bg-zinc-800" /><div className="h-3 w-24 rounded bg-zinc-800/50" /></div></td>
-      <td className="px-6 py-4 text-right"><div className="h-4 w-24 rounded bg-zinc-800 ml-auto" /></td>
+      <td className="px-6 py-4 text-center"><div className="h-4 w-24 rounded bg-zinc-800 mx-auto" /></td>
       <td className="px-6 py-4 text-center"><div className="h-4 w-16 rounded bg-zinc-800 mx-auto" /></td>
-      <td className="px-6 py-4 text-right"><div className="h-4 w-20 rounded bg-zinc-800 ml-auto" /></td>
-      <td className="px-6 py-4 text-right"><div className="h-4 w-24 rounded bg-zinc-800 ml-auto" /></td>
+      <td className="px-6 py-4 text-center"><div className="h-4 w-20 rounded bg-zinc-800 mx-auto" /></td>
+      <td className="px-6 py-4 text-center"><div className="h-4 w-24 rounded bg-zinc-800 mx-auto" /></td>
       <td className="px-6 py-4 text-center"><div className="h-5 w-20 rounded-full bg-zinc-800 mx-auto" /></td>
     </tr>
   );
@@ -120,6 +121,7 @@ export default function DepreciationPage() {
   });
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const router = useRouter();
@@ -129,10 +131,12 @@ export default function DepreciationPage() {
     if (!token) { router.push("/login"); return; }
 
     try {
+      // PERBAIKAN 1: Endpoint untuk fetch data JSON tabel
       const response = await fetch(`${API_URL}/api/assets/depreciation-summary`, {
-        headers: { 
-          "Authorization": `Bearer ${token}`, 
-          "Accept": "application/json" 
+        method: 'GET',
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/json"
         }
       });
       if (response.ok) {
@@ -163,6 +167,39 @@ export default function DepreciationPage() {
     setIsRefreshing(true);
     setSearchQuery("");
     loadDepreciationData();
+  };
+
+  const handleExportPDF = async () => {
+    setIsExporting(true);
+    const token = localStorage.getItem("token");
+    
+    try {
+      // PERBAIKAN 2: Endpoint untuk export PDF
+      const response = await fetch(`${API_URL}/api/reports/depreciation/pdf`, {
+        method: 'GET',
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) throw new Error("Gagal mengunduh laporan PDF");
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Laporan_EAM_SayPraz_${new Date().getTime()}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      alert("Terjadi kesalahan saat mengekspor dokumen PDF.");
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const filteredAssets = assets.filter((asset) =>
@@ -252,10 +289,10 @@ export default function DepreciationPage() {
           {isInitialLoading ? (
             <ControlsSkeleton />
           ) : (
-            <div className="border-b border-zinc-800 flex flex-col sm:flex-row bg-zinc-900/20">
+            <div className="border-b border-zinc-800 flex flex-col sm:flex-row items-center bg-zinc-900/20">
               
-              {/* BAGIAN KIRI: 80% Lebar Tabel */}
-              <div className="w-full sm:w-[80%] p-4 sm:px-6 flex items-center">
+              {/* BAGIAN KIRI: Search Bar */}
+              <div className="w-full sm:w-[60%] p-4 sm:px-6 flex items-center">
                 <div className="relative w-full sm:w-70">
                   <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                   <Input 
@@ -267,15 +304,24 @@ export default function DepreciationPage() {
                 </div>
               </div>
 
-              {/* BAGIAN KANAN: 20% Lebar Tabel */}
-              <div className="w-full sm:w-[20%] px-4 pb-4 sm:p-0 flex items-center justify-center">
+              {/* BAGIAN KANAN: Buttons */}
+              <div className="w-full sm:w-[40%] px-4 pb-4 sm:pb-0 sm:pr-6 flex items-center sm:justify-end gap-3 flex-wrap">
                 <Button 
                   variant="outline" 
                   onClick={handleRefreshClick} 
-                  disabled={isRefreshing} 
+                  disabled={isRefreshing || isExporting} 
                   className="border-zinc-800 bg-zinc-950/50 hover:bg-zinc-800 hover:text-white text-zinc-300 gap-2 h-10 px-4 rounded-lg transition-all w-full sm:w-auto"
                 >
                   <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} /> Muat Ulang
+                </Button>
+
+                <Button 
+                  onClick={handleExportPDF} 
+                  disabled={isRefreshing || isExporting} 
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 h-10 px-4 rounded-lg shadow-lg shadow-indigo-900/20 transition-all w-full sm:w-auto"
+                >
+                  {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Printer className="h-4 w-4" />}
+                  {isExporting ? "Memproses PDF..." : "Cetak Laporan PDF"}
                 </Button>
               </div>
 
@@ -294,7 +340,7 @@ export default function DepreciationPage() {
                     <th scope="col" className="px-6 py-4 font-semibold w-[24%]">Nama Aset & QR</th>
                     <th scope="col" className="px-6 py-4 font-semibold text-center w-[16%]">Harga Awal</th>
                     <th scope="col" className="px-6 py-4 font-semibold text-center w-[14%]">Masa Manfaat</th>
-                    <th scope="col" className="px-6 py-4 font-semibold text-right w-[16%]">Penyusutan / Thn</th>
+                    <th scope="col" className="px-6 py-4 font-semibold text-center w-[16%]">Penyusutan / Thn</th>
                     <th scope="col" className="px-6 py-4 font-semibold text-center w-[16%]">Nilai Asset Saat Ini</th>
                     <th scope="col" className="px-6 py-4 font-semibold text-center w-[14%]">Status Manfaat</th>
                   </tr>

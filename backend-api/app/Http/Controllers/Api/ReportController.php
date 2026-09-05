@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Asset;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ReportController extends Controller
 {
@@ -30,5 +31,26 @@ class ReportController extends Controller
                 'message' => 'Gagal membuat dokumen PDF: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function exportDepreciationPdf(){
+        $assets = Asset::with('category')->orderBy('id', 'desc');
+
+        $summary = [
+            'total_acquisition_cost'  => (float) $assets->sum('purchase_year'),
+            'total_accumulated_depreciation' => (float) $assets->sum('accumulated_depreciation'),
+            'total_current_book_value'       => (float) $assets->sum('current_book_value'),
+            'total_assets_count'             => $assets->count(),
+        ];
+
+        $pdf = Pdf::loadView('reports.depreciation', [
+            'assets'    => $assets,
+            'summary'   => $summary,
+            'date'      => Carbon::now()->translatedFormat('d F Y')
+        ]);
+
+        $pdf->setPaper('A4', 'landscape');
+        
+        return $pdf->download('Laporan_Valuasi_Depresiasi_SayPraz.pdf');
     }
 }
