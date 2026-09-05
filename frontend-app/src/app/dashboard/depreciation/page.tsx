@@ -71,13 +71,16 @@ function StatCardSkeleton() {
 
 function ControlsSkeleton() {
   return (
-    <div className="animate-pulse border-b border-zinc-800 flex flex-col sm:flex-row bg-zinc-900/20">
-      <div className="w-full sm:w-[70%] p-4 sm:px-6 flex items-center">
-        <div className="h-11 w-full sm:w-70 rounded-xl bg-zinc-800" />
+    <div className="animate-pulse border-b border-zinc-800 flex flex-col sm:flex-row items-center bg-zinc-900/20">
+      {/* BAGIAN KIRI: Search Bar Skeleton */}
+      <div className="w-full sm:w-[60%] p-4 sm:px-6 flex items-center">
+        <div className="h-11 w-full sm:w-70 rounded-md bg-zinc-800" />
       </div>
-      <div className="w-full sm:w-[30%] px-4 pb-4 sm:p-0 flex items-center justify-end gap-3 pr-6">
-        <div className="h-10 w-32 rounded-lg bg-zinc-800" />
-        <div className="h-10 w-40 rounded-lg bg-zinc-800" />
+
+      {/* BAGIAN KANAN: Buttons Skeleton (1:1 Presisi dengan Layout Asli) */}
+      <div className="w-full sm:w-[40%] px-4 pb-4 sm:pb-0 sm:pr-6 flex items-center sm:justify-end gap-3 flex-wrap">
+        <div className="h-10 w-full sm:w-32 rounded-lg bg-zinc-800" />
+        <div className="h-10 w-full sm:w-44 rounded-lg bg-zinc-800" />
       </div>
     </div>
   );
@@ -318,7 +321,7 @@ export default function DepreciationPage() {
                 <Button 
                   onClick={handleExportPDF} 
                   disabled={isRefreshing || isExporting} 
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 h-10 px-4 rounded-lg shadow-lg shadow-indigo-900/20 transition-all w-full sm:w-auto"
+                  className="border-zinc-800 bg-zinc-950/50 hover:bg-zinc-800 hover:text-white text-zinc-300 gap-2 h-10 px-4 rounded-lg transition-all"
                 >
                   {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Printer className="h-4 w-4" />}
                   {isExporting ? "Memproses PDF..." : "Cetak Laporan PDF"}
