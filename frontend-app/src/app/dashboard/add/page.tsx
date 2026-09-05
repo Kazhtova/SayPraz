@@ -253,14 +253,7 @@ export default function AddAssetPage() {
       const result = await response.json();
 
       if (response.ok || response.status === 201) {
-        // === PENAMBAHAN LOGIKA REDIRECT PINTAR DI SINI ===
-        const newAssetId = result.data?.id;
-
-        if (window.confirm("Aset berhasil didaftarkan! Ingin langsung mencetak label QR fisik?")) {
-          router.push(`/dashboard/assets/print-qr/${newAssetId}`);
-        } else {
-          router.push("/dashboard");
-        }
+        router.push("/dashboard");
       } else if (response.status === 422) {
         setFormErrors(result.errors || {});
       } else {
