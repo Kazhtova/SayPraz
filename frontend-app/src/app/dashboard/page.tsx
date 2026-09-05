@@ -143,7 +143,7 @@ export default function DashboardPage() {
     if (value === 0 || value === -100) {
       return (
         <div className="flex items-center text-[11px] font-medium px-2 py-1 rounded-md mb-1 border text-zinc-400 bg-zinc-500/10 border-zinc-500/20">
-          {value === -100 ? "Data Awal" : "Stabil"}
+          {value === -100 ? "Sedikit" : "Banyak"}
         </div>
       );
     }

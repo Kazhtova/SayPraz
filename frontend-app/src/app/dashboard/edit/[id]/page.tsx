@@ -550,17 +550,33 @@ export default function EditAssetPage() {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-between pt-2 gap-4">
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={handleDelete} 
-                disabled={isDeleting || isSubmitting}
-                className="w-full sm:w-auto border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white h-11 px-5 rounded-md gap-2 transition-all"
-              >
-                {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                Hapus Aset
-              </Button>
+              
+              {/* KELOMPOK KIRI: Hapus & Cetak */}
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={handleDelete} 
+                  disabled={isDeleting || isSubmitting}
+                  className="w-full sm:w-auto border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white h-11 px-5 rounded-md gap-2 transition-all"
+                >
+                  {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                  Hapus
+                </Button>
 
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => router.push(`/dashboard/assets/print-qr/${assetId}`)}
+                  disabled={isSubmitting || isDeleting}
+                  className="w-full sm:w-auto border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 text-zinc-300 hover:text-zinc-100 gap-2 h-11 px-5 rounded-md transition-all"
+                >
+                  <QrCode className="h-4 w-4 text-zinc-400" />
+                  Cetak Label
+                </Button>
+              </div>
+
+              {/* KELOMPOK KANAN: Batal & Simpan */}
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 <Button type="button" variant="ghost" onClick={() => router.back()} disabled={isSubmitting || isDeleting} className="w-full sm:w-auto text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 h-11 px-6 rounded-md">Batal</Button>
                 
