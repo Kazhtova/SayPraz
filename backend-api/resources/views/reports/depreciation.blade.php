@@ -115,7 +115,7 @@
         <tr>
             <td>
                 Mengetahui,<br>
-                Kepala Tata Usaha / Sarpras<br><br><br><br><br>
+                Kepala Sarpras<br><br><br><br><br>
                 <strong>_________________________</strong><br>
                 NIP.
             </td>
