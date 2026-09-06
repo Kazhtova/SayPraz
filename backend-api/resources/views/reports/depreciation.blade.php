@@ -36,7 +36,7 @@
     <!-- KOP SURAT -->
     <table class="kop-surat">
         <tr>
-            <!-- Hapus atau ubah src logo sesuai lokasi file kamu jika ada logo dinas/sekolah -->
+            <!-- Format alamat Instansi -->
             <td width="15%" class="text-center"></td> 
             <td width="70%" class="teks-kop">
                 <h2>PEMERINTAH PROVINSI JAWA TIMUR</h2>
