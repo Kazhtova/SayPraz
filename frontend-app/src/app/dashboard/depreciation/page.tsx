@@ -249,37 +249,86 @@ export default function DepreciationPage() {
             </>
           ) : (
             <>
-              {/* Total Harga Perolehan */}
-              <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 backdrop-blur-sm relative overflow-hidden">
-                <div className="flex items-center gap-2 text-zinc-400 text-sm font-medium">
-                  <Wallet className="h-4 w-4 text-zinc-300" /> Total Harga Perolehan (Awal)
+              {/* Total Harga Perolehan (Awal) */}
+              <div className="group relative overflow-hidden rounded-2xl border border-zinc-800/80 bg-gradient-to-b from-zinc-900/60 to-zinc-950/80 p-6 backdrop-blur-xl transition-all duration-300 hover:border-zinc-700/80 hover:shadow-xl hover:shadow-black/40">
+                <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-zinc-500/5 blur-2xl transition-all duration-500 group-hover:bg-zinc-400/10" />
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                    Nilai Akuisisi Awal
+                  </span>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-700/50 bg-zinc-800/50 text-zinc-300 shadow-inner">
+                    <Wallet className="h-4 w-4" />
+                  </div>
                 </div>
-                <p className="text-3xl font-bold text-zinc-100 mt-4 font-mono tracking-tight">
-                  {formatRupiah(summary.total_acquisition_cost)}
-                </p>
-                <p className="text-[10px] text-zinc-500 mt-2 font-mono uppercase">DARI {summary.total_assets_count} ASET TERDATA</p>
+
+                <div className="mt-5 space-y-1">
+                  <p className="font-mono text-3xl font-extrabold tracking-tight text-zinc-100">
+                    {formatRupiah(summary.total_acquisition_cost)}
+                  </p>
+                  <div className="flex items-center gap-1.5 pt-1">
+                    <span className="inline-flex items-center rounded-md bg-zinc-800/80 px-2 py-0.5 font-mono text-[11px] font-medium text-zinc-300 border border-zinc-700/40">
+                      {summary.total_assets_count} Unit
+                    </span>
+                    <span className="text-xs text-zinc-500">total portofolio aset</span>
+                  </div>
+                </div>
               </div>
 
               {/* Akumulasi Penyusutan */}
-              <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 backdrop-blur-sm relative overflow-hidden">
-                <div className="flex items-center gap-2 text-zinc-400 text-sm font-medium">
-                  <TrendingDown className="h-4 w-4 text-rose-400" /> Akumulasi Penyusutan
+              <div className="group relative overflow-hidden rounded-2xl border border-rose-500/20 bg-gradient-to-b from-rose-950/10 via-zinc-900/40 to-zinc-950/80 p-6 backdrop-blur-xl transition-all duration-300 hover:border-rose-500/40 hover:shadow-xl hover:shadow-rose-950/20">
+                <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-rose-500/10 blur-2xl transition-all duration-500 group-hover:bg-rose-500/20" />
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-rose-300/80">
+                    Akumulasi Depresiasi
+                  </span>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 shadow-inner">
+                    <TrendingDown className="h-4 w-4" />
+                  </div>
                 </div>
-                <p className="text-3xl font-bold text-rose-400 mt-4 font-mono tracking-tight">
-                  - {formatRupiah(summary.total_accumulated_depreciation)}
-                </p>
-                <p className="text-[10px] text-zinc-500 mt-2 font-mono uppercase">TOTAL NILAI YANG TELAH MENYUSUT</p>
+
+                <div className="mt-5 space-y-1">
+                  <p className="font-mono text-3xl font-extrabold tracking-tight text-rose-400">
+                    - {formatRupiah(summary.total_accumulated_depreciation)}
+                  </p>
+                  <div className="flex items-center gap-1.5 pt-1">
+                    <span className="inline-flex items-center rounded-md bg-rose-500/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-rose-300 border border-rose-500/20">
+                      {summary.total_acquisition_cost > 0 
+                        ? `${Math.round((summary.total_accumulated_depreciation / summary.total_acquisition_cost) * 100)}%` 
+                        : "0%"}
+                    </span>
+                    <span className="text-xs text-zinc-500">terdepresiasi sejak perolehan</span>
+                  </div>
+                </div>
               </div>
 
-              {/* Nilai Asset Terkini */}
-              <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/10 p-5 backdrop-blur-sm relative overflow-hidden">
-                <div className="flex items-center gap-2 text-emerald-400 text-sm font-semibold">
-                  <DollarSign className="h-4 w-4 text-emerald-400" /> Nilai Asset Terkini (Current Valuation)
+              {/* Nilai Buku Saat Ini (Current Book Value) */}
+              <div className="group relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-b from-emerald-950/20 via-zinc-900/40 to-zinc-950/80 p-6 backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-950/30">
+                <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-emerald-500/15 blur-2xl transition-all duration-500 group-hover:bg-emerald-500/25" />
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-emerald-300/90">
+                    Valuasi Riil Terkini (NBV)
+                  </span>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 shadow-inner">
+                    <DollarSign className="h-4 w-4" />
+                  </div>
                 </div>
-                <p className="text-3xl font-bold text-emerald-300 mt-4 font-mono tracking-tight">
-                  {formatRupiah(summary.total_current_book_value)}
-                </p>
-                <p className="text-[10px] text-emerald-500/80 mt-2 font-mono font-medium uppercase">VALUASI RIIL ASET AKTIF</p>
+
+                <div className="mt-5 space-y-1">
+                  <p className="font-mono text-3xl font-extrabold tracking-tight text-emerald-300">
+                    {formatRupiah(summary.total_current_book_value)}
+                  </p>
+                  <div className="flex items-center gap-1.5 pt-1">
+                    <span className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-emerald-300 border border-emerald-500/20">
+                      {summary.total_acquisition_cost > 0 
+                        ? `${Math.round((summary.total_current_book_value / summary.total_acquisition_cost) * 100)}%` 
+                        : "0%"}
+                    </span>
+                    <span className="text-xs text-zinc-500">nilai sisa buku aktif</span>
+                  </div>
+                </div>
               </div>
             </>
           )}
