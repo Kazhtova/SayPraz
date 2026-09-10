@@ -14,10 +14,26 @@ class Asset extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['category_id', 'name', 'brand', 'qr_code', 'status', 'purchase_year', 'image', 'purchase_price', 'useful_life', 'residual_value',];
+protected $fillable = [
+        'category_id', 'name', 'brand', 'qr_code', 'status', 
+        'purchase_date', 'image', 'purchase_price', 'useful_life', 'residual_value',
+        'is_disposed', 'disposal_date', 'disposal_value', 'disposal_reason'
+    ];
 
-    protected $appends = ['image_url', 'annual_depreciation', 'accumulated_depreciation', 'current_book_value', 'depreciation_percentage', 'is_fully_depreciated'];
+    // Casting tanggal dan boolean
+    protected $casts = [
+        'purchase_date' => 'date',
+        'disposal_date' => 'date',
+        'is_disposed'   => 'boolean',
+    ];
 
+    // Tetap sertakan annual_depreciation agar Frontend (tabel Next.js) tidak error
+    protected $appends = [
+        'image_url', 'monthly_depreciation', 'annual_depreciation', 
+        'accumulated_depreciation', 'current_book_value', 
+        'depreciation_percentage', 'is_fully_depreciated'
+    ];
+    
     protected function imageUrl(): Attribute
 {
     return Attribute::make(
@@ -63,28 +79,45 @@ class Asset extends Model
         return $this->hasMany(AssetLog::class);
     }
 
-    public function getAnnualDepreciationAttribute(): float
+    public function getMonthlyDepreciationAttribute(): float
     {
-        $usefulLife = (int) ($this->useful_life ?? 5);
-        if ($usefulLife <=0) return 0.0;
+        $usefulLife = (int) ($this->useful_life ?? 0);
+        $totalMonths = $usefulLife * 12;
         
-        $purchusePrice = (float) ($this->purchase_price ?? 0);
+        if ($totalMonths <= 0) return 0.0;
+        
+        $purchasePrice = (float) ($this->purchase_price ?? 0);
         $residualValue = (float) ($this->residual_value ?? 0);
 
-        $depreciableBase = max(0, $purchusePrice - $residualValue);
-        return round($depreciableBase / $usefulLife, 2);
+        $depreciableBase = max(0, $purchasePrice - $residualValue);
+        return round($depreciableBase / $totalMonths, 2);
     }
 
+    // Dipertahankan untuk tabel Next.js
+    public function getAnnualDepreciationAttribute(): float
+    {
+        return round($this->monthly_depreciation * 12, 2);
+    }
+
+    // Perhitungan akumulasi menggunakan selisih bulan (Prorated)
     public function getAccumulatedDepreciationAttribute(): float
     {
-        $currentYear = (int) Carbon::now()->year;
-        $purchaseYear = (int) ($this->purchase_year ?: $currentYear);
-        $usefulLife = (int) ($this->useful_life ?? 5);
+        if (!$this->purchase_date) return 0.0;
 
-        $yearInUse = max(0, $currentYear - $purchaseYear);
-        $effectiveYear = min($yearInUse, $usefulLife);
+        // Jika aset dijual/dihapus, nilai berhenti menyusut di tanggal pelepasan tersebut
+        $endDate = ($this->is_disposed && $this->disposal_date) ? $this->disposal_date : Carbon::now();
+        
+        // Menghitung jumlah bulan yang sudah dilewati
+        $monthsPassed = $this->purchase_date->diffInMonths($endDate);
+        
+        $calculatedAccumulation = $monthsPassed * $this->monthly_depreciation;
+        
+        $purchasePrice = (float) ($this->purchase_price ?? 0);
+        $residualValue = (float) ($this->residual_value ?? 0);
+        $maxDepreciable = max(0, $purchasePrice - $residualValue);
 
-        return round($this->annual_depreciation * $effectiveYear, 2);
+        // Jangan biarkan nilai penyusutan melebihi total maksimal yang boleh disusutkan
+        return round(min($calculatedAccumulation, $maxDepreciable), 2);
     }
 
     public function getCurrentBookValueAttribute(): float
@@ -99,17 +132,16 @@ class Asset extends Model
     public function getDepreciationPercentageAttribute(): float
     {
         $purchasePrice = (float) ($this->purchase_price ?? 0);
-        if ($purchasePrice <= 0) return 0.0;
+        $residualValue = (float) ($this->residual_value ?? 0);
+        $maxDepreciable = max(0, $purchasePrice - $residualValue);
 
-        return round(($this->accumulated_depreciation / $purchasePrice) * 100, 1);
+        if ($maxDepreciable <= 0) return 0.0;
+
+        return round(($this->accumulated_depreciation / $maxDepreciable) * 100, 1);
     }
 
     public function getIsFullyDepreciatedAttribute(): bool
     {
-        $currentYear = (int) Carbon::now()->year;
-        $purchaseYear = (int) ($this->purchase_year ?: $currentYear);
-        $usefulLife = (int) ($this->useful_life ?? 5);
-
-        return ($currentYear - $purchaseYear) >= $usefulLife;
+        return $this->depreciation_percentage >= 100;
     }
 }
