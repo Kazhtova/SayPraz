@@ -68,7 +68,7 @@ function EditFormSkeleton() {
               </div>
             </div>
 
-            {/* 3. Skeleton Kategori & Tahun Pembelian */}
+            {/* 3. Skeleton Kategori & Tanggal Pembelian */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <div className="h-3 w-24 rounded bg-zinc-800" />
@@ -155,7 +155,8 @@ export default function EditAssetPage() {
     qr_code: "", 
     category_id: "", 
     status: "available", 
-    purchase_year: "",
+    // PERUBAHAN EAM 1: State menggunakan purchase_date (format YYYY-MM-DD)
+    purchase_date: "",
     purchase_price: "",
     useful_life: "5",
     residual_value: "0",
@@ -189,7 +190,8 @@ export default function EditAssetPage() {
             qr_code: asset.qr_code || "",
             category_id: asset.category_id ? asset.category_id.toString() : "",
             status: asset.status || "available",
-            purchase_year: asset.purchase_year ? asset.purchase_year.toString() : "",
+            // PERUBAHAN EAM 2: Set nilai state dari purchase_date bawaan API baru
+            purchase_date: asset.purchase_date || "",
             purchase_price: asset.purchase_price !== null && asset.purchase_price !== undefined ? Math.round(Number(asset.purchase_price)).toString() : "",
             useful_life: asset.useful_life !== null && asset.useful_life !== undefined ? asset.useful_life.toString() : "5",
             residual_value: asset.residual_value !== null && asset.residual_value !== undefined ? Math.round(Number(asset.residual_value)).toString() : "0",
@@ -260,7 +262,10 @@ export default function EditAssetPage() {
     payload.append("qr_code", formData.qr_code);
     payload.append("category_id", formData.category_id);
     payload.append("status", formData.status);
-    payload.append("purchase_year", formData.purchase_year);
+    
+    // PERUBAHAN EAM 3: Kirim parameter purchase_date
+    payload.append("purchase_date", formData.purchase_date);
+    
     payload.append("purchase_price", formData.purchase_price);
     payload.append("useful_life", formData.useful_life);
     payload.append("residual_value", formData.residual_value || "0");
@@ -271,7 +276,7 @@ export default function EditAssetPage() {
 
     try {
       const response = await fetch(`${API_URL}/api/assets/${assetId}`, {
-        method: "POST",
+        method: "POST", // Menggunakan POST dengan _method=PUT untuk upload file multipart
         headers: { 
           "Accept": "application/json", 
           "Authorization": `Bearer ${token}` 
@@ -322,6 +327,12 @@ export default function EditAssetPage() {
     <style dangerouslySetInnerHTML={{__html: `
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
       * { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important; }
+      
+      /* Resetting internal padding on date inputs for consistent UI */
+      input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(0.6);
+        cursor: pointer;
+      }
     `}} />
   );
 
@@ -409,7 +420,7 @@ export default function EditAssetPage() {
                   <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Nama Aset <span className="text-red-500">*</span></label>
                   <div className="relative">
                     <Input value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-500/50 text-zinc-100 h-11 transition-all" required />
-                    <Type className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-zinc-400" />
+                    <Type className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-zinc-400 pointer-events-none" />
                   </div>
                   {formErrors.name && <p className="text-xs text-red-500">{formErrors.name[0]}</p>}
                 </div>
@@ -417,13 +428,13 @@ export default function EditAssetPage() {
                   <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Merek <span className="text-red-500">*</span></label>
                   <div className="relative">
                     <Input value={formData.brand} onChange={(e) => setFormData({...formData, brand: e.target.value})} className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-500/50 text-zinc-100 h-11 transition-all" required />
-                    <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-zinc-400" />
+                    <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-zinc-400 pointer-events-none" />
                   </div>
                   {formErrors.brand && <p className="text-xs text-red-500">{formErrors.brand[0]}</p>}
                 </div>
               </div>
 
-              {/* Baris 2: Kategori & Tahun Pembelian */}
+              {/* Baris 2: Kategori & Tanggal Pembelian */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Kategori</label>
@@ -438,12 +449,20 @@ export default function EditAssetPage() {
                   {formErrors.category_id && <p className="text-xs text-red-500">{formErrors.category_id[0]}</p>}
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Tahun Pembelian <span className="text-red-500">*</span></label>
+                  <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Tanggal Pembelian <span className="text-red-500">*</span></label>
                   <div className="relative">
-                    <Input type="number" value={formData.purchase_year} onChange={(e) => setFormData({...formData, purchase_year: e.target.value})} className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-500/50 text-zinc-100 h-11 transition-all" required />
-                    <CalendarDays className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-zinc-400" />
+                    {/* PERUBAHAN EAM 4: Ubah Input menjadi Date picker UI */}
+                    <Input 
+                      type="date" 
+                      value={formData.purchase_date} 
+                      onChange={(e) => setFormData({...formData, purchase_date: e.target.value})} 
+                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-500/50 text-zinc-100 h-11 transition-all [color-scheme:dark]" 
+                      max={new Date().toISOString().split("T")[0]} 
+                      required 
+                    />
+                    <CalendarDays className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-zinc-400 pointer-events-none" />
                   </div>
-                  {formErrors.purchase_year && <p className="text-xs text-red-500">{formErrors.purchase_year[0]}</p>}
+                  {formErrors.purchase_date && <p className="text-xs text-red-500">{formErrors.purchase_date[0]}</p>}
                 </div>
               </div>
 
@@ -486,7 +505,7 @@ export default function EditAssetPage() {
                         min="0"
                         required
                       />
-                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400" />
+                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400 pointer-events-none" />
                     </div>
                     {formErrors.purchase_price && <p className="text-xs text-red-500">{formErrors.purchase_price[0]}</p>}
                   </div>
@@ -507,7 +526,7 @@ export default function EditAssetPage() {
                         max="50"
                         required
                       />
-                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400" />
+                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400 pointer-events-none" />
                     </div>
                     {formErrors.useful_life && <p className="text-xs text-red-500">{formErrors.useful_life[0]}</p>}
                   </div>
@@ -526,7 +545,7 @@ export default function EditAssetPage() {
                         className="peer pl-9 bg-zinc-950/60 border-zinc-800 text-zinc-100 h-11 font-mono text-sm focus-visible:ring-1 focus-visible:ring-zinc-500/50"
                         min="0"
                       />
-                      <Coins className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400" />
+                      <Coins className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400 pointer-events-none" />
                     </div>
                     {formErrors.residual_value && <p className="text-xs text-red-500">{formErrors.residual_value[0]}</p>}
                   </div>
