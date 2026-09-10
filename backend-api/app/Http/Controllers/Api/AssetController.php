@@ -6,13 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\AssetResource;
 use App\Models\Asset;
 use App\Models\AssetLog;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Models\FinancialJournal;
 use App\Models\Transaction; 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class AssetController extends Controller
 {
@@ -345,8 +346,89 @@ class AssetController extends Controller
 
         $data = $validator->validated();
 
-        DB::transaction(function () use ($asset, $data){
-            
+        DB::transaction(function () use ($asset, $data) {
+            $currentAssetValue = $asset->current_asset_value;
+            $sellingPrice     = (float) $data['disposal_value'];
+            $gainOrLoss       = $sellingPrice - $currentAssetValue;
+
+            $asset->update([
+                'is_disposed'     => true,
+                'disposal_date'   => $data['disposal_date'],
+                'disposal_value'  => $sellingPrice,
+                'disposal_reason' => $data['disposal_reason'],
+                'status'          => 'in_repair',
+            ]);
+
+            AssetLog::create([
+                'asset_id'   => $asset->id,
+                'admin_id'   => Auth::id(),
+                'old_status' => $asset->status,
+                'new_status' => 'disposed',
+                'handle_by'  => Auth::id(),
+                'notes'      => "Aset dihapusbukukan: {$data['disposal_reason']}. Nilai Aset Terakhir: Rp " . number_format($currentAssetValue, 0, ',', '.') . ", Nilai Jual/Pelepasan: Rp " . number_format($sellingPrice, 0, ',', '.') . " (Selisih: Rp " . number_format($gainOrLoss, 0, ',', '.'). ")"
+            ]);
+
+            if ($sellingPrice > 0) {
+                FinancialJournal::create([
+                    'asset_id'         => $asset->id,
+                    'transaction_date' => $data['disposal_date'],
+                    'account_name'     => 'Kas / Bank',
+                    'entry_type'       => 'debit',
+                    'amount'           => $sellingPrice,
+                    'reference_type'   => 'disposal',
+                    'description'      => "Penerimaan kas pelepasan aset {$asset->name}"
+                ]);
+            }
+
+            if ($asset->accumulated_depreciation > 0) {
+                FinancialJournal::create([
+                    'asset_id'         => $asset->id,
+                    'transaction_date' => $data['disposal_date'],
+                    'account_name'     => 'Akumulasi Depresiasi',
+                    'entry_type'       => 'debit',
+                    'amount'           => $asset->accumulated_depreciation,
+                    'reference_type'   => 'disposal',
+                    'description'      => "Penutupan akumulasi depresiasi aset {$asset->name}"
+                ]);
+            }
+
+            if ($gainOrLoss < 0) {
+                FinancialJournal::create([
+                    'asset_id'         => $asset->id,
+                    'transaction_date' => $data['disposal_date'],
+                    'account_name'     => 'Rugi Pelepasan Aset Tetap',
+                    'entry_type'       => 'debit',
+                    'amount'           => abs($gainOrLoss),
+                    'reference_type'   => 'disposal',
+                    'description'      => "Rugi selisih nilai aset {$asset->name}"
+                ]);
+            } elseif ($gainOrLoss > 0) {
+                FinancialJournal::create([
+                    'asset_id'         => $asset->id,
+                    'transaction_date' => $data['disposal_date'],
+                    'account_name'     => 'Keuntungan Pelepasan Aset Tetap',
+                    'entry_type'       => 'credit',
+                    'amount'           => $gainOrLoss,
+                    'reference_type'   => 'disposal',
+                    'description'      => "Laba penjualan di atas nilai aset {$asset->name}"
+                ]);
+            }
+
+            FinancialJournal::create([
+                'asset_id'         => $asset->id,
+                'transaction_date' => $data['disposal_date'],
+                'account_name'     => 'Aset Tetap (Inventaris)',
+                'entry_type'       => 'credit',
+                'amount'           => $asset->purchase_price,
+                'reference_type'   => 'disposal',
+                'description'      => "Penghapusan nilai historis aset {$asset->name}"
+            ]);
         });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Aset berhasil dihapusbukukan beserta seluruh jurnal penutupnya.',
+            'data'    => new AssetResource($asset->fresh())
+        ]);
     }
 }
