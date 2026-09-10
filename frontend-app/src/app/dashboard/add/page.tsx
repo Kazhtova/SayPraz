@@ -414,7 +414,7 @@ export default function AddAssetPage() {
                       className="peer appearance-none flex h-11 w-full items-center rounded-md border border-zinc-800 bg-zinc-900/50 pl-10 pr-8 py-2 text-sm text-zinc-300 focus:outline-none focus:ring-1 focus:ring-zinc-200/80 cursor-pointer transition-all"
                       required
                     >
-                      <option value="" className="bg-zinc-900">-- Pilih Kategori --</option>
+                      <option value="" className="bg-zinc-900"> Pilih Kategori </option>
                       {categories.map(cat => (
                         <option key={cat.id} value={cat.id} className="bg-zinc-900">{cat.name}</option>
                       ))}
