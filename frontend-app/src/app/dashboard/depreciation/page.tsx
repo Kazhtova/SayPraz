@@ -16,7 +16,7 @@ interface AssetDepreciation {
   name: string;
   brand: string;
   qr_code: string;
-  purchase_date: number;
+  purchase_date: string;
   purchase_price: number;
   useful_life: number;
   residual_value: number;
@@ -303,13 +303,13 @@ export default function DepreciationPage() {
                 </div>
               </div>
 
-              {/* Nilai Buku Saat Ini (Current Book Value) */}
+              {/* Nilai Aset Saat Ini (Current Asset Value) */}
               <div className="group relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-b from-emerald-950/20 via-zinc-900/40 to-zinc-950/80 p-6 backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/50 hover:shadow-xl hover:shadow-emerald-950/30">
                 <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-emerald-500/15 blur-2xl transition-all duration-500 group-hover:bg-emerald-500/25" />
                 
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold uppercase tracking-wider text-emerald-300/90">
-                    Valuasi Riil Terkini (NBV)
+                    Valuasi Riil Terkini (NAV)
                   </span>
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 shadow-inner">
                     <DollarSign className="h-4 w-4" />
@@ -326,7 +326,7 @@ export default function DepreciationPage() {
                         ? `${Math.round((summary.total_current_asset_value / summary.total_acquisition_cost) * 100)}%` 
                         : "0%"}
                     </span>
-                    <span className="text-xs text-zinc-500">nilai sisa buku aktif</span>
+                    <span className="text-xs text-zinc-500">nilai sisa Asset aktif</span>
                   </div>
                 </div>
               </div>
