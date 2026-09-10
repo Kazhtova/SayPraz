@@ -16,7 +16,7 @@ interface AssetDepreciation {
   name: string;
   brand: string;
   qr_code: string;
-  purchase_year: number;
+  purchase_date: number;
   purchase_price: number;
   useful_life: number;
   residual_value: number;
@@ -433,7 +433,7 @@ export default function DepreciationPage() {
 
                       <td className="px-6 py-4 text-center">
                         <div className="text-zinc-200 font-semibold text-xs">{item.useful_life} Tahun</div>
-                        <div className="text-[10px] text-zinc-500 font-mono">Beli: {item.purchase_year}</div>
+                        <div className="text-[10px] text-zinc-500 font-mono"> Beli: {item.purchase_date ? new Date(item.purchase_date).toLocaleDateString('id-ID', {day: '2-digit', month: 'long', year: 'numeric' }) : '-'} </div>
                       </td>
 
                       <td className="px-6 py-4 text-center font-mono text-rose-400/90 text-xs">

@@ -42,4 +42,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::get('/reports/assets/pdf', [ReportController::class, 'exportAssetPdf']);
 
     Route::get('/reports/depreciation/pdf', [ReportController::class, 'exportDepreciationPdf']);
+
+    Route::post('/assets/{asset}/dispose', [AssetController::class, 'dispose']);
 });

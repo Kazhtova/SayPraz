@@ -320,4 +320,8 @@ class AssetController extends Controller
            ] 
         ], 200);
     }
+
+    public function dispose(Request $request, Asset $asset){
+        
+    }
 }
