@@ -322,6 +322,25 @@ class AssetController extends Controller
     }
 
     public function dispose(Request $request, Asset $asset){
-        
+        if($asset->is_disposed){
+            return response()->json([
+               'success'    => false,
+               'message' => 'Aset ini sudah pernah dihapusbukukan (disposed).' 
+            ]);
+        }
+        $validator = Validator::make($request->all(), [
+            'disposial_date'    => 'required|date|before_or_equal:today',
+            'disposal_value'  => 'required|numeric|min:0',
+            'disposal_reason' => 'required|string|max:255',
+        ]);
+            
+        if($validator->fails()){
+            return response()->json([
+                'success'   => false,
+                'errors'    => $validator->errors()
+            ], 422);
+        }
+
+        $data = $validator->validated();
     }
 }
