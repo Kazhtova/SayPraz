@@ -72,7 +72,7 @@ function AddFormSkeleton() {
               </div>
             </div>
 
-            {/* 3. Skeleton Kategori & Tahun Pembelian */}
+            {/* 3. Skeleton Kategori & Tanggal Pembelian */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <div className="h-3 w-24 rounded bg-zinc-800" />
@@ -150,7 +150,8 @@ export default function AddAssetPage() {
     qr_code: "",
     category_id: "",
     status: "available",
-    purchase_year: new Date().getFullYear().toString(),
+    // PERUBAHAN EAM 1: Inisialisasi tanggal presisi default ke hari ini
+    purchase_date: new Date().toISOString().split("T")[0],
     purchase_price: "",
     useful_life: "5",
     residual_value: "0",
@@ -231,7 +232,10 @@ export default function AddAssetPage() {
     payload.append("qr_code", formData.qr_code);
     payload.append("category_id", formData.category_id);
     payload.append("status", formData.status);
-    payload.append("purchase_year", formData.purchase_year);
+    
+    // PERUBAHAN EAM 2: Kirim purchase_date, bukan purchase_year
+    payload.append("purchase_date", formData.purchase_date);
+    
     payload.append("purchase_price", formData.purchase_price);
     payload.append("useful_life", formData.useful_life);
     payload.append("residual_value", formData.residual_value || "0");
@@ -253,7 +257,6 @@ export default function AddAssetPage() {
       const result = await response.json();
 
       if (response.ok || response.status === 201) {
-        // === PENAMBAHAN LOGIKA REDIRECT PINTAR DI SINI ===
         const newAssetId = result.data?.id;
 
         if (window.confirm("Aset berhasil didaftarkan! Ingin langsung mencetak label QR fisik?")) {
@@ -277,6 +280,12 @@ export default function AddAssetPage() {
     <style dangerouslySetInnerHTML={{__html: `
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
       * { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important; }
+      
+      /* Resetting internal padding on date inputs for consistent UI */
+      input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(0.6);
+        cursor: pointer;
+      }
     `}} />
   );
 
@@ -369,7 +378,7 @@ export default function AddAssetPage() {
                       placeholder="Cth: Proyektor Epson EB-X51" 
                       required 
                     />
-                    <Type className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-zinc-400 transition-colors" />
+                    <Type className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-zinc-400 transition-colors pointer-events-none" />
                   </div>
                   {formErrors.name && <p className="text-xs text-red-500">{formErrors.name[0]}</p>}
                 </div>
@@ -386,13 +395,13 @@ export default function AddAssetPage() {
                       placeholder="Cth: Epson" 
                       required 
                     />
-                    <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-zinc-400 transition-colors" />
+                    <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-zinc-400 transition-colors pointer-events-none" />
                   </div>
                   {formErrors.brand && <p className="text-xs text-red-500">{formErrors.brand[0]}</p>}
                 </div>
               </div>
 
-              {/* Baris 2: Kategori & Tahun Beli */}
+              {/* Baris 2: Kategori & Tanggal Beli */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
@@ -418,21 +427,21 @@ export default function AddAssetPage() {
 
                 <div className="space-y-2">
                   <label className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-                    Tahun Pembelian <span className="text-red-500">*</span>
+                    Tanggal Pembelian <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
+                    {/* PERUBAHAN EAM 3: Ubah input type="number" menjadi type="date" dengan [color-scheme:dark] */}
                     <Input 
-                      type="number" 
-                      value={formData.purchase_year} 
-                      onChange={(e) => setFormData({...formData, purchase_year: e.target.value})}
-                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-500/50 text-zinc-100 h-11 transition-all" 
-                      min="1900" 
-                      max={new Date().getFullYear()} 
+                      type="date" 
+                      value={formData.purchase_date} 
+                      onChange={(e) => setFormData({...formData, purchase_date: e.target.value})}
+                      className="peer pl-10 bg-zinc-900/50 border-zinc-800 focus-visible:ring-1 focus-visible:ring-zinc-500/50 text-zinc-100 h-11 transition-all [color-scheme:dark]" 
+                      max={new Date().toISOString().split("T")[0]} 
                       required 
                     />
-                    <CalendarDays className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-zinc-400 transition-colors" />
+                    <CalendarDays className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 peer-focus:text-zinc-400 transition-colors pointer-events-none" />
                   </div>
-                  {formErrors.purchase_year && <p className="text-xs text-red-500">{formErrors.purchase_year[0]}</p>}
+                  {formErrors.purchase_date && <p className="text-xs text-red-500">{formErrors.purchase_date[0]}</p>}
                 </div>
               </div>
 
@@ -461,7 +470,7 @@ export default function AddAssetPage() {
                         min="0"
                         required
                       />
-                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400" />
+                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400 pointer-events-none" />
                     </div>
                     {formErrors.purchase_price && <p className="text-xs text-red-500">{formErrors.purchase_price[0]}</p>}
                   </div>
@@ -482,7 +491,7 @@ export default function AddAssetPage() {
                         max="50"
                         required
                       />
-                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400" />
+                      <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400 pointer-events-none" />
                     </div>
                     {formErrors.useful_life && <p className="text-xs text-red-500">{formErrors.useful_life[0]}</p>}
                   </div>
@@ -501,7 +510,7 @@ export default function AddAssetPage() {
                         className="peer pl-9 bg-zinc-950/60 border-zinc-800 text-zinc-100 h-11 font-mono text-sm focus-visible:ring-1 focus-visible:ring-zinc-500/50"
                         min="0"
                       />
-                      <Coins className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400" />
+                      <Coins className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 peer-focus:text-zinc-400 pointer-events-none" />
                     </div>
                     {formErrors.residual_value && <p className="text-xs text-red-500">{formErrors.residual_value[0]}</p>}
                   </div>
