@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute; 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Casts\Attribute; 
 use Illuminate\Support\Facades\Storage;
-use Carbon\Carbon;
 
 class Asset extends Model
 {
@@ -31,7 +31,8 @@ protected $fillable = [
     protected $appends = [
         'image_url', 'monthly_depreciation', 'annual_depreciation', 
         'accumulated_depreciation', 'current_asset_value', 
-        'depreciation_percentage', 'is_fully_depreciated'
+        'depreciation_percentage', 'is_fully_depreciated',
+        'total_maintenance_cost', 'total_cost_of_ownership'
     ];
     
     protected function imageUrl(): Attribute
@@ -143,5 +144,20 @@ protected $fillable = [
     public function getIsFullyDepreciatedAttribute(): bool
     {
         return $this->depreciation_percentage >= 100;
+    }
+
+    public function maintenances(): HasMany
+    {
+        return $this->hasMany(Maintenance::class);
+    }
+
+    public function getTotalMaintenanceCostAttribute(): float
+    {
+        return (float) $this->maintenances()->where('status', 'completed')->sum('cost');
+    }
+
+    public function getTotalCostOfOwnershipAttribute(): float
+    {
+        return (float) ($this->purchuse_price ?? 0) + $this->total_maintenance_cost;
     }
 }
