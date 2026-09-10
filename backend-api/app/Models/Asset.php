@@ -30,7 +30,7 @@ protected $fillable = [
     // Tetap sertakan annual_depreciation agar Frontend (tabel Next.js) tidak error
     protected $appends = [
         'image_url', 'monthly_depreciation', 'annual_depreciation', 
-        'accumulated_depreciation', 'current_book_value', 
+        'accumulated_depreciation', 'current_asset_value', 
         'depreciation_percentage', 'is_fully_depreciated'
     ];
     
@@ -120,7 +120,7 @@ protected $fillable = [
         return round(min($calculatedAccumulation, $maxDepreciable), 2);
     }
 
-    public function getCurrentBookValueAttribute(): float
+    public function getCurrentAssetValueAttribute(): float
     {
         $purchasePrice = (float) ($this->purchase_price ?? 0);
         $residualValue = (float) ($this->residual_value ?? 0);

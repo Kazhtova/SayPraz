@@ -33,21 +33,22 @@ class ReportController extends Controller
         }
     }
 
-    public function exportDepreciationPdf(){
+    public function exportDepreciationPdf()
+    {
         try {
             $assets = Asset::with('category')->orderBy('id', 'desc')->get();
 
             $summary = [
-                'total_acquisition_cost'            => (float) $assets->sum('purchase_price'),
-                'total_accumulated_depreciation'    => (float) $assets->sum('accumulated_depreciation'),
-                'total_current_book_value'          => (float) $assets->sum('current_book_value'),
-                'total_assets_count'                => $assets->count(),
+                'total_acquisition_cost'         => (float) $assets->sum('purchase_price'),
+                'total_accumulated_depreciation' => (float) $assets->sum('accumulated_depreciation'),
+                'total_current_asset_value'      => (float) $assets->sum('current_asset_value'),
+                'total_assets_count'             => $assets->count(),
             ];
 
             $pdf = Pdf::loadView('reports.depreciation', [
-                'assets'    => $assets,
-                'summary'   => $summary,
-                'date'      => Carbon::now()->translatedFormat('d F Y')
+                'assets'  => $assets,
+                'summary' => $summary,
+                'date'    => Carbon::now()->translatedFormat('d F Y')
             ]);
 
             $pdf->setPaper('A4', 'landscape');
@@ -55,8 +56,8 @@ class ReportController extends Controller
             return $pdf->download('Laporan_Valuasi_Depresiasi_SayPraz.pdf');
         } catch (\Exception $e) {
             return response()->json([
-                'status'    => 'error',
-                'message'   => 'Gagal membuat dokumen PDF: ' . $e->getMessage()
+                'status'  => 'error',
+                'message' => 'Gagal membuat dokumen PDF: ' . $e->getMessage()
             ], 500);
         }
     }

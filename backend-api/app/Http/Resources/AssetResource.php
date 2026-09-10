@@ -37,7 +37,7 @@ class AssetResource extends JsonResource
             // Valuasi & Depresiasi Terkini
             'monthly_depreciation'      => $this->monthly_depreciation,
             'annual_depreciation'       => $this->annual_depreciation,
-            'current_book_value'        => $this->current_book_value,
+            'current_asset_value'       => $this->current_asset_value,
             'accumulated_depreciation'  => $this->accumulated_depreciation,
             'depreciation_percentage'   => $this->depreciation_percentage,
             'is_fully_depreciated'      => $this->is_fully_depreciated,

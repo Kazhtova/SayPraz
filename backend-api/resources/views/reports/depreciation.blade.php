@@ -36,7 +36,6 @@
     <!-- KOP SURAT -->
     <table class="kop-surat">
         <tr>
-            <!-- Format alamat Instansi -->
             <td width="15%" class="text-center"></td> 
             <td width="70%" class="teks-kop">
                 <h2>PEMERINTAH PROVINSI JAWA TIMUR</h2>
@@ -58,7 +57,7 @@
     <table class="summary-box">
         <tr>
             <td>
-                <span class="label">Total Harga Perolehan ({{ $summary['total_assets_count'] }} Aset)</span>
+                <span class="label">Total Nilai Akuisisi ({{ $summary['total_assets_count'] }} Aset)</span>
                 <span class="value">Rp {{ number_format($summary['total_acquisition_cost'], 0, ',', '.') }}</span>
             </td>
             <td>
@@ -66,8 +65,8 @@
                 <span class="value" style="color: #dc2626;">- Rp {{ number_format($summary['total_accumulated_depreciation'], 0, ',', '.') }}</span>
             </td>
             <td>
-                <span class="label">Total Nilai Buku Terkini</span>
-                <span class="value" style="color: #059669;">Rp {{ number_format($summary['total_current_book_value'], 0, ',', '.') }}</span>
+                <span class="label">Total Nilai Aset Terkini</span>
+                <span class="value" style="color: #059669;">Rp {{ number_format($summary['total_current_asset_value'], 0, ',', '.') }}</span>
             </td>
         </tr>
     </table>
@@ -82,7 +81,7 @@
                 <th width="12%">Kategori</th>
                 <th width="15%">Harga Perolehan</th>
                 <th width="18%">Penyusutan Berjalan</th>
-                <th width="15%">Nilai Buku Saat Ini</th>
+                <th width="15%">Nilai Aset Saat Ini</th>
             </tr>
         </thead>
         <tbody>
@@ -92,7 +91,7 @@
                 <td class="text-center font-bold">{{ $asset->qr_code }}</td>
                 <td>
                     <strong>{{ $asset->name }}</strong><br>
-                    <span style="color: #666; font-size: 9px;">Thn Beli: {{ $asset->purchase_year }} | Umur: {{ $asset->useful_life }} Thn</span>
+                    <span style="color: #666; font-size: 9px;">Tgl Beli: {{ $asset->purchase_date ? $asset->purchase_date->format('d/m/Y') : '-' }} | Umur: {{ $asset->useful_life }} Thn</span>
                 </td>
                 <td class="text-center">{{ $asset->category ? $asset->category->name : '-' }}</td>
                 <td class="text-right">Rp {{ number_format($asset->purchase_price, 0, ',', '.') }}</td>
@@ -100,7 +99,7 @@
                     - Rp {{ number_format($asset->accumulated_depreciation, 0, ',', '.') }}<br>
                     <span style="font-size: 8px; color: #666;">({{ $asset->is_fully_depreciated ? 'Habis Manfaat' : $asset->depreciation_percentage.'% Tersusut' }})</span>
                 </td>
-                <td class="text-right"><strong>Rp {{ number_format($asset->current_book_value, 0, ',', '.') }}</strong></td>
+                <td class="text-right"><strong>Rp {{ number_format($asset->current_asset_value, 0, ',', '.') }}</strong></td>
             </tr>
             @empty
             <tr>

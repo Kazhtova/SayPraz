@@ -22,7 +22,7 @@ interface AssetDepreciation {
   residual_value: number;
   annual_depreciation: number;
   accumulated_depreciation: number;
-  current_book_value: number;
+  current_asset_value: number;
   depreciation_percentage: number;
   is_fully_depreciated: boolean;
   category?: { id: number; name: string };
@@ -32,7 +32,7 @@ interface AssetDepreciation {
 interface DepreciationSummary {
   total_acquisition_cost: number;
   total_accumulated_depreciation: number;
-  total_current_book_value: number;
+  total_current_asset_value: number;
   total_assets_count: number;
 }
 
@@ -119,7 +119,7 @@ export default function DepreciationPage() {
   const [summary, setSummary] = useState<DepreciationSummary>({
     total_acquisition_cost: 0,
     total_accumulated_depreciation: 0,
-    total_current_book_value: 0,
+    total_current_asset_value: 0,
     total_assets_count: 0,
   });
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -147,7 +147,7 @@ export default function DepreciationPage() {
         setSummary(result.data?.summary || {
           total_acquisition_cost: 0,
           total_accumulated_depreciation: 0,
-          total_current_book_value: 0,
+          total_current_asset_value: 0,
           total_assets_count: 0,
         });
         setAssets(result.data?.assets || []);
@@ -318,12 +318,12 @@ export default function DepreciationPage() {
 
                 <div className="mt-5 space-y-1">
                   <p className="font-mono text-3xl font-extrabold tracking-tight text-emerald-300">
-                    {formatRupiah(summary.total_current_book_value)}
+                    {formatRupiah(summary.total_current_asset_value)}
                   </p>
                   <div className="flex items-center gap-1.5 pt-1">
                     <span className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-emerald-300 border border-emerald-500/20">
                       {summary.total_acquisition_cost > 0 
-                        ? `${Math.round((summary.total_current_book_value / summary.total_acquisition_cost) * 100)}%` 
+                        ? `${Math.round((summary.total_current_asset_value / summary.total_acquisition_cost) * 100)}%` 
                         : "0%"}
                     </span>
                     <span className="text-xs text-zinc-500">nilai sisa buku aktif</span>
@@ -441,7 +441,7 @@ export default function DepreciationPage() {
                       </td>
 
                       <td className="px-6 py-4 text-center font-mono font-semibold text-emerald-400">
-                        {formatRupiah(item.current_book_value)}
+                        {formatRupiah(item.current_asset_value)}
                       </td>
 
                       <td className="px-6 py-4 text-center">
