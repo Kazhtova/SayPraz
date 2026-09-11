@@ -26,24 +26,36 @@ interface PaginationMeta {
 }
 
 // ==========================================
-// KOMPONEN SKELETON
+// KOMPONEN SKELETON PROPOSIONAL & PRESISI (1:1)
 // ==========================================
+function ControlsSkeleton() {
+  return (
+    <div className="border-b border-zinc-800 p-4 flex flex-col md:flex-row gap-4 items-center justify-between bg-zinc-900/20 animate-pulse">
+      {/* Area Search & Sort Skeleton */}
+      <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto flex-1">
+        <div className="h-11 w-full sm:w-80 rounded-md bg-zinc-800 shrink-0" />
+        <div className="h-11 w-full sm:w-52 rounded-md bg-zinc-800 shrink-0" />
+      </div>
+
+      {/* Tombol Aksi Skeleton */}
+      <div className="flex w-full md:w-auto gap-3 justify-end shrink-0">
+        <div className="h-11 w-full sm:w-44 rounded-md bg-zinc-800" />
+        <div className="h-11 w-full sm:w-32 rounded-md bg-zinc-800" />
+      </div>
+    </div>
+  );
+}
+
 function TableRowSkeleton() {
   return (
     <tr className="animate-pulse border-b border-zinc-800/60">
-      {/* Kolom 1: ID (Otomatis dibatasi w-24 oleh thead) */}
-      <td className="px-6 py-4">
+      <td className="px-6 py-4 w-24">
         <div className="h-4 w-8 rounded bg-zinc-800" />
       </td>
-      
-      {/* Kolom 2: Nama Kategori */}
       <td className="px-6 py-4">
-        <div className="h-4 w-48 rounded bg-zinc-800" />
+        <div className="h-4 w-52 rounded bg-zinc-800" />
       </td>
-      
-      {/* Kolom 3: Aksi (Otomatis dibatasi w-32 oleh thead) */}
-      <td className="px-6 py-4 text-center">
-        {/* Menggunakan mx-auto agar kotak berada tepat di tengah */}
+      <td className="px-6 py-4 text-center w-32">
         <div className="mx-auto h-8 w-8 rounded-md bg-zinc-800" />
       </td>
     </tr>
@@ -56,7 +68,7 @@ export default function CategoriesPage() {
   
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortId, setSortId] = useState("asc"); // 'asc' (terkecil) atau 'desc' (terbesar)
+  const [sortId, setSortId] = useState("asc");
 
   const [isInitialLoading, setIsInitialLoading] = useState(true); 
   const [isTableRefreshing, setIsTableRefreshing] = useState(false); 
@@ -68,7 +80,6 @@ export default function CategoriesPage() {
     router.push("/login");
   }, [router]);
 
-  // Fungsi Utama Load Data (Diperbarui dengan parameter sort_id)
   const loadCategories = useCallback(async (page: number = 1, search: string = "", sort: string = "asc") => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -95,11 +106,13 @@ export default function CategoriesPage() {
     } catch (error) {
       console.error("Gagal terhubung ke server Laravel:", error);
     } finally {
-      setTimeout(() => { setIsInitialLoading(false); setIsTableRefreshing(false); }, 400);
+      setTimeout(() => { 
+        setIsInitialLoading(false); 
+        setIsTableRefreshing(false); 
+      }, 300);
     }
   }, [handleLogout]);
 
-  // Efek Debounce untuk Pencarian & Sorting
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) { router.push("/login"); return; }
@@ -127,81 +140,96 @@ export default function CategoriesPage() {
     `}} />
   );
 
-  if (isInitialLoading && categories.length === 0) {
-    return (
-      <div className="min-h-screen bg-zinc-950 font-sans antialiased">
-        <FontKillerStyles />
-        <main className="mx-auto max-w-5xl px-4 py-8 space-y-8">
-          <div className="space-y-2 animate-pulse"><div className="h-9 w-64 rounded-lg bg-zinc-800" /><div className="h-4 w-96 rounded bg-zinc-800" /></div>
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 overflow-hidden"><div className="p-4 border-b border-zinc-800 flex justify-between animate-pulse"><div className="h-11 w-full rounded-lg bg-zinc-800" /></div><table className="w-full"><tbody><TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton /></tbody></table></div>
-        </main>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans antialiased">
       <FontKillerStyles />
 
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
         
+        {/* HEADER SECTION */}
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.push('/dashboard')} className="h-10 w-10 border border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => router.push('/dashboard')} 
+            className="h-10 w-10 border border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 shrink-0"
+          >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-zinc-100 flex items-center gap-3">
-              <FolderOpen className="h-7 w-7 text-zinc-400" /> Manajemen Kategori
-            </h1>
-            <p className="text-zinc-400 text-sm mt-1">Kelola daftar Kategori untuk inventaris aset.</p>
-          </div>
+          
+          {isInitialLoading ? (
+            <div className="space-y-2 animate-pulse">
+              <div className="h-7 w-64 rounded-md bg-zinc-800" />
+              <div className="h-4 w-80 rounded bg-zinc-800/60" />
+            </div>
+          ) : (
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-100 flex items-center gap-3">
+                <FolderOpen className="h-7 w-7 text-zinc-400" /> Manajemen Kategori
+              </h1>
+              <p className="text-zinc-400 text-sm mt-1">Kelola daftar Kategori untuk inventaris aset.</p>
+            </div>
+          )}
         </div>
 
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm overflow-hidden flex flex-col">
+        {/* CARD CONTAINER TABLE */}
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm overflow-hidden flex flex-col shadow-xl shadow-black/20">
           
-          <div className="border-b border-zinc-800 p-4 flex flex-col md:flex-row gap-4 items-center justify-between bg-zinc-900/20">
-            
-            {/* AREA PENCARIAN DAN URUTKAN (Kiri/Atas) */}
-            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto flex-1">
-              {/* Kolom Pencarian Nama */}
-              <div className="relative w-full sm:w-80 shrink-0">
-                <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-                <Input 
-                  placeholder="Cari nama kategori..." 
-                  value={searchQuery}
-                  onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                  className="pl-10 bg-zinc-900/50 border-zinc-800 text-sm h-11 focus-visible:ring-zinc-500/50 w-full"
-                />
-              </div>
-
-              {/* Dropdown Urutkan ID */}
-              <div className="relative w-full sm:w-52 shrink-0">
-                <ArrowUpDown className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-                <select 
-                  value={sortId}
-                  onChange={(e) => { setSortId(e.target.value); setCurrentPage(1); }}
-                  className="pl-10 appearance-none flex h-11 w-full items-center justify-between rounded-md border border-zinc-800 bg-zinc-900/50 pr-8 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-500/50 cursor-pointer transition-all"
-                >
-                  <option value="asc" className="bg-zinc-900">ID Terkecil (Lama)</option>
-                  <option value="desc" className="bg-zinc-900">ID Terbesar (Baru)</option>
-                </select>
-              </div>
-            </div>
-
-            {/* TOMBOL AKSI (Kanan/Bawah) */}
-            <div className="flex w-full md:w-auto gap-3 justify-end shrink-0">
-              <Button onClick={() => router.push('/dashboard/categories/add')} className="bg-zinc-300 hover:bg-zinc-100 text-zinc-950 font-medium gap-2 h-11 w-full sm:w-auto px-5">
-                <Plus className="h-4 w-4" /> Tambah Kategori
-              </Button>
+          {/* CONTROLS (SEARCH, SORT, ACTIONS) */}
+          {isInitialLoading ? (
+            <ControlsSkeleton />
+          ) : (
+            <div className="border-b border-zinc-800 p-4 flex flex-col md:flex-row gap-4 items-center justify-between bg-zinc-900/20">
               
-              <Button variant="outline" onClick={handleRefreshClick} disabled={isTableRefreshing} className="border-zinc-800 bg-zinc-950/50 hover:bg-zinc-800 hover:text-white text-zinc-300 gap-2 h-11 w-full sm:w-auto px-5 transition-all">
-                <RefreshCw className={`h-4 w-4 ${isTableRefreshing ? "animate-spin" : ""}`} /> Muat Ulang
-              </Button>
-            </div>
-          </div>
+              {/* AREA PENCARIAN DAN URUTKAN */}
+              <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto flex-1">
+                <div className="relative w-full sm:w-80 shrink-0">
+                  <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                  <Input 
+                    placeholder="Cari nama kategori..." 
+                    value={searchQuery}
+                    onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                    className="pl-10 bg-zinc-900/50 border-zinc-800 text-sm h-11 focus-visible:ring-zinc-500/50 w-full"
+                  />
+                </div>
 
+                <div className="relative w-full sm:w-52 shrink-0">
+                  <ArrowUpDown className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+                  <select 
+                    value={sortId}
+                    onChange={(e) => { setSortId(e.target.value); setCurrentPage(1); }}
+                    className="pl-10 appearance-none flex h-11 w-full items-center justify-between rounded-md border border-zinc-800 bg-zinc-900/50 pr-8 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-500/50 cursor-pointer transition-all"
+                  >
+                    <option value="asc" className="bg-zinc-900">ID Terkecil (Lama)</option>
+                    <option value="desc" className="bg-zinc-900">ID Terbesar (Baru)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* TOMBOL AKSI */}
+              <div className="flex w-full md:w-auto gap-3 justify-end shrink-0">
+                <Button 
+                  onClick={() => router.push('/dashboard/categories/add')} 
+                  className="bg-zinc-100 hover:bg-white text-zinc-950 font-semibold gap-2 h-11 w-full sm:w-auto px-5 rounded-md"
+                >
+                  <Plus className="h-4 w-4" /> Tambah Kategori
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  onClick={handleRefreshClick} 
+                  disabled={isTableRefreshing} 
+                  className="border-zinc-800 bg-zinc-950/50 hover:bg-zinc-800 hover:text-white text-zinc-300 gap-2 h-11 w-full sm:w-auto px-5 rounded-md transition-all"
+                >
+                  <RefreshCw className={`h-4 w-4 ${isTableRefreshing ? "animate-spin" : ""}`} /> Muat Ulang
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* TABEL DATA */}
           <div className="overflow-x-auto min-h-[300px]">
-            <table className="w-full text-left text-sm text-zinc-400">
+            <table className="w-full text-left text-sm text-zinc-400 table-fixed">
               <thead className="border-b border-zinc-800 bg-zinc-900/60 text-xs uppercase text-zinc-400 tracking-wider">
                 <tr>
                   <th scope="col" className="px-6 py-4 font-semibold w-24">ID</th>
@@ -210,28 +238,34 @@ export default function CategoriesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/60">
-                {isTableRefreshing ? (
-                  <><TableRowSkeleton /><TableRowSkeleton /><TableRowSkeleton /></>
+                {isInitialLoading || isTableRefreshing ? (
+                  <>
+                    <TableRowSkeleton />
+                    <TableRowSkeleton />
+                    <TableRowSkeleton />
+                    <TableRowSkeleton />
+                    <TableRowSkeleton />
+                  </>
                 ) : categories.length === 0 ? (
                   <tr>
-                    <td colSpan={3} className="px-6 py-12 text-center text-zinc-500">
+                    <td colSpan={3} className="px-6 py-16 text-center text-zinc-500">
                       {searchQuery ? "Kategori yang dicari tidak ditemukan." : "Belum ada kategori terdaftar."}
                     </td>
                   </tr>
                 ) : (
                   categories.map((cat) => (
                     <tr key={cat.id} className="hover:bg-zinc-800/40 transition-colors">
-                      <td className="px-6 py-4 font-mono text-zinc-500">{cat.id}</td>
+                      <td className="px-6 py-4 font-mono text-zinc-500 w-24">{cat.id}</td>
                       <td className="px-6 py-4">
                         <div className="font-medium text-zinc-200">{cat.name}</div>
                       </td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="px-6 py-4 text-center w-32">
                         <div className="flex justify-center gap-2">
                           <Button 
                             variant="ghost" 
                             size="icon" 
                             onClick={() => router.push(`/dashboard/categories/edit/${cat.id}`)}
-                            className="h-8 w-8 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-200/10"
+                            className="h-8 w-8 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 rounded-md"
                             title="Edit Kategori"
                           >
                             <Pencil className="h-4 w-4" />
@@ -245,18 +279,38 @@ export default function CategoriesPage() {
             </table>
           </div>
 
+          {/* PAGINATION SECTION */}
           {pagination && pagination.last_page > 1 && (
-            <div className="border-t border-zinc-800 px-6 py-4 flex items-center justify-between bg-zinc-900/30">
+            <div className="border-t border-zinc-800 px-6 py-4 flex flex-col sm:flex-row gap-3 items-center justify-between bg-zinc-900/30">
               <div className="text-sm text-zinc-400">
                 Menampilkan <span className="font-medium text-zinc-200">{pagination.from || 0}</span> sampai <span className="font-medium text-zinc-200">{pagination.to || 0}</span> dari <span className="font-medium text-zinc-200">{pagination.total}</span> hasil
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1 || isTableRefreshing} className="border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 gap-1"><ChevronLeft className="h-4 w-4" /> Prev</Button>
-                <div className="flex items-center justify-center px-3 text-sm font-medium text-zinc-400">Halaman {currentPage} dari {pagination.last_page}</div>
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage(prev => Math.min(prev + 1, pagination.last_page))} disabled={currentPage === pagination.last_page || isTableRefreshing} className="border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 gap-1">Next <ChevronRight className="h-4 w-4" /></Button>
+              <div className="flex gap-2 items-center">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
+                  disabled={currentPage === 1 || isTableRefreshing} 
+                  className="border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 gap-1 h-9 rounded-md"
+                >
+                  <ChevronLeft className="h-4 w-4" /> Prev
+                </Button>
+                <div className="px-3 text-sm font-medium text-zinc-400">
+                  Halaman {currentPage} dari {pagination.last_page}
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, pagination.last_page))} 
+                  disabled={currentPage === pagination.last_page || isTableRefreshing} 
+                  className="border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 gap-1 h-9 rounded-md"
+                >
+                  Next <ChevronRight className="h-4 w-4" />
+                </Button>
               </div>
             </div>
           )}
+
         </div>
       </main>
     </div>
