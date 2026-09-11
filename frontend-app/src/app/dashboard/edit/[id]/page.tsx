@@ -731,7 +731,7 @@ export default function EditAssetPage() {
                   <Button 
                     type="submit" 
                     disabled={isSubmitting || isDeleting} 
-                    className="w-full sm:w-auto bg-zinc-100 hover:bg-white text-zinc-950 gap-2 h-10 px-7 font-semibold rounded-md shadow-lg shadow-black/40 transition-all text-xs"
+                    className="w-full sm:w-auto bg-zinc-200 hover:bg-white text-zinc-950 gap-2 h-10 px-7 font-semibold rounded-md shadow-lg shadow-black/40 transition-all text-xs"
                   >
                     {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                     Simpan Perubahan
