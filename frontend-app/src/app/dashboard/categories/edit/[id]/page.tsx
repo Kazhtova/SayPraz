@@ -281,7 +281,7 @@ export default function EditCategoryPage() {
 
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 <Button type="button" variant="ghost" onClick={() => router.back()} disabled={isSubmitting || isDeleting} className="w-full sm:w-auto text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 h-11 px-6 rounded-md">Batal</Button>
-                <Button type="submit" disabled={isSubmitting || isDeleting} className="w-full sm:w-auto bg-zinc-800 hover:bg-zinc-950 text-white gap-2 h-11 px-8 font-semibold rounded-md shadow-lg shadow-indigo-900/20 transition-all">
+                <Button type="submit" disabled={isSubmitting || isDeleting} className="w-full sm:w-auto bg-zinc-200 hover:bg-white text-zinc-950 gap-2 h-10 px-7 font-semibold rounded-md shadow-lg shadow-black/40 transition-all text-xs">
                   {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                   {isSubmitting ? "Menyimpan..." : "Simpan"}
                 </Button>
