@@ -551,7 +551,7 @@ export default function DashboardPage() {
             </div>
             
             <div className="flex flex-col w-full xl:w-auto gap-3 items-end">
-              <Button onClick={() => router.push('/dashboard/add')} className="bg-zinc-100 hover:bg-zinc-200 text-zinc-900 font-medium gap-2 h-10 w-full sm:w-auto px-20 rounded-lg shadow-[0_0_15px_-3px_rgba(255,255,255,0.2)] transition-all">
+              <Button onClick={() => router.push('/dashboard/add')} className="bg-zinc-300 hover:bg-zinc-100 text-zinc-900 font-medium gap-2 h-10 w-full sm:w-auto px-20 rounded-lg shadow-[0_0_15px_-3px_rgba(255,255,255,0.2)] transition-all">
                 <Plus className="h-4 w-4" />Tambah Aset
               </Button>
 
