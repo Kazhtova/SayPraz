@@ -190,7 +190,7 @@ export default function CategoriesPage() {
 
             {/* TOMBOL AKSI (Kanan/Bawah) */}
             <div className="flex w-full md:w-auto gap-3 justify-end shrink-0">
-              <Button onClick={() => router.push('/dashboard/categories/add')} className="bg-zinc-100 hover:bg-zinc-300 text-zinc-950 font-medium gap-2 h-11 w-full sm:w-auto px-5">
+              <Button onClick={() => router.push('/dashboard/categories/add')} className="bg-zinc-300 hover:bg-zinc-100 text-zinc-950 font-medium gap-2 h-11 w-full sm:w-auto px-5">
                 <Plus className="h-4 w-4" /> Tambah Kategori
               </Button>
               
