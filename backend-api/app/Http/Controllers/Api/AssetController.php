@@ -324,32 +324,37 @@ class AssetController extends Controller
         ], 200);
     }
 
-    public function dispose(Request $request, Asset $asset){
-        if($asset->is_disposed){
+    public function dispose(Request $request, Asset $asset)
+    {
+        if ($asset->is_disposed) {
             return response()->json([
-               'success'    => false,
-               'message' => 'Aset ini sudah pernah dihapusbukukan (disposed).' 
-            ]);
+                'success' => false,
+                'message' => 'Aset ini sudah pernah dihapusbukukan (disposed).'
+            ], 422);
         }
-        $validator = Validator::make($request->all(), [
-            'disposial_date'    => 'required|date|before_or_equal:today',
+
+        // Ambil data langsung baik dari JSON body maupun form-data
+        $input = $request->json()->all() ?: $request->all();
+
+        $validator = Validator::make($input, [
+            'disposal_date'   => 'required|date',
             'disposal_value'  => 'required|numeric|min:0',
             'disposal_reason' => 'required|string|max:255',
         ]);
-            
-        if($validator->fails()){
+
+        if ($validator->fails()) {
             return response()->json([
-                'success'   => false,
-                'errors'    => $validator->errors()
+                'success' => false,
+                'errors'  => $validator->errors()
             ], 422);
         }
 
         $data = $validator->validated();
 
         DB::transaction(function () use ($asset, $data) {
-            $currentAssetValue = $asset->current_asset_value;
-            $sellingPrice     = (float) $data['disposal_value'];
-            $gainOrLoss       = $sellingPrice - $currentAssetValue;
+            $currentAssetValue = (float) $asset->current_asset_value;
+            $sellingPrice      = (float) $data['disposal_value'];
+            $gainOrLoss        = $sellingPrice - $currentAssetValue;
 
             $asset->update([
                 'is_disposed'     => true,
@@ -365,7 +370,7 @@ class AssetController extends Controller
                 'old_status' => $asset->status,
                 'new_status' => 'disposed',
                 'handle_by'  => Auth::id(),
-                'notes'      => "Aset dihapusbukukan: {$data['disposal_reason']}. Nilai Aset Terakhir: Rp " . number_format($currentAssetValue, 0, ',', '.') . ", Nilai Jual/Pelepasan: Rp " . number_format($sellingPrice, 0, ',', '.') . " (Selisih: Rp " . number_format($gainOrLoss, 0, ',', '.'). ")"
+                'notes'      => "Aset dihapusbukukan: {$data['disposal_reason']}. Nilai Aset Terakhir: Rp " . number_format($currentAssetValue, 0, ',', '.') . ", Nilai Jual/Pelepasan: Rp " . number_format($sellingPrice, 0, ',', '.') . " (Selisih: Rp " . number_format($gainOrLoss, 0, ',', '.') . ")"
             ]);
 
             if ($sellingPrice > 0) {
@@ -428,7 +433,7 @@ class AssetController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Aset berhasil dihapusbukukan beserta seluruh jurnal penutupnya.',
-            'data'    => new AssetResource($asset->fresh())
-        ]);
+            'data'    => $asset->fresh()
+        ], 200);
     }
 }

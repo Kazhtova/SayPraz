@@ -158,6 +158,6 @@ protected $fillable = [
 
     public function getTotalCostOfOwnershipAttribute(): float
     {
-        return (float) ($this->purchuse_price ?? 0) + $this->total_maintenance_cost;
+        return (float) ($this->purchuse_price ?? 0) + $this->total_maintenance_costma;
     }
 }
