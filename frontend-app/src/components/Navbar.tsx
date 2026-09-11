@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { 
-  Boxes, LogOut, Package, FolderOpen, User, ArrowLeftRight, PackageSearch, History, Menu, X, TrendingDown
+  Boxes, LogOut, Package, FolderOpen, User, ArrowLeftRight, PackageSearch, History, Menu, X, TrendingDown, Wrench
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/lib/constants";
@@ -46,7 +46,8 @@ export function Navbar() {
     { name: "Kategori", href: "/dashboard/categories", icon: FolderOpen },
     { name: "Transaksi", href: "/dashboard/transactions", icon: ArrowLeftRight },
     { name: "Riwayat", href: "/dashboard/history", icon: History },
-    { name: "Depresiasi", href: "/dashboard/depreciation", icon: TrendingDown }
+    { name: "Depresiasi", href: "/dashboard/depreciation", icon: TrendingDown },
+    { name: "Pemeliharaan", href: "/dashboard/maintenances", icon: Wrench },
   ];
 
   const userLinks = [
@@ -68,7 +69,7 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-zinc-800/80 bg-zinc-950/85 backdrop-blur-2xl transition-all">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
-        <div className="relative flex h-20 items-center justify-between">
+        <div className="flex h-20 items-center justify-between gap-3 lg:gap-4">
           
           {/* 1. LOGO & BRANDING (KIRI) */}
           <div className="flex items-center shrink-0">
@@ -83,9 +84,9 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* 2. NAVIGASI DESKTOP: ABSOLUTE CENTER (LEBIH BESAR, LEGA, & MODERN) */}
-          <div className="hidden xl:flex absolute left-1/2 -translate-x-1/2 items-center pointer-events-auto">
-            <div className="flex items-center gap-2 p-2 rounded-2xl bg-zinc-900/80 border border-zinc-800 shadow-xl shadow-black/40 backdrop-blur-xl">
+          {/* 2. NAVIGASI DESKTOP (TENGAH - PROPORSIONAL LEBIH BESAR) */}
+          <div className="hidden xl:flex items-center justify-center flex-1 min-w-0 px-2">
+            <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-900/80 border border-zinc-800 shadow-xl shadow-black/40 backdrop-blur-xl">
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 
@@ -95,12 +96,12 @@ export function Navbar() {
                 
                 return (
                   <Link key={link.href} href={link.href} className="outline-none shrink-0">
-                    <div className={`flex items-center gap-3 px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
+                    <div className={`flex items-center gap-2.5 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
                       isActive 
                         ? "bg-zinc-800 text-zinc-100 shadow-md border border-zinc-700/80 ring-1 ring-white/10" 
                         : "text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200 border border-transparent" 
                     }`}>
-                      <Icon className={`h-[18px] w-[18px] shrink-0 transition-colors ${isActive ? "text-zinc-200" : "text-zinc-500"}`} />
+                      <Icon className={`h-[17px] w-[17px] shrink-0 transition-colors ${isActive ? "text-zinc-200" : "text-zinc-500"}`} />
                       <span>{link.name}</span>
                     </div>
                   </Link>
@@ -110,10 +111,10 @@ export function Navbar() {
           </div>
 
           {/* 3. USER PROFILE & LOGOUT (KANAN) */}
-          <div className="flex items-center gap-4 shrink-0">
-            <div className="hidden sm:flex items-center gap-3.5 pr-4 border-r border-zinc-800/80">
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="hidden sm:flex items-center gap-3.5 pr-3.5 border-r border-zinc-800/80">
               <div className="flex flex-col items-end">
-                <span className="text-sm font-semibold text-zinc-100 leading-none">{userName}</span>
+                <span className="text-sm font-semibold text-zinc-100 leading-none max-w-[130px] truncate">{userName}</span>
                 <span className="text-[11px] text-zinc-400 mt-1 uppercase tracking-wider font-medium">{roleName}</span>
               </div>
               <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-zinc-800 to-zinc-700 border border-zinc-600 shadow-sm flex items-center justify-center shrink-0">
@@ -125,7 +126,7 @@ export function Navbar() {
               variant="ghost" 
               size="sm"
               onClick={handleLogout}
-              className="hidden sm:flex text-zinc-400 hover:text-red-400 hover:bg-red-950/30 hover:border-red-900/50 border border-transparent gap-2 h-10 px-4 rounded-xl text-sm transition-all duration-200"
+              className="hidden sm:flex text-zinc-400 hover:text-red-400 hover:bg-red-950/30 hover:border-red-900/50 border border-transparent gap-2 h-10 px-3.5 rounded-xl text-sm transition-all duration-200"
             >
               <LogOut className="h-4 w-4" />
               <span className="font-medium">Keluar</span>
