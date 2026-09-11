@@ -553,7 +553,7 @@ export default function AddAssetPage() {
               <Button 
                 type="submit" 
                 disabled={isSubmitting} 
-                className="w-full sm:w-auto bg-zinc-800 hover:bg-zinc-950 text-white gap-2 h-11 px-8 font-semibold rounded-md shadow-lg shadow-indigo-900/20 transition-all"
+                className="w-full sm:w-auto bg-zinc-200 hover:bg-white text-zinc-950 gap-2 h-10 px-7 font-semibold rounded-md shadow-lg shadow-black/40 transition-all text-xs"
               >
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                 {isSubmitting ? "Menyimpan Data..." : "Tambah Aset"}
