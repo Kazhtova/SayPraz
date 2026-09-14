@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AssetController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\MaintenanceController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\TransactionController;
 use Illuminate\Http\Request;
@@ -44,4 +45,8 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::get('/reports/depreciation/pdf', [ReportController::class, 'exportDepreciationPdf']);
 
     Route::post('/assets/{asset}/dispose', [AssetController::class, 'dispose']);
+
+    Route::get('/maintenances', [MaintenanceController::class, 'index']);
+    Route::post('/maintenances', [MaintenanceController::class, 'store']);
+    Route::post('/maintenances/{maintenance}/complete', [MaintenanceController::class, 'complete']);
 });
