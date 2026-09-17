@@ -183,7 +183,7 @@ class AssetController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => new AssetResource($asset->load('category'))
+            'data' => new AssetResource($asset)
         ]);   
     }
 
@@ -280,16 +280,15 @@ class AssetController extends Controller
     {
 
         DB::transaction(function() use ($asset){
-
             if($asset->image){
                 Storage::disk('s3')->delete($asset->image);
             }
             
-            AssetLog::where('asset_id', $asset->id)->delete();
+            $asset->logs()->delete();
+            $asset->maintenances()->delete();
             $asset->delete();
         });
     
-
         return response()->json([
             'success' => true,
             'message' => 'Asset berhasil dihapus'
