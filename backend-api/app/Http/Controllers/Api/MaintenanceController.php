@@ -53,7 +53,7 @@ class MaintenanceController extends Controller
 
         $maintenance = DB::transaction(function() use ($input, $asset){
             $record = Maintenance::create([
-                'asset'             => $asset->id,
+                'asset_id'             => $asset->id,
                 'user_id'           => Auth::id() ?? 1,
                 'title'             => $input['title'],
                 'issue_description' => $input['issue_description'],

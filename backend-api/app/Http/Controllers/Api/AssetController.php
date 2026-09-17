@@ -173,6 +173,14 @@ class AssetController extends Controller
      */
     public function show(Asset $asset)
     {
+
+        $asset->load([
+            'category',
+            'maintenances'  => function($q) {
+                $q->where('status', 'completed')->latest('completion_date');
+            }
+        ]);
+
         return response()->json([
             'success' => true,
             'data' => new AssetResource($asset->load('category'))
@@ -304,11 +312,15 @@ class AssetController extends Controller
     public function getDepreciationSummary()
     {
         // Load relasi kategori agar data tidak kosong saat dirender tabel
-        $assets = Asset::with('category')->orderBy('id', 'desc')->get();
-
+        $assets = Asset::with(['category', 'maintenances' => function($q){
+            $q->where('status', 'completed')->latest('completion_date');
+        }])->orderBy('id', 'desc')->get();
+        
         $totalAcquisitionCost = (float) $assets->sum('purchase_price');
         $totalAccumulatedDepreciation = (float) $assets->sum('accumulated_depreciation');
         $totalCurrentAssetValue = (float) $assets->sum('current_asset_value');
+        $totalMaintenanceCost = (float) $assets->sum('total_maintenance_cost');
+        $totalTco = (float) $assets->sum('total_cost_of_ownership');
 
         return response()->json([
             'status' => 'success',
@@ -317,6 +329,8 @@ class AssetController extends Controller
                     'total_acquisition_cost'         => $totalAcquisitionCost,
                     'total_accumulated_depreciation' => $totalAccumulatedDepreciation,
                     'total_current_asset_value'      => $totalCurrentAssetValue,
+                    'total_maintenance_cost'         => $totalMaintenanceCost,
+                    'total_cost_of_ownership'        => $totalTco,
                     'total_assets_count'             => $assets->count(),
                 ],
                 'assets' => $assets

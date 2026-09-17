@@ -47,6 +47,11 @@ const getTodayLocalDate = () => {
   return `${year}-${month}-${day}`;
 };
 
+const formatDateOnly = (dateStr?: string | null) => {
+  if (!dateStr) return "-";
+  return dateStr.split("T")[0];
+};
+
 const formatRupiah = (val: number) => {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -56,50 +61,50 @@ const formatRupiah = (val: number) => {
 };
 
 // ==========================================
-// SKELETON TABLE PRESISI 1:1 (LEBAR & LEGA)
+// SKELETON TABLE PRESISI 1:1 (LEGA & PROPORSI PAS)
 // ==========================================
 function TableSkeleton() {
   return (
     <tbody className="divide-y divide-zinc-800/60">
       {[...Array(5)].map((_, i) => (
         <tr key={i} className="animate-pulse">
-          {/* 1. Aset & Tiket (25%) */}
-          <td className="px-6 py-4.5 w-[25%]">
+          {/* 1. Aset & Tiket (22%) */}
+          <td className="px-5 py-4 w-[22%]">
             <div className="space-y-2">
-              <div className="h-4 w-44 rounded bg-zinc-800" />
-              <div className="h-3 w-32 rounded bg-zinc-800/50" />
+              <div className="h-4 w-40 rounded bg-zinc-800" />
+              <div className="h-3 w-28 rounded bg-zinc-800/50" />
             </div>
           </td>
 
-          {/* 2. Kerusakan & Solusi (30%) */}
-          <td className="px-6 py-4.5 w-[30%]">
+          {/* 2. Kerusakan & Solusi (24%) */}
+          <td className="px-5 py-4 w-[24%]">
             <div className="space-y-2">
-              <div className="h-3.5 w-5/6 rounded bg-zinc-800" />
+              <div className="h-4 w-4/5 rounded bg-zinc-800" />
               <div className="h-3 w-3/5 rounded bg-zinc-800/40" />
             </div>
           </td>
 
           {/* 3. Vendor & Tanggal (18%) */}
-          <td className="px-6 py-4.5 w-[18%]">
+          <td className="px-5 py-4 w-[18%]">
             <div className="space-y-2">
-              <div className="h-3.5 w-28 rounded bg-zinc-800" />
+              <div className="h-4 w-28 rounded bg-zinc-800" />
               <div className="h-3 w-20 rounded bg-zinc-800/50" />
             </div>
           </td>
 
-          {/* 4. Biaya Servis (12%) */}
-          <td className="px-6 py-4.5 text-center w-[12%]">
+          {/* 4. Biaya Servis (14%) */}
+          <td className="px-5 py-4 text-center w-[14%]">
             <div className="h-4 w-24 rounded bg-zinc-800 mx-auto" />
           </td>
 
-          {/* 5. Status Badge (10%) */}
-          <td className="px-6 py-4.5 text-center w-[10%]">
+          {/* 5. Status Badge (11%) */}
+          <td className="px-4 py-4 text-center w-[11%]">
             <div className="h-6 w-20 rounded-full bg-zinc-800 mx-auto" />
           </td>
 
-          {/* 6. Tombol Aksi (5%) */}
-          <td className="px-6 py-4.5 text-center w-[5%]">
-            <div className="h-8 w-20 rounded-md bg-zinc-800 mx-auto" />
+          {/* 6. Tombol Aksi (11%) */}
+          <td className="px-4 py-4 text-center w-[11%]">
+            <div className="h-8 w-24 rounded-md bg-zinc-800 mx-auto" />
           </td>
         </tr>
       ))}
@@ -292,28 +297,28 @@ export default function MaintenancePage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans antialiased py-8 px-4 sm:px-6 lg:px-8">
       <FontKillerStyles />
-      <div className="mx-auto max-w-[1400px] space-y-7">
+      <div className="mx-auto max-w-6xl space-y-6">
 
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight flex items-center gap-3 text-zinc-100">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight flex items-center gap-2.5 text-zinc-100">
               <Wrench className="h-7 w-7 text-zinc-300" /> Pemeliharaan & Tiket Servis
             </h1>
-            <p className="text-zinc-400 text-sm mt-1.5">
+            <p className="text-zinc-400 text-sm mt-1">
               Pantau log reparasi unit aset, vendor servis, serta pencatatan otomatis biaya ke jurnal keuangan.
             </p>
           </div>
           <Button 
             onClick={() => setShowCreateModal(true)}
-            className="bg-zinc-100 hover:bg-white text-zinc-950 font-semibold gap-2 h-11 px-5 shadow-lg shadow-black/40 rounded-lg text-sm"
+            className="bg-zinc-100 hover:bg-white text-zinc-950 font-semibold gap-2 h-10 px-5 shadow-lg shadow-black/40 rounded-lg text-sm shrink-0"
           >
             <Plus className="h-4 w-4" /> Buka Tiket Servis
           </Button>
         </div>
 
         {/* Filter Toolbar */}
-        <div className="flex flex-col sm:flex-row items-center gap-3.5">
+        <div className="flex flex-col sm:flex-row items-center gap-3">
           <div className="relative w-full sm:w-80">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
             <Input 
@@ -324,7 +329,7 @@ export default function MaintenancePage() {
             />
           </div>
 
-          <div className="relative w-full sm:w-56">
+          <div className="relative w-full sm:w-52">
             <ArrowUpDown className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
             <select 
               value={statusFilter}
@@ -338,18 +343,18 @@ export default function MaintenancePage() {
           </div>
         </div>
 
-        {/* Tabel Tiket Besar & Lega */}
+        {/* Tabel Tiket: Kolom Longgar & Seimbang */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 overflow-hidden shadow-xl shadow-black/20">
-          <div className="overflow-x-auto min-h-[380px]">
-            <table className="w-full text-left text-sm text-zinc-400 table-fixed">
-              <thead className="border-b border-zinc-800 bg-zinc-900/70 text-xs uppercase text-zinc-400 tracking-wider">
+          <div className="w-full overflow-x-auto">
+            <table className="w-full text-left text-sm text-zinc-400 table-fixed min-w-[760px]">
+              <thead className="border-b border-zinc-800 bg-zinc-900/60 text-xs uppercase text-zinc-400 tracking-wider">
                 <tr>
-                  <th className="px-6 py-4 w-[25%] font-semibold">Aset & Tiket</th>
-                  <th className="px-6 py-4 w-[30%] font-semibold">Kerusakan & Solusi</th>
-                  <th className="px-6 py-4 w-[18%] font-semibold">Vendor & Tanggal</th>
-                  <th className="px-6 py-4 text-center w-[12%] font-semibold">Biaya Servis</th>
-                  <th className="px-6 py-4 text-center w-[10%] font-semibold">Status</th>
-                  <th className="px-6 py-4 text-center w-[5%] font-semibold">Aksi</th>
+                  <th className="px-5 py-3.5 w-[22%] font-semibold">Aset & Tiket</th>
+                  <th className="px-5 py-3.5 w-[24%] font-semibold">Kerusakan & Solusi</th>
+                  <th className="px-5 py-3.5 w-[18%] font-semibold">Vendor & Tanggal</th>
+                  <th className="px-5 py-3.5 text-center w-[14%] font-semibold">Biaya Servis</th>
+                  <th className="px-4 py-3.5 text-center w-[11%] font-semibold">Status</th>
+                  <th className="px-4 py-3.5 text-center w-[11%] font-semibold">Aksi</th>
                 </tr>
               </thead>
               {loading ? (
@@ -369,13 +374,13 @@ export default function MaintenancePage() {
                 <tbody className="divide-y divide-zinc-800/60">
                   {filteredRecords.map((item) => (
                     <tr key={item.id} className="hover:bg-zinc-800/30 transition-colors">
-                      <td className="px-6 py-4.5">
+                      <td className="px-5 py-4">
                         <div className="font-semibold text-zinc-100 text-sm truncate">{item.title}</div>
-                        <div className="text-xs text-zinc-500 font-mono mt-0.5 truncate">
+                        <div className="text-xs text-zinc-500 font-mono mt-1 truncate">
                           {item.asset?.qr_code} • {item.asset?.name}
                         </div>
                       </td>
-                      <td className="px-6 py-4.5">
+                      <td className="px-5 py-4">
                         <p className="line-clamp-2 text-zinc-300 text-sm leading-relaxed">{item.issue_description}</p>
                         {item.action_taken && (
                           <p className="text-xs text-emerald-400/90 mt-1 font-mono line-clamp-1">
@@ -383,28 +388,28 @@ export default function MaintenancePage() {
                           </p>
                         )}
                       </td>
-                      <td className="px-6 py-4.5 text-xs">
+                      <td className="px-5 py-4 text-xs">
                         <div className="text-zinc-200 font-medium text-sm truncate">{item.vendor_name || "Internal Sarpras"}</div>
-                        <div className="text-zinc-500 mt-1">Mulai: {item.start_date}</div>
+                        <div className="text-zinc-400 mt-1">Mulai: {formatDateOnly(item.start_date)}</div>
                         {item.completion_date && (
-                          <div className="text-emerald-400/90 mt-0.5">Selesai: {item.completion_date}</div>
+                          <div className="text-emerald-400 font-medium mt-0.5">Selesai: {formatDateOnly(item.completion_date)}</div>
                         )}
                       </td>
-                      <td className="px-6 py-4.5 text-center font-mono font-medium text-zinc-100 text-sm">
+                      <td className="px-5 py-4 text-center font-mono font-medium text-zinc-100 text-sm">
                         {formatRupiah(Number(item.cost))}
                       </td>
-                      <td className="px-6 py-4.5 text-center">
+                      <td className="px-4 py-4 text-center">
                         {item.status === "completed" ? (
-                          <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full font-medium">
+                          <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full font-medium">
                             <CheckCircle2 className="h-3.5 w-3.5" /> Selesai
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full font-medium">
+                          <span className="inline-flex items-center gap-1.5 text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full font-medium">
                             <Clock className="h-3.5 w-3.5 animate-pulse" /> Proses
                           </span>
                         )}
                       </td>
-                      <td className="px-6 py-4.5 text-center">
+                      <td className="px-4 py-4 text-center">
                         {item.status === "in_progress" ? (
                           <Button
                             size="sm"
@@ -412,7 +417,7 @@ export default function MaintenancePage() {
                               setSelectedTicket(item);
                               setShowCompleteModal(true);
                             }}
-                            className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs h-8 px-3 rounded-md font-medium"
+                            className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs h-8 px-3.5 rounded-md font-medium"
                           >
                             Selesaikan
                           </Button>
