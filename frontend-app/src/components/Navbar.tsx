@@ -75,11 +75,11 @@ export function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-zinc-800/80 bg-zinc-950/85 backdrop-blur-2xl transition-all">
-      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between gap-3 lg:gap-4">
+      <div className="mx-auto max-w-[1536px] px-4 sm:px-6 lg:px-8">
+        <div className="relative flex h-20 items-center justify-between">
           
           {/* 1. LOGO & BRANDING (KIRI) */}
-          <div className="flex items-center shrink-0">
+          <div className="flex items-center shrink-0 z-10">
             <Link 
               href={isAdminOrStaff ? "/dashboard" : "/catalog"} 
               className="flex items-center gap-3 transition-transform hover:scale-[1.02] active:scale-[0.98] outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 rounded-xl"
@@ -91,9 +91,9 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* 2. NAVIGASI DESKTOP (TENGAH - SKALA UKURAN LEGA) */}
-          <div className="hidden xl:flex items-center justify-center flex-1 min-w-0 px-2">
-            <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-900/80 border border-zinc-800 shadow-xl shadow-black/40 backdrop-blur-xl">
+          {/* 2. NAVIGASI DESKTOP (TEPAT DI TENGAH SECARA ABSOLUT) */}
+          <div className="hidden xl:flex absolute inset-x-0 justify-center items-center pointer-events-none">
+            <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-900/80 border border-zinc-800 shadow-xl shadow-black/40 backdrop-blur-xl pointer-events-auto">
               
               {isAdminOrStaff ? (
                 <>
@@ -121,7 +121,7 @@ export function Navbar() {
                     </div>
                   </Link>
 
-                  {/* Dropdown Aktivitas */}
+                  {/* Dropdown Aktivitas (Transaksi & Riwayat) */}
                   <div className="relative shrink-0" ref={dropdownRef}>
                     <button
                       type="button"
@@ -137,7 +137,6 @@ export function Navbar() {
                       <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`} />
                     </button>
 
-                    {/* Popover Menu Dropdown */}
                     {isDropdownOpen && (
                       <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-52 rounded-xl bg-zinc-950 border border-zinc-800 shadow-2xl p-1.5 z-50 animate-in fade-in-50 zoom-in-95 duration-150">
                         <Link 
@@ -222,7 +221,7 @@ export function Navbar() {
           </div>
 
           {/* 3. USER PROFILE & LOGOUT (KANAN) */}
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-3 shrink-0 z-10">
             <div className="hidden sm:flex items-center gap-3.5 pr-3.5 border-r border-zinc-800/80">
               <div className="flex flex-col items-end">
                 <span className="text-sm font-semibold text-zinc-100 leading-none max-w-[130px] truncate">{userName}</span>
@@ -243,7 +242,7 @@ export function Navbar() {
               <span className="font-medium">Keluar</span>
             </Button>
 
-            {/* Tombol Hamburger Mobile / Tablet */}
+            {/* Tombol Hamburger Mobile */}
             <Button
               variant="ghost"
               size="icon"
@@ -258,7 +257,7 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* 4. PANEL MENU MOBILE & TABLET */}
+      {/* 4. PANEL MENU MOBILE */}
       {isMobileMenuOpen && (
         <div className="xl:hidden border-b border-zinc-800 bg-zinc-950/95 backdrop-blur-2xl px-5 pt-4 pb-6 space-y-4 animate-in slide-in-from-top-2 duration-200 overflow-y-auto max-h-[80vh]">
           
