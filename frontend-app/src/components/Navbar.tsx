@@ -1,11 +1,13 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { 
-  Boxes, LogOut, Package, FolderOpen, User, ArrowLeftRight, PackageSearch, History, Menu, X, TrendingDown, Wrench
+  Boxes, LogOut, Package, FolderOpen, User, ArrowLeftRight, 
+  PackageSearch, History, Menu, X, TrendingDown, Wrench, 
+  ChevronDown, BookOpen
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/lib/constants";
@@ -18,6 +20,9 @@ export function Navbar() {
   const [userName, setUserName] = useState<string>("Pengguna");
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
@@ -30,9 +35,22 @@ export function Navbar() {
     setIsMounted(true);
   }, []);
 
+  // Tutup menu mobile & dropdown saat pindah halaman
   useEffect(() => {
     setIsMobileMenuOpen(false);
+    setIsDropdownOpen(false);
   }, [pathname]);
+
+  // Event listener klik di luar dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = () => {
     localStorage.clear(); 
@@ -41,22 +59,13 @@ export function Navbar() {
 
   if (!isMounted) return null;
 
-  const adminLinks = [
-    { name: "Aset Inventaris", href: "/dashboard", icon: Package },
-    { name: "Kategori", href: "/dashboard/categories", icon: FolderOpen },
-    { name: "Transaksi", href: "/dashboard/transactions", icon: ArrowLeftRight },
-    { name: "Riwayat", href: "/dashboard/history", icon: History },
-    { name: "Depresiasi", href: "/dashboard/depreciation", icon: TrendingDown },
-    { name: "Pemeliharaan", href: "/dashboard/maintenances", icon: Wrench },
-  ];
-
   const userLinks = [
     { name: "Katalog Aset", href: "/catalog", icon: PackageSearch },
     { name: "Riwayat Peminjaman", href: "/my-transactions", icon: History },
   ];
 
   const isAdminOrStaff = role === "admin" || role === "staff";
-  const navLinks = isAdminOrStaff ? adminLinks : userLinks;
+  const isActivityActive = pathname.startsWith("/dashboard/transactions") || pathname.startsWith("/dashboard/history");
 
   const roleDisplayNames: Record<string, string> = {
     admin: "Administrator",
@@ -84,29 +93,134 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* 2. NAVIGASI DESKTOP (TENGAH - PROPORSIONAL LEBIH BESAR) */}
+          {/* 2. NAVIGASI DESKTOP (TENGAH) */}
           <div className="hidden xl:flex items-center justify-center flex-1 min-w-0 px-2">
             <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-900/80 border border-zinc-800 shadow-xl shadow-black/40 backdrop-blur-xl">
-              {navLinks.map((link) => {
-                const Icon = link.icon;
-                
-                const isExactMatch = pathname === link.href;
-                const isSubMatch = link.href !== "/dashboard" && link.href !== "/catalog" && pathname.startsWith(link.href);
-                const isActive = isExactMatch || isSubMatch;
-                
-                return (
-                  <Link key={link.href} href={link.href} className="outline-none shrink-0">
+              
+              {isAdminOrStaff ? (
+                <>
+                  {/* Aset Inventaris */}
+                  <Link href="/dashboard" className="outline-none shrink-0">
                     <div className={`flex items-center gap-2.5 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
-                      isActive 
+                      pathname === "/dashboard" 
                         ? "bg-zinc-800 text-zinc-100 shadow-md border border-zinc-700/80 ring-1 ring-white/10" 
                         : "text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200 border border-transparent" 
                     }`}>
-                      <Icon className={`h-[17px] w-[17px] shrink-0 transition-colors ${isActive ? "text-zinc-200" : "text-zinc-500"}`} />
-                      <span>{link.name}</span>
+                      <Package className={`h-[17px] w-[17px] shrink-0 transition-colors ${pathname === "/dashboard" ? "text-zinc-200" : "text-zinc-500"}`} />
+                      <span>Aset Inventaris</span>
                     </div>
                   </Link>
-                );
-              })}
+
+                  {/* Kategori */}
+                  <Link href="/dashboard/categories" className="outline-none shrink-0">
+                    <div className={`flex items-center gap-2.5 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
+                      pathname.startsWith("/dashboard/categories") 
+                        ? "bg-zinc-800 text-zinc-100 shadow-md border border-zinc-700/80 ring-1 ring-white/10" 
+                        : "text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200 border border-transparent" 
+                    }`}>
+                      <FolderOpen className={`h-[17px] w-[17px] shrink-0 transition-colors ${pathname.startsWith("/dashboard/categories") ? "text-zinc-200" : "text-zinc-500"}`} />
+                      <span>Kategori</span>
+                    </div>
+                  </Link>
+
+                  {/* Dropdown Aktivitas (Transaksi & Riwayat) */}
+                  <div className="relative shrink-0" ref={dropdownRef}>
+                    <button
+                      type="button"
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className={`flex items-center gap-2.5 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                        isActivityActive || isDropdownOpen
+                          ? "bg-zinc-800 text-zinc-100 shadow-md border border-zinc-700/80 ring-1 ring-white/10" 
+                          : "text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200 border border-transparent"
+                      }`}
+                    >
+                      <ArrowLeftRight className={`h-[17px] w-[17px] shrink-0 transition-colors ${isActivityActive || isDropdownOpen ? "text-zinc-200" : "text-zinc-500"}`} />
+                      <span>Aktivitas</span>
+                      <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`} />
+                    </button>
+
+                    {/* Popover Menu Dropdown */}
+                    {isDropdownOpen && (
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 rounded-xl bg-zinc-950 border border-zinc-800 shadow-2xl p-1.5 z-50 animate-in fade-in-50 zoom-in-95 duration-150">
+                        <Link 
+                          href="/dashboard/transactions" 
+                          onClick={() => setIsDropdownOpen(false)}
+                          className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors ${
+                            pathname.startsWith("/dashboard/transactions") ? "bg-zinc-800 text-zinc-100" : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
+                          }`}
+                        >
+                          <ArrowLeftRight className="h-4 w-4" />
+                          <span>Peminjaman Aset</span>
+                        </Link>
+                        <Link 
+                          href="/dashboard/history" 
+                          onClick={() => setIsDropdownOpen(false)}
+                          className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors mt-0.5 ${
+                            pathname.startsWith("/dashboard/history") ? "bg-zinc-800 text-zinc-100" : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
+                          }`}
+                        >
+                          <History className="h-4 w-4" />
+                          <span>Riwayat Lengkap</span>
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Depresiasi */}
+                  <Link href="/dashboard/depreciation" className="outline-none shrink-0">
+                    <div className={`flex items-center gap-2.5 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
+                      pathname.startsWith("/dashboard/depreciation") 
+                        ? "bg-zinc-800 text-zinc-100 shadow-md border border-zinc-700/80 ring-1 ring-white/10" 
+                        : "text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200 border border-transparent" 
+                    }`}>
+                      <TrendingDown className={`h-[17px] w-[17px] shrink-0 transition-colors ${pathname.startsWith("/dashboard/depreciation") ? "text-zinc-200" : "text-zinc-500"}`} />
+                      <span>Depresiasi</span>
+                    </div>
+                  </Link>
+
+                  {/* Pemeliharaan */}
+                  <Link href="/dashboard/maintenances" className="outline-none shrink-0">
+                    <div className={`flex items-center gap-2.5 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
+                      pathname.startsWith("/dashboard/maintenances") 
+                        ? "bg-zinc-800 text-zinc-100 shadow-md border border-zinc-700/80 ring-1 ring-white/10" 
+                        : "text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200 border border-transparent" 
+                    }`}>
+                      <Wrench className={`h-[17px] w-[17px] shrink-0 transition-colors ${pathname.startsWith("/dashboard/maintenances") ? "text-zinc-200" : "text-zinc-500"}`} />
+                      <span>Pemeliharaan</span>
+                    </div>
+                  </Link>
+
+                  {/* Jurnal Finansial */}
+                  <Link href="/dashboard/journals" className="outline-none shrink-0">
+                    <div className={`flex items-center gap-2.5 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
+                      pathname.startsWith("/dashboard/journals") 
+                        ? "bg-zinc-800 text-zinc-100 shadow-md border border-zinc-700/80 ring-1 ring-white/10" 
+                        : "text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200 border border-transparent" 
+                    }`}>
+                      <BookOpen className={`h-[17px] w-[17px] shrink-0 transition-colors ${pathname.startsWith("/dashboard/journals") ? "text-zinc-200" : "text-zinc-500"}`} />
+                      <span>Jurnal</span>
+                    </div>
+                  </Link>
+                </>
+              ) : (
+                /* Role User Biasa (Student/Teacher) */
+                userLinks.map((link) => {
+                  const Icon = link.icon;
+                  const isActive = pathname === link.href || pathname.startsWith(link.href);
+                  return (
+                    <Link key={link.href} href={link.href} className="outline-none shrink-0">
+                      <div className={`flex items-center gap-2.5 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
+                        isActive 
+                          ? "bg-zinc-800 text-zinc-100 shadow-md border border-zinc-700/80 ring-1 ring-white/10" 
+                          : "text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200 border border-transparent" 
+                      }`}>
+                        <Icon className={`h-[17px] w-[17px] shrink-0 transition-colors ${isActive ? "text-zinc-200" : "text-zinc-500"}`} />
+                        <span>{link.name}</span>
+                      </div>
+                    </Link>
+                  );
+                })
+              )}
             </div>
           </div>
 
@@ -149,7 +263,7 @@ export function Navbar() {
 
       {/* 4. PANEL MENU MOBILE & TABLET */}
       {isMobileMenuOpen && (
-        <div className="xl:hidden border-b border-zinc-800 bg-zinc-950/95 backdrop-blur-2xl px-5 pt-4 pb-6 space-y-4 animate-in slide-in-from-top-2 duration-200">
+        <div className="xl:hidden border-b border-zinc-800 bg-zinc-950/95 backdrop-blur-2xl px-5 pt-4 pb-6 space-y-4 animate-in slide-in-from-top-2 duration-200 overflow-y-auto max-h-[80vh]">
           
           <div className="flex items-center gap-3.5 p-3.5 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
             <div className="h-10 w-10 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center">
@@ -162,23 +276,69 @@ export function Navbar() {
           </div>
 
           <div className="space-y-1.5">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = pathname === link.href || (link.href !== "/dashboard" && link.href !== "/catalog" && pathname.startsWith(link.href));
-              
-              return (
-                <Link key={link.href} href={link.href}>
-                  <div className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                    isActive 
-                      ? "bg-zinc-800 text-zinc-100 border border-zinc-700/60" 
-                      : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
-                  }`}>
-                    <Icon className={`h-4 w-4 ${isActive ? "text-zinc-200" : "text-zinc-500"}`} />
-                    {link.name}
+            {isAdminOrStaff ? (
+              <>
+                <Link href="/dashboard">
+                  <div className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${pathname === "/dashboard" ? "bg-zinc-800 text-zinc-100 border border-zinc-700/60" : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"}`}>
+                    <Package className={`h-4 w-4 ${pathname === "/dashboard" ? "text-zinc-200" : "text-zinc-500"}`} /> Aset Inventaris
                   </div>
                 </Link>
-              );
-            })}
+                <Link href="/dashboard/categories">
+                  <div className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${pathname.startsWith("/dashboard/categories") ? "bg-zinc-800 text-zinc-100 border border-zinc-700/60" : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"}`}>
+                    <FolderOpen className={`h-4 w-4 ${pathname.startsWith("/dashboard/categories") ? "text-zinc-200" : "text-zinc-500"}`} /> Kategori
+                  </div>
+                </Link>
+                
+                {/* Pembatas Visual Aktivitas untuk Mobile */}
+                <div className="pt-2 pb-1 px-3 text-[11px] font-bold text-zinc-500 uppercase tracking-wider">Aktivitas & Log</div>
+                
+                <Link href="/dashboard/transactions">
+                  <div className={`flex items-center gap-3 pl-6 pr-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${pathname.startsWith("/dashboard/transactions") ? "bg-zinc-800 text-zinc-100 border border-zinc-700/60" : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"}`}>
+                    <ArrowLeftRight className={`h-4 w-4 ${pathname.startsWith("/dashboard/transactions") ? "text-zinc-200" : "text-zinc-500"}`} /> Peminjaman
+                  </div>
+                </Link>
+                <Link href="/dashboard/history">
+                  <div className={`flex items-center gap-3 pl-6 pr-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${pathname.startsWith("/dashboard/history") ? "bg-zinc-800 text-zinc-100 border border-zinc-700/60" : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"}`}>
+                    <History className={`h-4 w-4 ${pathname.startsWith("/dashboard/history") ? "text-zinc-200" : "text-zinc-500"}`} /> Riwayat Lengkap
+                  </div>
+                </Link>
+
+                <div className="pt-2" />
+                
+                <Link href="/dashboard/depreciation">
+                  <div className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${pathname.startsWith("/dashboard/depreciation") ? "bg-zinc-800 text-zinc-100 border border-zinc-700/60" : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"}`}>
+                    <TrendingDown className={`h-4 w-4 ${pathname.startsWith("/dashboard/depreciation") ? "text-zinc-200" : "text-zinc-500"}`} /> Depresiasi
+                  </div>
+                </Link>
+                <Link href="/dashboard/maintenances">
+                  <div className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${pathname.startsWith("/dashboard/maintenances") ? "bg-zinc-800 text-zinc-100 border border-zinc-700/60" : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"}`}>
+                    <Wrench className={`h-4 w-4 ${pathname.startsWith("/dashboard/maintenances") ? "text-zinc-200" : "text-zinc-500"}`} /> Pemeliharaan
+                  </div>
+                </Link>
+                <Link href="/dashboard/journals">
+                  <div className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${pathname.startsWith("/dashboard/journals") ? "bg-zinc-800 text-zinc-100 border border-zinc-700/60" : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"}`}>
+                    <BookOpen className={`h-4 w-4 ${pathname.startsWith("/dashboard/journals") ? "text-zinc-200" : "text-zinc-500"}`} /> Jurnal Finansial
+                  </div>
+                </Link>
+              </>
+            ) : (
+              userLinks.map((link) => {
+                const Icon = link.icon;
+                const isActive = pathname === link.href || pathname.startsWith(link.href);
+                return (
+                  <Link key={link.href} href={link.href}>
+                    <div className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+                      isActive 
+                        ? "bg-zinc-800 text-zinc-100 border border-zinc-700/60" 
+                        : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
+                    }`}>
+                      <Icon className={`h-4 w-4 ${isActive ? "text-zinc-200" : "text-zinc-500"}`} />
+                      {link.name}
+                    </div>
+                  </Link>
+                );
+              })
+            )}
           </div>
 
           <Button 
