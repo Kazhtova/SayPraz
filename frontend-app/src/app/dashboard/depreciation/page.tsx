@@ -332,7 +332,7 @@ export default function DepreciationPage() {
               <div className="group relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-b from-amber-950/20 via-zinc-900/40 to-zinc-950/80 p-5 backdrop-blur-xl transition-all duration-300 hover:border-amber-500/50 hover:shadow-xl hover:shadow-amber-950/30">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold uppercase tracking-wider text-amber-300/90">
-                    Total TCO Portofolio
+                    Total Harga TCO 
                   </span>
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-400">
                     <Coins className="h-4 w-4" />
