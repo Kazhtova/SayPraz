@@ -79,7 +79,7 @@ export function Navbar() {
         <div className="relative flex h-20 items-center justify-between">
           
           {/* 1. LOGO & BRANDING (KIRI) */}
-          <div className="flex items-center shrink-0 z-10">
+          <div className="flex items-center shrink-0 z-10 sm:ml-30">
             <Link 
               href={isAdminOrStaff ? "/dashboard" : "/catalog"} 
               className="flex items-center gap-3 transition-transform hover:scale-[1.02] active:scale-[0.98] outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 rounded-xl"
