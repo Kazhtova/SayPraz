@@ -7,5 +7,7 @@ use Illuminate\Http\Request;
 
 class JournalController extends Controller
 {
-    //
+    public function index(Request $request){
+        
+    }
 }

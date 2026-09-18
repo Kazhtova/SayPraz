@@ -14,9 +14,9 @@ class FinancialJournal extends Model
         'asset_id',
         'transaction_date',
         'account_name',
-        'entry_type', // debit / credit
+        'entry_type', 
         'amount',
-        'reference_type', // purchase, maintenance, disposal
+        'reference_type', 
         'description'
     ];
 
