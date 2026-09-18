@@ -13,6 +13,25 @@ class JournalController extends Controller
         ->latest('transaction_date')
         ->orderBy('id', 'desc');
 
-        
+        if($request->filled('search')){
+            $search = $request->search;
+            $query->where(function ($q) use ($search){
+               $q->where('account_name', 'like', '{%search%}')
+               ->orWhere('despreciation', 'like', '{%search%}')
+               ->orWhereHas('asset', function($qa) use ($search) {
+                    $qa->where('name', 'like', '{%search%}')
+                    ->orWhere('qr_code', 'like', '{%search%}');
+               }); 
+            });
+        }
+
+        if($request->filled('entry_type') && $request->entry_type !== 'all'){
+            $query->where('entry_type', $request->entry_type);
+        }
+        if($request->filled('reference_type') && $request->reference_type !== 'all'){
+            $query->where('reference_type', $request->reference_type);
+        }
+
+        $journal = $query->paginate(20);
     }
 }
