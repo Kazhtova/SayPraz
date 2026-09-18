@@ -89,6 +89,7 @@ export default function JournalsPage() {
   }, [router, currentPage, search, entryTypeFilter]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchJournals();
   }, [fetchJournals]);
 
