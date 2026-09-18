@@ -36,5 +36,15 @@ class JournalController extends Controller
 
         $totalDebit = FinancialJournal::where('entry_date', 'debit')->sum('amount');
         $totalCredit = FinancialJournal::where('entry_date', 'credit')->sum('amount');
+
+        return response()->json([
+            'status'    => 'success',
+            'data'      => $journal,
+            'summry'    => [
+                'total_debit'   => (float) $totalDebit,
+                'total_credit'  => (float) $totalCredit,
+                'is_balanced'   => (float) round($totalDebit, 2) === round($totalCredit, 2),
+            ]
+        ], 200);
     }
 }
