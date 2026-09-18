@@ -33,5 +33,8 @@ class JournalController extends Controller
         }
 
         $journal = $query->paginate(20);
+
+        $totalDebit = FinancialJournal::where('entry_date', 'debit')->sum('amount');
+        $totalCredit = FinancialJournal::where('entry_date', 'credit')->sum('amount');
     }
 }
