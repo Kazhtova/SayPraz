@@ -274,7 +274,7 @@ export default function DepreciationPage() {
               <div className="group relative overflow-hidden rounded-2xl border border-zinc-800/80 bg-gradient-to-b from-zinc-900/60 to-zinc-950/80 p-5 backdrop-blur-xl transition-all duration-300 hover:border-zinc-700/80 hover:shadow-xl hover:shadow-black/40">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                    Nilai Akuisisi
+                    Harga Akuisisi
                   </span>
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700/50 bg-zinc-800/50 text-zinc-300">
                     <Wallet className="h-4 w-4" />
