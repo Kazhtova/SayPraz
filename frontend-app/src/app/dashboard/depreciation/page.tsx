@@ -324,7 +324,7 @@ export default function DepreciationPage() {
                   <p className="font-mono text-2xl font-extrabold tracking-tight text-emerald-300">
                     {formatRupiah(summary.total_current_asset_value)}
                   </p>
-                  <span className="text-xs text-zinc-500">Nilai sisa buku saat ini</span>
+                  <span className="text-xs text-zinc-500">Nilai sisa Aset saat ini</span>
                 </div>
               </div>
 
@@ -404,7 +404,7 @@ export default function DepreciationPage() {
                     <th scope="col" className="px-4 py-4 font-semibold text-center w-[14%]">Harga Awal</th>
                     <th scope="col" className="px-4 py-4 font-semibold text-center w-[12%]">Masa Manfaat</th>
                     <th scope="col" className="px-4 py-4 font-semibold text-center w-[14%]">Penyusutan / Thn</th>
-                    <th scope="col" className="px-4 py-4 font-semibold text-center w-[14%]">Nilai Riil Buku</th>
+                    <th scope="col" className="px-4 py-4 font-semibold text-center w-[14%]">Nilai Riil Aset</th>
                     <th scope="col" className="px-4 py-4 font-semibold text-center w-[14%]">TCO & Servis</th>
                     <th scope="col" className="px-4 py-4 font-semibold text-center w-[10%]">Status</th>
                   </tr>
