@@ -4,53 +4,56 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\FinancialJournal;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class JournalController extends Controller
 {
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $query = FinancialJournal::with('asset:id,name,qr_code')
-        ->latest('transaction_date')
-        ->orderBy('id', 'desc');
+            ->latest('transaction_date')
+            ->orderBy('id', 'desc');
 
-        if($request->filled('search')){
+        if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function ($q) use ($search){
-               $q->where('account_name', 'like', '{%search%}')
-               ->orWhere('despreciation', 'like', '{%search%}')
-               ->orWhereHas('asset', function($qa) use ($search) {
-                    $qa->where('name', 'like', '{%search%}')
-                    ->orWhere('qr_code', 'like', '{%search%}');
-               }); 
+            $query->where(function ($q) use ($search) {
+                $q->where('account_name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('asset', function ($qa) use ($search) {
+                        $qa->where('name', 'like', "%{$search}%")
+                            ->orWhere('qr_code', 'like', "%{$search}%");
+                    });
             });
         }
 
-        if($request->filled('entry_type') && $request->entry_type !== 'all'){
+        if ($request->filled('entry_type') && $request->entry_type !== 'all') {
             $query->where('entry_type', $request->entry_type);
         }
-        if($request->filled('reference_type') && $request->reference_type !== 'all'){
+
+        if ($request->filled('reference_type') && $request->reference_type !== 'all') {
             $query->where('reference_type', $request->reference_type);
         }
 
         $journal = $query->paginate(20);
 
-        $totalDebit = FinancialJournal::where('entry_date', 'debit')->sum('amount');
-        $totalCredit = FinancialJournal::where('entry_date', 'credit')->sum('amount');
+        // Menggunakan kolom entry_type (bukan entry_date)
+        $totalDebit = FinancialJournal::where('entry_type', 'debit')->sum('amount');
+        $totalCredit = FinancialJournal::where('entry_type', 'credit')->sum('amount');
 
         return response()->json([
-            'status'    => 'success',
-            'data'      => $journal,
-            'summry'    => [
-                'total_debit'   => (float) $totalDebit,
-                'total_credit'  => (float) $totalCredit,
-                'is_balanced'   => (float) round($totalDebit, 2) === round($totalCredit, 2),
+            'status'  => 'success',
+            'data'    => $journal,
+            'summary' => [ // Key diperbaiki dari 'summry' menjadi 'summary'
+                'total_debit'  => (float) $totalDebit,
+                'total_credit' => (float) $totalCredit,
+                'is_balanced'  => round($totalDebit, 2) === round($totalCredit, 2),
             ]
         ], 200);
     }
 
     public function exportPdf(Request $request)
     {
-        // Ambil semua data jurnal (bisa ditambahkan filter bulan/tahun jika dibutuhkan nanti)
         $journals = FinancialJournal::with('asset')
             ->orderBy('transaction_date', 'asc')
             ->orderBy('id', 'asc')

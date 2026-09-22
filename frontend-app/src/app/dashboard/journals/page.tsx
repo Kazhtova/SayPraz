@@ -6,7 +6,8 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { 
   BookOpen, Search, ArrowUpDown, ChevronLeft, ChevronRight, Scale, 
-  ArrowDownLeft, ArrowUpRight, Package, CheckCircle2, AlertTriangle, RefreshCw
+  ArrowDownLeft, ArrowUpRight, Package, CheckCircle2, AlertTriangle, RefreshCw,
+  Printer, Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -79,6 +80,7 @@ function ControlsSkeleton() {
 
       <div className="w-full sm:w-[40%] px-4 pb-4 sm:pb-0 sm:pr-6 flex items-center sm:justify-end gap-3 flex-wrap">
         <div className="h-10 w-full sm:w-32 rounded-lg bg-zinc-800" />
+        <div className="h-10 w-full sm:w-44 rounded-lg bg-zinc-800" />
       </div>
     </div>
   );
@@ -117,6 +119,7 @@ export default function JournalsPage() {
   const [summary, setSummary] = useState({ total_debit: 0, total_credit: 0, is_balanced: true });
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const [search, setSearch] = useState("");
   const [entryTypeFilter, setEntryTypeFilter] = useState("all");
@@ -171,6 +174,38 @@ export default function JournalsPage() {
     fetchJournals();
   };
 
+  const handleExportPDF = async () => {
+    setIsExporting(true);
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch(`${API_URL}/api/journals/export/pdf`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Gagal mengunduh laporan Jurnal PDF");
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Laporan_Jurnal_Sarpras_${new Date().getTime()}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      alert("Terjadi kesalahan saat mengekspor dokumen PDF.");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const FontKillerStyles = () => (
     <style dangerouslySetInnerHTML={{__html: `
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -198,7 +233,7 @@ export default function JournalsPage() {
           </div>
         )}
 
-        {/* 3 FINANCIAL STAT CARDS (SAMA PERSIS DENGAN DEPRECIATION PAGE) */}
+        {/* 3 FINANCIAL STAT CARDS */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {isInitialLoading ? (
             <>
@@ -276,7 +311,7 @@ export default function JournalsPage() {
         {/* TABEL DATA JURNAL */}
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 backdrop-blur-sm overflow-hidden flex flex-col shadow-lg shadow-zinc-950/50">
           
-          {/* CONTROL SEARCH & REFRESH */}
+          {/* CONTROL SEARCH & REFRESH & EXPORT */}
           {isInitialLoading ? (
             <ControlsSkeleton />
           ) : (
@@ -308,15 +343,24 @@ export default function JournalsPage() {
                 </div>
               </div>
 
-              {/* BAGIAN KANAN: Button Refresh */}
+              {/* BAGIAN KANAN: Button Refresh & Cetak PDF */}
               <div className="w-full sm:w-[40%] px-4 pb-4 sm:pb-0 sm:pr-6 flex items-center sm:justify-end gap-3 flex-wrap">
                 <Button 
                   variant="outline" 
                   onClick={handleRefreshClick} 
-                  disabled={isRefreshing} 
+                  disabled={isRefreshing || isExporting} 
                   className="border-zinc-800 bg-zinc-950/50 hover:bg-zinc-800 hover:text-white text-zinc-300 gap-2 h-10 px-4 rounded-lg transition-all w-full sm:w-auto"
                 >
                   <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} /> Muat Ulang
+                </Button>
+
+                <Button 
+                  onClick={handleExportPDF} 
+                  disabled={isRefreshing || isExporting} 
+                  className="border-zinc-800 bg-zinc-950/50 hover:bg-zinc-800 hover:text-white text-zinc-300 gap-2 h-10 px-4 rounded-lg transition-all w-full sm:w-auto"
+                >
+                  {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Printer className="h-4 w-4" />}
+                  {isExporting ? "Memproses PDF..." : "Cetak Laporan PDF"}
                 </Button>
               </div>
 
@@ -396,7 +440,7 @@ export default function JournalsPage() {
             </table>
           </div>
 
-          {/* PAGINATION (SAMA DENGAN CATEGORIES & DEPRECIATION) */}
+          {/* PAGINATION */}
           {pagination && pagination.last_page > 1 && (
             <div className="border-t border-zinc-800 px-6 py-4 flex flex-col sm:flex-row gap-3 items-center justify-between bg-zinc-900/30">
               <div className="text-xs text-zinc-400 font-mono">
