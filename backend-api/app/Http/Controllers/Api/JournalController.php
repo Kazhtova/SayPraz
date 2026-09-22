@@ -47,4 +47,6 @@ class JournalController extends Controller
             ]
         ], 200);
     }
+
+    
 }
