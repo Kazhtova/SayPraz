@@ -379,8 +379,8 @@ export default function JournalsPage() {
                     <th scope="col" className="px-5 py-4 font-semibold w-[18%]">Tanggal & Ref</th>
                     <th scope="col" className="px-5 py-4 font-semibold w-[24%]">Nama Akun</th>
                     <th scope="col" className="px-5 py-4 font-semibold w-[28%]">Keterangan / Aset</th>
-                    <th scope="col" className="px-5 py-4 font-semibold text-right w-[15%]">Debit</th>
-                    <th scope="col" className="px-5 py-4 font-semibold text-right w-[15%]">Kredit</th>
+                    <th scope="col" className="px-5 py-4 font-semibold text-center w-[15%]">Debit</th>
+                    <th scope="col" className="px-5 py-4 font-semibold text-center w-[15%]">Kredit</th>
                   </tr>
                 </thead>
               )}
@@ -409,7 +409,7 @@ export default function JournalsPage() {
                       <td className="px-5 py-4">
                         <div className="text-zinc-200 font-mono text-xs">{item.transaction_date}</div>
                         <span className="inline-block mt-0.5 px-2 py-0.5 rounded bg-zinc-800/80 border border-zinc-700/40 text-[10px] font-mono uppercase tracking-wider text-zinc-400">
-                          #{item.reference_type}
+                          {item.reference_type}
                         </span>
                       </td>
 
@@ -426,11 +426,11 @@ export default function JournalsPage() {
                         )}
                       </td>
 
-                      <td className="px-5 py-4 text-right font-mono font-medium text-emerald-400 text-xs">
+                      <td className="px-5 py-4 text-center font-mono font-medium text-emerald-400 text-xs">
                         {item.entry_type === "debit" ? formatRupiah(Number(item.amount)) : "-"}
                       </td>
 
-                      <td className="px-5 py-4 text-right font-mono font-medium text-rose-400 text-xs">
+                      <td className="px-5 py-4 text-center font-mono font-medium text-rose-400 text-xs">
                         {item.entry_type === "credit" ? formatRupiah(Number(item.amount)) : "-"}
                       </td>
                     </tr>
