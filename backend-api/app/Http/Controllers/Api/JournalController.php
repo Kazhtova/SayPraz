@@ -48,5 +48,29 @@ class JournalController extends Controller
         ], 200);
     }
 
-    
+    public function exportPdf(Request $request)
+    {
+        // Ambil semua data jurnal (bisa ditambahkan filter bulan/tahun jika dibutuhkan nanti)
+        $journals = FinancialJournal::with('asset')
+            ->orderBy('transaction_date', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $totalDebit = $journals->where('entry_type', 'debit')->sum('amount');
+        $totalCredit = $journals->where('entry_type', 'credit')->sum('amount');
+        $isBalanced = round($totalDebit, 2) === round($totalCredit, 2);
+
+        $pdf = Pdf::loadView('reports.journals', [
+            'journals'    => $journals,
+            'totalDebit'  => $totalDebit,
+            'totalCredit' => $totalCredit,
+            'isBalanced'  => $isBalanced,
+            'printDate'   => now()->translatedFormat('d F Y H:i:s'),
+        ]);
+
+        // Opsional: Atur ukuran kertas
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->download('Laporan_Jurnal_Mutasi_Aset.pdf');
+    }
 }
