@@ -63,19 +63,19 @@ graph TD
 [ Pengadaan Aset ]
        │
        ▼
-[ Registrasi & Valuasi ] ──────► [ Auto-Generate QR Code ] ───► [ Sinkronisasi S3 Media ]
-       │
-       ▼
-[ Operasional Inventaris ] ◄────► [ Mutasi Status & Immutable Audit Trail (AssetLog) ]
+[ Registrasi & Valuasi ] ──────► [ Generate QR Unik ] ───► [ Cetak Satuan / Massal A4 ]
+       │                                                              │
+       ▼                                                              ▼
+[ Operasional Inventaris ] ◄─────────────────────────────── [ Web Camera Scanner ]
    ├─ Tersedia (Available)
-   ├─ Dipinjam (Borrowed)
-   └─ Perbaikan (In Repair)
-       │
-       ▼
-[ Depresiasi Berkala ] ────────► [ Valuasi Nilai Buku Riil Tiap Tahun Buku ]
-       │
-       ▼
-[ 100% Tersusut ] ─────────────► [ Rekomendasi Disposed / Afkir Barang ]
+   ├─ Dipinjam (Borrowed) ──────► [ Transaksi & Riwayat Pengembalian ]
+   ├─ Servis (In Repair) ───────► [ Tiket Perbaikan & Total Cost of Ownership (TCO) ]
+   │                                  │
+   │                                  ▼
+   ├─ Depresiasi Bulanan (Cron) ──► [ Jurnal Beban Penyusutan (Buku Besar) ]
+   │                                  │
+   ▼                                  ▼
+[ Pelepasan Aset (Disposal) ] ──► [ Jurnal Pengakuan Laba / Rugi Pelepasan ]
 ```
 
 ### Penjelasan Tahapan
