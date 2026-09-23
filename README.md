@@ -79,36 +79,51 @@ graph TD
 [ Pelepasan Aset (Disposal) ] ──► [ Jurnal Pengakuan Laba / Rugi Pelepasan ]
 ```
 
-### Penjelasan Tahapan
-* **Registrasi & Kodifikasi:** Aset baru didaftarkan ke sistem dengan membangkitkan kode unik berformat `AST-{timestamp}-{random}`. Foto aset diunggah ke bucket Supabase S3 dengan header tipe MIME yang presisi.
-* **Sirkulasi Operasional:**
-  * `available`: Unit berada di ruang penyimpanan dan siap diajukan untuk peminjaman.
-  * `borrowed`: Unit sedang aktif digunakan; status ini mengunci aset agar tidak dapat dipinjam ganda.
-  * `in_repair`: Unit mengalami kerusakan teknis dan dialihkan ke dalam antrean pemeliharaan.
-  * `disposed`: Unit telah dihapus dari inventaris aktif karena rusak total atau dilelang.
-* **Audit Trail Otomatis:** Setiap mutasi status dieksekusi dalam `DB::transaction` dan otomatis mencatat riwayat ke tabel `asset_logs` beserta catatan inspeksi dan identitas admin.
+### Penjelasan Modul Inti
+* **Kodifikasi & Labeling:** Setiap unit memiliki kode QR unik berformat `AST-{timestamp}-{random}`. Tersedia modul cetak stiker satuan maupun lembar massal A4 (*bulk print*), serta pemindai kamera web langsung untuk verifikasi fisik di lapangan.
+* **Pemeliharaan & Work Orders:** Unit yang mengalami kendala dialihkan ke status `in_repair`. Setelah perbaikan selesai, sistem mencatat rincian tindakan, vendor pelaksana, tanggal penyelesaian, dan biaya riil yang langsung terintegrasi ke kalkulasi *Total Cost of Ownership* (TCO) serta pembukuan jurnal akuntansi.
+* **Audit Trail Imutabel:** Setiap perubahan status aset dibungkus dalam `DB::transaction` dan otomatis dicatat ke tabel `asset_logs` bersama identitas admin penanggung jawab untuk memastikan integritas rekam jejak.
 
 ---
 
-## Mesin Perhitungan Finansial (EAM)
+## Mesin Finansial & Akuntansi
 
-SayPraz mengimplementasikan standar akuntansi **Metode Garis Lurus (*Straight-Line Depreciation Method*)** secara dinamis menggunakan accessor model Eloquent di backend.
+SayPraz menerapkan kalkulasi akuntansi aset tetap secara *real-time* dan otomatis di backend:
 
-### Formula Matematika
+### 1. Depresiasi Garis Lurus (*Straight-Line Method*)
+* **Beban Penyusutan Bulanan ($D_m$):**
+  $$D_m = \frac{\text{Harga Perolehan} - \text{Nilai Residu}}{\text{Masa Manfaat (Tahun)} \times 12}$$
 
-* **Beban Penyusutan Tahunan ($D$):**
-  $$D = \frac{\text{Harga Perolehan} - \text{Nilai Residu}}{\text{Masa Manfaat}}$$
+* **Akumulasi Depresiasi Berjalan ($AD$):**
+  $$AD = \min\Big(D_m \times \text{Bulan Terlewati}, \text{Harga Perolehan} - \text{Nilai Residu}\Big)$$
 
-* **Akumulasi Penyusutan ($AD$):**
-  $$AD = D \times \min\Big(\max(0, \text{Tahun Berjalan} - \text{Tahun Pembelian}), \text{Masa Manfaat}\Big)$$
-
-* **Nilai Asset Bersih Terkini ($NBV$):**
-  $$NBV = \max(\text{Nilai Residu}, \text{Harga Perolehan} - AD)$$
-
-* **Persentase Tersusut:**
-  $$\% \text{ Tersusut} = \left(\frac{AD}{\text{Harga Perolehan}}\right) \times 100\%$$
+* **Nilai Riil Buku (Net Asset Value / $NAV$):**
+  $$NAV = \max(\text{Nilai Residu}, \text{Harga Perolehan} - AD)$$
 
 ---
+
+### 2. Total Cost of Ownership (TCO)
+Menghitung biaya kepemilikan unit secara komprehensif:
+$$\text{TCO} = \text{Harga Perolehan} + \sum \text{Biaya Perbaikan Selesai}$$
+
+---
+
+### 3. Jurnal Finansial Otomatis (*Double-Entry Bookkeeping*)
+Sistem otomatis membukukan transaksi berimbang (Debit/Kredit) pada peristiwa:
+
+* **Perbaikan Aset Selesai:**
+  * *Debit:* Beban Pemeliharaan & Perbaikan
+  * *Kredit:* Kas / Bank
+
+* **Pelepasan Aset (*Disposal*):**
+  * *Debit:* Kas / Bank (Nilai Jual/Lelang)
+  * *Debit:* Akumulasi Penyusutan (Penutupan Depresiasi)
+  * *Debit/Kredit:* Rugi / Laba Pelepasan Aset Tetap
+  * *Kredit:* Aset Tetap (Penghapusan Harga Perolehan Historis)
+
+* **Depresiasi Berkala (Akhir Bulan via *Cron Job*):**
+  * *Debit:* Beban Penyusutan Aset Tetap
+  * *Kredit:* Akumulasi Penyusutan Aset Tetap
 
 ## Matriks Hak Akses (RBAC)
 
