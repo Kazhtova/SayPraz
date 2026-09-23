@@ -1,7 +1,7 @@
 <div align="center">
 
 # SayPraz
-### Enterprise Asset Management (EAM) & Stock Circulation Platform
+### Enterprise Asset Management (EAM), Accounting Ledger & Stock Circulation Platform
 
 [![Laravel 13](https://img.shields.io/badge/Laravel%2013-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
 [![Next.js 16](https://img.shields.io/badge/Next.js%2016-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
@@ -12,13 +12,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 <p align="center">
-  Platform EAM modern berbasis arsitektur <i>Decoupled</i> (Headless API) untuk mengotomatisasi siklus hidup sarana-prasarana, perhitungan depresiasi finansial aset riil (Metode Garis Lurus), pelacakan sirkulasi berbasis QR Code, dan rekam jejak audit nir-ubah (<i>Immutable Audit Trail</i>).
+  Platform EAM modern berbasis arsitektur <i>Decoupled</i> (Headless API) untuk mengotomatisasi siklus hidup sarana-prasarana: perhitungan depresiasi finansial aset riil (Metode Garis Lurus), pembukuan buku besar otomatis (<i>Double-Entry Journal</i>), tiket perbaikan & kalkulasi TCO, scanner QR kamera web, cetak label massal A4, serta laporan PDF resmi siap audit.
 </p>
 
 [Gambaran Proyek](#-gambaran-proyek) •
 [Arsitektur Sistem](#-arsitektur-sistem) •
-[Alur Bisnis & Siklus Aset](#-alur-bisnis--siklus-aset) •
-[Mesin Perhitungan Finansial](#-mesin-perhitungan-finansial-eam) •
+[Siklus Hidup Aset (EAM Lifecycle)](#-siklus-hidup-aset-eam-lifecycle) •
+[Mesin Finansial & Akuntansi](#-mesin-finansial--akuntansi) •
 [Matriks Hak Akses](#-matriks-hak-akses-rbac) •
 [Struktur Basis Data](#-struktur-basis-data) •
 [Panduan Instalasi](#-panduan-instalasi)
@@ -29,19 +29,18 @@
 
 ## Gambaran Proyek
 
-**SayPraz** dirancang untuk mentransformasi tata kelola logistik sekolah dan institusi dari inventarisasi manual menjadi ekosistem digital enterprise. Sistem ini mengatasi tiga masalah krusial:
+**SayPraz** dirancang untuk mentransformasi tata kelola logistik sekolah dan institusi pendidikan dari pembukuan manual menjadi ekosistem *Enterprise Resource Planning* (ERP) mini yang tangguh. Sistem ini menjawab tantangan utama pengelolaan sarpras:
 
-1. **Discrepancy Fisik & Administratif:** Hilangnya jejak peminjaman (*asset misplacement*) dan peminjaman liar tanpa persetujuan bertingkat.
-2. **Ketiadaan Valuasi Riil:** Nilai aset yang tercatat sering kali statis pada harga beli awal, mengabaikan degradasi nilai barang seiring berjalannya tahun pemakaian.
-3. **Dokumentasi Kerusakan Minim:** Peralatan fisik mengalami penurunan mutu tanpa adanya catatan rekam jejak perbaikan (*maintenance logs*) yang terpusat.
-
-Dengan menggabungkan konsep **Enterprise Asset Management (EAM)** dan **Sirkulasi Peminjaman Bertingkat**, SayPraz mengawasi aset mulai dari pengadaan (*procurement*), pemanfaatan operasional (*active deployment*), siklus servis (*maintenance*), evaluasi nilai buku berkala, hingga penghapusan unit (*disposal*).
+1. **Discrepancy Fisik & Administratif:** Hilangnya jejak peminjaman dan sirkulasi liar diselesaikan melalui verifikasi QR Code terintegrasi via kamera browser langsung.
+2. **Ketiadaan Valuasi Riil & Degradasi Nilai:** Nilai aset tidak lagi statis pada harga beli awal, melainkan terdepresiasi proporsional setiap bulan menggunakan metode akuntansi garis lurus.
+3. **Dokumentasi Kerusakan & Beban Biaya:** Rekam jejak servis internal maupun vendor luar dicatat rapi ke dalam tiket kerja (*work orders*), menghitung akumulasi biaya riil kepemilikan aset (*Total Cost of Ownership*).
+4. **Audit Finansial Terbuka:** Setiap aksi pelepasan aset (*disposal*) dan servis memicu penerbitan jurnal penutup berimbang (Debit/Kredit) secara otomatis yang siap dicetak ke format PDF berstandar resmi.
 
 ---
 
 ## Arsitektur Sistem
 
-Platform mengadopsi arsitektur *decoupled* berkinerja tinggi yang memisahkan *client presentation* dengan backend komputasi transaksional:
+Platform mengadopsi arsitektur *decoupled* berkinerja tinggi yang memisahkan *presentation layer* modern dengan backend transaksional:
 
 ```mermaid
 graph TD
@@ -50,17 +49,17 @@ graph TD
     classDef storage fill:#18181b,stroke:#059669,stroke-width:2px,color:#f4f4f5;
     classDef db fill:#18181b,stroke:#2563eb,stroke-width:2px,color:#f4f4f5;
 
-    Frontend["<b>Frontend Client (Next.js 16)</b><br/>• React Server Components (RSC)<br/>• Tailwind CSS Dark-Mode Theme<br/>• Recharts Analytics Engine"]:::client
-    Backend["<b>Backend Core API (Laravel 13)</b><br/>• RESTful API Architecture<br/>• Laravel Sanctum Auth<br/>• Eloquent Dynamic Accessors"]:::backend
-    ObjectStorage[("<b>Object Storage (Supabase S3)</b><br/>• Direct Asset Images<br/>• Public Bucket Distribution")]:::storage
-    RelationalDB[("<b>Relational Database (MySQL 8)</b><br/>• Strict Constraints & Foreign Keys<br/>• Transactional Acid Processing")]:::db
+    Frontend["<b>Frontend Client (Next.js 16)</b><br/>• React Server Components (RSC)<br/>• Tailwind CSS Dark Architecture<br/>• In-Browser QR Scanner (Camera API)<br/>• Recharts Visual Engine & 1:1 Skeletons"]:::client
+    Backend["<b>Backend Core API (Laravel 13)</b><br/>• RESTful Architecture & Sanctum Auth<br/>• Eloquent Dynamic Accessors & Casts<br/>• Monthly Cron Job Task Scheduler<br/>• DOMPDF Official Report Generator"]:::backend
+    ObjectStorage[("<b>Object Storage (Supabase S3)</b><br/>• Direct Asset Photos Upload<br/>• Presigned MIME Distribution")]:::storage
+    RelationalDB[("<b>Relational Database (MySQL 8)</b><br/>• Strict Foreign Key Integrity<br/>• ACID Transactional Commit")]:::db
 
     Frontend -->|"HTTPS / JSON API (Bearer Token)"| Backend
     Backend -->|"AWS S3 SDK (Flysystem Driver)"| ObjectStorage
     Backend -->|"PDO / Eloquent Queries"| RelationalDB
-```
 
 ```
+
 [ Pengadaan Aset ]
        │
        ▼
