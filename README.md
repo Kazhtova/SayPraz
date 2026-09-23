@@ -129,15 +129,16 @@ Sistem otomatis membukukan transaksi berimbang (Debit/Kredit) pada peristiwa:
 
 Pemisahan tanggung jawab diatur secara terstruktur melalui sistem peran:
 
-| Fitur / Akses | Administrator | Staf Sarpras | Siswa / Guru |
+| Fitur / Modul | Administrator | Staf Sarpras | Siswa / Guru |
 | :--- | :---: | :---: | :---: |
-| **Registrasi & Edit Master Aset** | ✅ Ya | ❌ Tidak | ❌ Tidak |
-| **Konfigurasi Parameter Finansial** | ✅ Ya | ❌ Tidak | ❌ Tidak |
-| **Monitoring Valuasi & Laporan Depresiasi** | ✅ Ya | ❌ Tidak | ❌ Tidak |
-| **Persetujuan & Mutasi Peminjaman Fisik** | ✅ Ya | ❌ Tidak | ❌ Tidak |
-| **Pencetakan Label QR Code Unit** | ✅ Ya | ❌ Tidak | ❌ Tidak |
-| **Inspeksi Rekam Jejak Audit (Logs)** | ✅ Ya | ❌ Tidak | ❌ Tidak |
-| **Akses E-Catalog & Pengajuan Pinjam** | ❌ Tidak | ✅ Ya | ✅ Ya |
+| **Kelola Master Aset & Kategori** | ✅ Penuh | ❌ Tidak | ❌ Tidak |
+| **Tiket Servis & Work Orders** | ✅ Penuh | ✅ Lihat & Buka | ❌ Tidak |
+| **Kalkulasi TCO & Depresiasi** | ✅ Penuh | ❌ Tidak | ❌ Tidak |
+| **Buku Besar Jurnal & Cetak PDF** | ✅ Penuh | ❌ Tidak | ❌ Tidak |
+| **Pelepasan Aset (Disposal)** | ✅ Penuh | ❌ Tidak | ❌ Tidak |
+| **Persetujuan Sirkulasi Pinjam** | ✅ Penuh | ✅ Verifikasi | ❌ Tidak |
+| **Scanner QR Kamera Web** | ✅ Ya | ✅ Ya | ✅ Ya |
+| **Katalog & Pengajuan Pinjam** | ❌ Tidak | ✅ Ya | ✅ Ya |
 
 ---
 
@@ -147,14 +148,18 @@ Skema database dirancang menggunakan relasi integritas referensial penuh:
 
 ```text
 categories (1) ────< (N) assets (1) ────< (N) asset_logs (N) >──── (1) users
-                            │
-                            └────< (N) transactions (N) >──── (1) users
+                           │
+                           ├────< (N) transactions (N) >──── (1) users
+                           │
+                           ├────< (N) maintenances (N) >──── (1) users
+                           │
+                           └────< (N) financial_journals
 ```
 
 Panduan Instalasi
 1. Kebutuhan Sistem
 ```
-PHP 8.2 atau 8.3 dengan ekstensi PDO, OpenSSL, BCMath, cURL
+PHP 8.2+ dengan ekstensi PDO, OpenSSL, BCMath, cURL, GD
 
 Node.js 20+ & npm / pnpm
 
