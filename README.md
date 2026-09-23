@@ -60,6 +60,7 @@ graph TD
 
 ```
 
+```
 [ Pengadaan Aset ]
        │
        ▼
