@@ -3,7 +3,7 @@
 # SayPraz
 ### Enterprise Asset Management (EAM), Accounting Ledger & Stock Circulation Platform.
 
----
+
 
 [![Laravel 13](https://img.shields.io/badge/Laravel%2013-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
 [![Next.js 16](https://img.shields.io/badge/Next.js%2016-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
